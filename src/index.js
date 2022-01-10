@@ -131,7 +131,7 @@ const islocalStorage = (() => {
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 const wikiVersion = '1.5.7';
-const pathImages = 'https://dobriy-vecher-vlad.github.io/warlord/wiki-new/media/images/';
+const pathImages = 'https://dobriy-vecher-vlad.github.io/warlord-helper/media/images/';
 
 
 import MODAL_alert from './modals/alert';

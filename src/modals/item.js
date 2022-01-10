@@ -25,7 +25,7 @@ class MODAL extends React.Component {
 	render() {
 		const { state, options, data } = this.props;
 		const item = Items[data.id];
-		const pathImages = 'https://dobriy-vecher-vlad.github.io/warlord/wiki-new/media/images/';
+		const pathImages = 'https://dobriy-vecher-vlad.github.io/warlord-helper/media/images/';
 		return (
 			<ModalPage id={this.props.id}>
 				<Div style={{padding: state.isDesktop ? 12 : ''}}>

@@ -36,7 +36,7 @@ class PANEL extends React.Component {
 	}
 	render() {
 		const { state, options, parent } = this.props;
-		const pathImages = 'https://dobriy-vecher-vlad.github.io/warlord/wiki-new/media/images/';
+		const pathImages = 'https://dobriy-vecher-vlad.github.io/warlord-helper/media/images/';
 		const title = 'Список боссов';
 		const description = 'Боссы';
 		const avatar = 'labels/9.png';

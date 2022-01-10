@@ -67,7 +67,7 @@ class MODAL extends React.Component {
 		const { isLoad, items, days } = this.state;
 		const totalItemsIs = items&&items.filter(item => item.is).length;
 		const itemsNotIs = items&&items.filter(item => !item.is);
-		const pathImages = 'https://dobriy-vecher-vlad.github.io/warlord/wiki-new/media/images/';
+		const pathImages = 'https://dobriy-vecher-vlad.github.io/warlord-helper/media/images/';
 		return (
 			<ModalCard id={this.props.id}>
 				{isLoad ? <Div style={{textAlign: 'center', padding: 0, display: 'flex', alignItems: 'center', flexDirection: 'column'}}>

@@ -104,7 +104,7 @@ class MODAL extends React.Component {
 	}
 	render() {
 		const { setState, state, options, data } = this.props;
-		const pathImages = 'https://dobriy-vecher-vlad.github.io/warlord/wiki-new/media/images/';
+		const pathImages = 'https://dobriy-vecher-vlad.github.io/warlord-helper/media/images/';
 		return (
 			data.modalIndex == 1 && <ModalPage
 				id={this.props.id}
