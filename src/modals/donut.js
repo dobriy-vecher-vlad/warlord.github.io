@@ -48,7 +48,7 @@ class MODAL extends React.Component {
 						textAlign: 'center',
 						padding: 20,
 					}}>
-						<TabbarItem className="CustomTabbarItem" indicator={<Counter className="BottomStyle Icon"><Icon28DonateCircleFillYellow/></Counter>}><Avatar src="https://dobriy-vecher-vlad.github.io/warlord/wiki-new/media/helpers/group_avatar.png" size={96}/></TabbarItem>
+						<TabbarItem className="CustomTabbarItem" indicator={<Counter className="BottomStyle Icon"><Icon28DonateCircleFillYellow/></Counter>}><Avatar src="https://dobriy-vecher-vlad.github.io/warlord-helper/media/helpers/group_avatar.png" size={96}/></TabbarItem>
 						<Title style={{ marginTop: 20 }} level="2" weight="medium">VK Donut</Title>
 						<div style={{ marginTop: 8 }}>Поддержите проект подпиской и получите</div>
 					</Gradient>
