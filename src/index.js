@@ -130,7 +130,7 @@ const islocalStorage = (() => {
 })();
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
-const wikiVersion = '1.5.7';
+const wikiVersion = '1.5.7 fixed';
 const pathImages = 'https://dobriy-vecher-vlad.github.io/warlord-helper/media/images/';
 
 

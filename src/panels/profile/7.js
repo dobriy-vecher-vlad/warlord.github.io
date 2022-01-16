@@ -188,13 +188,12 @@ class PANEL extends React.Component {
 		let player = this._isMounted && await BotAPI('getStats', auth_key, api_uid, sslt);
 		if (!player) {
 			openSnackbar({text: 'Ключ авторизации игры неисправен, введите новый', icon: 'error'});
-			this._isMounted && setActivePanel('profile');
 			this._isMounted && BotAPI('getAuth', null, null, null, {stage: 'modal', text: 'Ключ авторизации игры неисправен, введите новый'});
+			this._isMounted && setActivePanel('profile');
 			return;
 		}
 		let dataArena = this._isMounted && await getData('xml', `https://backup1.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&i=9&UID=${player._id}&t=1`);
 		if (!dataArena || (dataArena && !dataArena.my_rating)) {
-			// console.warn(dataArena);
 			this._isMounted && setActivePanel('profile');
 			openSnackbar({text: 'Ошибка при получении данных арены', icon: 'error'});
 			return;

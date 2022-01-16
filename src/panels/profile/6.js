@@ -955,7 +955,7 @@ class PANEL extends React.Component {
 		};
 		let dataGame = this._isMounted && await getData('xml', `https://backup1.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}`);
 		// console.log(dataGame);
-		if (!dataGame) {
+		if (!dataGame?.u) {
 			// this.setState({ popout: null });
 			openSnackbar({text: 'Ключ авторизации игры неисправен, введите новый', icon: 'error'});
 			this._isMounted && BotAPI('getAuth', null, null, null, {stage: 'modal', text: 'Ключ авторизации игры неисправен, введите новый'});
