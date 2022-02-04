@@ -79,7 +79,9 @@ import {
 	Icon56FaceIdOutline,
 	Icon28GraphOutline,
 	Icon56MessageReadOutline,
-	Icon28KeyOutline
+	Icon28KeyOutline,
+	Icon28UserCardOutline,
+	Icon28UserOutline
 } from '@vkontakte/icons';
 
 // import Tasks from './panels/home/tasks.js';
@@ -154,6 +156,9 @@ import PANEL_profile__4 from './panels/profile/4';
 import PANEL_profile__5 from './panels/profile/5';
 import PANEL_profile__6 from './panels/profile/6';
 import PANEL_profile__7 from './panels/profile/7';
+
+import PANEL_rating from './panels/rating/rating';
+import PANEL_rating__1 from './panels/rating/1';
 
 import PANEL_map__1 from './panels/map/1';
 import PANEL_map__2 from './panels/map/2';
@@ -1507,13 +1512,21 @@ const App = withAdaptivity(({ viewWidth }) => {
 										disabled={activeStory === 'profile'}
 										data-story="profile"
 										onClick={onStoryChange}
-										before={<Icon28UserCircleOutline />}
-										after={isEmbedded&&<Counter size="s" mode="prominent">НОВОЕ</Counter>}
+										before={<Icon28UserOutline />}
+										after={<Counter size="s" mode="prominent">НОВОЕ</Counter>}
 									>Мой профиль</RichCell>}
+									<RichCell
+										className="RichCell--Context"
+										disabled={activeStory === 'rating'}
+										data-story="rating"
+										onClick={onStoryChange}
+										before={<Icon28UserCardOutline />}
+										after={<Counter size="s" mode="prominent">НОВОЕ</Counter>}
+									>Рейтинг</RichCell>
 									{/* {isEmbedded && <RichCell
 										className="RichCell--Context"
 										disabled={activePanel === 'tasks'}
-										data-story="profile"
+										data-story="tasks"
 										onClick={() => setActivePanel('tasks')}
 										before={<Icon28UserCircleOutline />}
 										after={isEmbedded&&<Counter size="s" mode="prominent">НОВОЕ</Counter>}
@@ -1796,6 +1809,14 @@ const App = withAdaptivity(({ viewWidth }) => {
 								<PANEL_profile__5 id='5' parent='profile' state={this.state} options={this} />
 								<PANEL_profile__6 id='6' parent='profile' state={this.state} options={this} />
 								<PANEL_profile__7 id='7' parent='profile' state={this.state} options={this} />
+							</View>
+
+
+
+
+							<View id="rating" activePanel={!activePanel ? 'rating' : activePanel} modal={modal()}>
+								<PANEL_rating id='rating' parent='rating' state={this.state} options={this} />
+								<PANEL_rating__1 id='1' parent='rating' state={this.state} options={this} />
 							</View>
 
 

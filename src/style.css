@@ -2091,6 +2091,123 @@ input::-webkit-inner-spin-button {
 }
 
 
+
+.HorizontalRating {
+	position: relative;
+}
+.HorizontalRating .Header {
+	padding: 0px 8px;
+}
+.HorizontalRating .Header__main {
+    margin: 6px 0 16px;
+}
+.HorizontalRating .HorizontalScroll {
+	margin: -7px -7px 0 -7px;
+	background: linear-gradient(to top,#f5f5f5,rgba(245,245,245,.98),rgba(245,245,245,.94),rgba(245,245,245,.88),rgba(245,245,245,.8),rgba(245,245,245,.71),rgba(245,245,245,.61),rgba(245,245,245,.5),rgba(245,245,245,.39),rgba(245,245,245,.29),rgba(245,245,245,.2),rgba(245,245,245,.12),rgba(245,245,245,.06),rgba(245,245,245,.02),rgba(245,245,245,0));
+}
+body[scheme=space_gray] .HorizontalRating .HorizontalScroll {
+    background: linear-gradient(to top,#232324,rgba(35,35,36,.98),rgba(35,35,36,.94),rgba(35,35,36,.88),rgba(35,35,36,.8),rgba(35,35,36,.71),rgba(35,35,36,.61),rgba(35,35,36,.5),rgba(35,35,36,.39),rgba(35,35,36,.29),rgba(35,35,36,.2),rgba(35,35,36,.12),rgba(35,35,36,.06),rgba(35,35,36,.02),rgba(35,35,36,0));
+}
+.HorizontalRating .HorizontalScroll__in {
+	margin: 0;
+	padding: 0;
+}
+.HorizontalRating .HorizontalScroll__in-wrapper > div {
+	display: grid;
+    grid-template-columns: repeat(5, calc(20% - 16px + (16px / 5)));
+    grid-column-gap: 16px;
+	margin: 7px 15px 16px 15px;
+}
+.HorizontalRating .HorizontalCell {
+	max-width: unset!important;
+}
+.HorizontalRating .HorizontalCell__body {
+	width: 100%;
+}
+.HorizontalRating .HorizontalCell::before,
+.HorizontalRating .HorizontalCell::after {
+	display: none;
+}
+.HorizontalRating .HorizontalCell .Counter {
+	background: #828282;
+	color: var(--counter_primary_text);
+}
+.HorizontalRating .HorizontalCell .Counter__in {
+	font-weight: 400;
+}
+.HorizontalRating .HorizontalCell:nth-child(1) .Counter {
+	background: #ffc107;
+}
+.HorizontalRating .HorizontalCell:nth-child(2) .Counter {
+	background: #8fadc8;
+}
+.HorizontalRating .HorizontalCell:nth-child(3) .Counter {
+	background: #ab9871;
+}
+.HorizontalRating .HorizontalCell__title {
+	font-size: 14px;
+    line-height: 16px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.HorizontalRating .HorizontalCell__subtitle {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.HorizontalRatings {
+	margin: 8px;
+}
+.HorizontalRatings-wrap {
+	display: grid;
+    grid-template-columns: repeat(2, 1fr);
+	grid-gap: 21px;
+	position: relative;
+}
+.HorizontalRatings .Footer {
+	margin: 16px 0 4px 0;
+}
+.HorizontalRatings .Header__main {
+    margin: 0 0 16px;
+}
+.HorizontalRatings .HorizontalScroll {
+	background: unset;
+}
+.HorizontalRatings .HorizontalRating {
+	/* overflow: hidden; */
+
+}
+.HorizontalRatings .HorizontalRating:nth-child(1) {
+	position: unset;
+}
+.HorizontalRatings .HorizontalRating:nth-child(1):before {
+	content: '';
+    display: block;
+    position: absolute;
+    width: 1px;
+    height: 100%;
+    left: 50%;
+    background: var(--separator_common);
+    /* transform: scaleX(.5); */
+}
+.HorizontalRatings .HorizontalRating:nth-child(2n+3):before {
+	content: '';
+    display: block;
+    position: absolute;
+    right: calc(-100% - 21px);
+    left: 0;
+    top: -11px;
+    height: 1px;
+    background: var(--separator_common);
+    /* transform: scaleY(.5); */
+}
+.HorizontalRating .TableCell__row:last-child {
+	justify-content: flex-end;
+}
+
+
 @media screen and (orientation: landscape) {
 	.Panel__in {
 		overflow: hidden;
