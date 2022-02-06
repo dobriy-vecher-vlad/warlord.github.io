@@ -1666,7 +1666,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 													<Card data-story="character" onClick={onStoryChange}><HorizontalCell size='l' header="Персонаж"><Icon28IncognitoOutline style={{['--fill']: 'var(--systemGreen)' }}/></HorizontalCell></Card>
 													<Card data-story="guild" onClick={onStoryChange}><HorizontalCell size='l' header="Гильдия"><Icon28Users3Outline style={{['--fill']: 'var(--systemYellow)' }}/></HorizontalCell></Card>
 													<Card data-story="other" onClick={onStoryChange}><HorizontalCell size='l' header="Разное"><Icon28GridSquareOutline style={{['--fill']: 'var(--systemPurple)' }}/></HorizontalCell></Card>
-													<Card><HorizontalCell disabled size='l' header=" "><Icon28GridSquareOutline style={{['--fill']: '#505050' }}/></HorizontalCell></Card>
+													<Card data-story="rating" onClick={onStoryChange}><HorizontalCell size='l' header="Рейтинг"><Icon28UserCardOutline style={{['--fill']: 'var(--systemIndigo)' }}/></HorizontalCell></Card>
 													<Card><HorizontalCell disabled size='l' header=" "><Icon28GridSquareOutline style={{['--fill']: '#505050' }}/></HorizontalCell></Card>
 												</CardGrid>
 												<Spacing size={16} separator/>

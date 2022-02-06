@@ -10,7 +10,8 @@ import {
 	HorizontalCell,
 	Avatar,
 	Counter,
-	PanelHeader
+	PanelHeader,
+	PanelHeaderBack
 } from '@vkontakte/vkui';
 
 import Skeleton from '../../components/skeleton';
@@ -81,7 +82,7 @@ class PANEL extends React.Component {
 		const grid = state.isDesktop ? {display: 'grid', alignItems: 'center', gridTemplateColumns: '40px 32px auto auto', gridGap: '8px'} : {display: 'grid', alignItems: 'center', gridTemplateColumns: '40px 32px auto auto', gridGap: '16px'};
 		return (
 			<Panel id={this.props.id}>
-				{!state.isDesktop && <PanelHeader>Рейтинг</PanelHeader>}
+				{!state.isDesktop && <PanelHeader right={!state.isEmbedded&&options.getCopy(parent)} left={<PanelHeaderBack onClick={() => setState({ activeStory: 'home', activePanel: 'home' })}/>}>{title}</PanelHeader>}
 				<Group>
 					{state.isDesktop && <PanelHeader className='HeaderFix' fixed={false} separator={true} right={options.getCopy(parent)}>{title}</PanelHeader>}
 					<div className="HorizontalRating">
@@ -172,7 +173,7 @@ class PANEL extends React.Component {
 						</div>
 					</div>
 					<Spacing size={8} />
-					{this.state?.rating?<Footer style={{margin: 0}}>Эрмун, обновлено {this.state.rating.time.replace(/(\d*).(\d*).(\d*)/g, '$3.$2.$1')}, {options.numberSpaces(this.state.rating.users.length, ' ')} игроков</Footer>:<Footer style={{margin: 0}}><Skeleton height={16} width={'35%'} margin={'auto'}/></Footer>}
+					{this.state?.rating?<Footer style={{margin: 0}}>Эрмун, обновлено {this.state.rating.time.replace(/(\d*).(\d*).(\d*)/g, '$3.$2.$1')} в 18:00, {options.numberSpaces(this.state.rating.users.length, ' ')} игроков</Footer>:<Footer style={{margin: 0}}><Skeleton height={16} width={'35%'} margin={'auto'}/></Footer>}
 				</Group>
 				{this.state.snackbar}
 			</Panel>
