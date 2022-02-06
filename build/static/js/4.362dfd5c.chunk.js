@@ -1,2 +1,0 @@
-(this.webpackJsonpWarlordWiki=this.webpackJsonpWarlordWiki||[]).push([[4],{230:function(i,a,d){"use strict";d.r(a);var r=d(240),s=d(241),t=d(242);r.init(),r.add(s),r.add(t),a.default=r}}]);
-//# sourceMappingURL=4.362dfd5c.chunk.js.map

@@ -132,7 +132,7 @@ const islocalStorage = (() => {
 })();
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
-const wikiVersion = '1.5.7 fixed';
+const wikiVersion = '1.5.8';
 const pathImages = 'https://dobriy-vecher-vlad.github.io/warlord-helper/media/images/';
 
 
@@ -267,6 +267,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 		return data;
 	};
 	const getData = async(type, link) => {
+		if (link == null) link = type;
 		if (type && link) {
 			try {
 				let data = await fetch(link);
@@ -350,6 +351,8 @@ const App = withAdaptivity(({ viewWidth }) => {
 				storeProfiles: [],
 				storeProfilesFull: [],
 				storeProfilesIndex: 0,
+
+				ratingMode: 'lvl',
 
 				checkItems: {null: true, item: true, scroll: true, collection: true, personal: true, stock: true, yesStock: true, noStock: true},
 
@@ -551,9 +554,10 @@ const App = withAdaptivity(({ viewWidth }) => {
 		};
 		isObject = (obj) => Object.prototype.toString.call(obj) === '[object Object]';
 		transmittedSetState = async(name, callback = () => {}) => {
-			this.setState(name, callback());
+			this.setState(name);
+			// this.setState(name, callback());
 		};
-		numberSpaces = (number, symbol = '.') => {
+		numberSpaces = (number = 0, symbol = '.') => {
 			return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, symbol);
 		};
 		numberForm = (number, titles) => {
@@ -707,74 +711,74 @@ const App = withAdaptivity(({ viewWidth }) => {
 			checkItems.null = true;
 			if (name == '1' && activeStory == 'profile') {
 				if (!isDonut) {
-					this.OpenModal('donut');
-					return 0;
+					// this.OpenModal('donut');
+					return this.OpenModal('donut');
 				}
 			}
 			if (name == '2' && activeStory == 'profile') {
 				if (!isDonut) {
-					this.OpenModal('donut');
-					return 0;
+					// this.OpenModal('donut');
+					return this.OpenModal('donut');
 				}
 			}
 			if (name == '3' && activeStory == 'profile') {
 				if (!isDonut) {
-					this.OpenModal('donut');
-					return 0;
+					// this.OpenModal('donut');
+					return this.OpenModal('donut');
 				}
 			}
 			if (name == '4' && activeStory == 'profile') {
 				if (!isDonut) {
-					this.OpenModal('donut');
-					return 0;
+					// this.OpenModal('donut');
+					return this.OpenModal('donut');
 				}
 			}
 			if (name == '5' && activeStory == 'profile') {
 				if (!isDonut) {
-					this.OpenModal('donut');
-					return 0;
+					// this.OpenModal('donut');
+					return this.OpenModal('donut');
 				}
 			}
 			if (name == '6' && activeStory == 'profile') {
 				if (!isDonut) {
-					this.OpenModal('donut');
-					return 0;
+					// this.OpenModal('donut');
+					return this.OpenModal('donut');
 				}
 			}
 			if (name == '7' && activeStory == 'profile') {
 				if (!isDonut) {
-					this.OpenModal('donut');
-					return 0;
+					// this.OpenModal('donut');
+					return this.OpenModal('donut');
 				}
 			}
 			if (name == '1' && activeStory == 'bosses') {
 				if (!isDonut) {
-					this.OpenModal('donut');
-					return 0;
+					// this.OpenModal('donut');
+					return this.OpenModal('donut');
 				}
 			}
 			if (name == '1' && activeStory == 'arena') {
 				if (!isDonut) {
-					this.OpenModal('donut');
-					return 0;
+					// this.OpenModal('donut');
+					return this.OpenModal('donut');
 				}
 			}
 			if (name == '1' && activeStory == 'guild') {
 				if (!isDonut) {
-					this.OpenModal('donut');
-					return 0;
+					// this.OpenModal('donut');
+					return this.OpenModal('donut');
 				}
 			}
 			if (name == '1' && activeStory == 'other') {
 				if (!isDonut) {
-					this.OpenModal('donut');
-					return 0;
+					// this.OpenModal('donut');
+					return this.OpenModal('donut');
 				}
 			}
 			if (name == '5' && activeStory == 'other') {
 				if (!isDonut) {
-					this.OpenModal('donut');
-					return 0;
+					// this.OpenModal('donut');
+					return this.OpenModal('donut');
 				}
 			}
 			if (!close || isDonut) {
@@ -1513,7 +1517,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 										data-story="profile"
 										onClick={onStoryChange}
 										before={<Icon28UserOutline />}
-										after={<Counter size="s" mode="prominent">НОВОЕ</Counter>}
+										// after={<Counter size="s" mode="prominent">НОВОЕ</Counter>}
 									>Мой профиль</RichCell>}
 									<RichCell
 										className="RichCell--Context"
@@ -1555,7 +1559,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 										onClick={onStoryChange}
 										before={<Icon28Smiles2Outline />}
 										description="Сезоны, сундуки"
-										after={isEmbedded&&<Counter size="s" mode="prominent">НОВОЕ</Counter>}
+										// after={isEmbedded&&<Counter size="s" mode="prominent">НОВОЕ</Counter>}
 									>Арена</RichCell>
 									<RichCell
 										className="RichCell--Context"
@@ -1580,7 +1584,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 										onClick={onStoryChange}
 										before={<Icon28GridSquareOutline />} 
 										description="События, лотерея"
-										after={isEmbedded&&<Counter size="s" mode="prominent">НОВОЕ</Counter>}
+										// after={isEmbedded&&<Counter size="s" mode="prominent">НОВОЕ</Counter>}
 									>Разное</RichCell>
 									<Spacing separator size={16} />
 									<RichCell
@@ -1794,7 +1798,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 											<SimpleCell onClick={() => setActivePanel('6', true)} before={<Avatar mode="app" src={`${pathImages}labels/4.png`} />} description="Автоматизация" expandable indicator={<React.Fragment>
 												<span className="Text">{!isDonut&&<Icon28DonateCircleFillYellow width={24} height={24}/>}</span>
 											</React.Fragment>}>Рейды</SimpleCell>
-											<SimpleCell onClick={() => setActivePanel('7', true)} badge={<Badge mode="prominent"/>} before={<Avatar mode="app" src={`${pathImages}labels/30.png`} />} description="Автоматизация" expandable indicator={<React.Fragment>
+											<SimpleCell onClick={() => setActivePanel('7', true)} before={<Avatar mode="app" src={`${pathImages}labels/30.png`} />} description="Автоматизация" expandable indicator={<React.Fragment>
 												{!isDonut ? <span className="Text"><Icon28DonateCircleFillYellow width={24} height={24}/></span> : <React.Fragment><span className="Text">{numberSpaces(syncUserGame._ap)}</span>
 												<span className="Subhead">{numberForm(syncUserGame._ap, ['кубок', 'кубка', 'кубков'])}</span></React.Fragment>}
 											</React.Fragment>}>Арена</SimpleCell>
@@ -1815,7 +1819,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 
 
 							<View id="rating" activePanel={!activePanel ? 'rating' : activePanel} modal={modal()}>
-								<PANEL_rating id='rating' parent='rating' state={this.state} options={this} />
+								<PANEL_rating id='rating' parent='rating' state={this.state} options={this} setState={this.transmittedSetState} />
 								<PANEL_rating__1 id='1' parent='rating' state={this.state} options={this} />
 							</View>
 
@@ -1935,7 +1939,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 										<React.Fragment>
 											<Spacing size={6} />
 											{isEmbedded&&<React.Fragment>
-												<SimpleCell onClick={() => this.OpenModal('mediaArenaItems')} before={<Icon28GraphOutline/>} expandable badge={<Badge mode="prominent"/>}>Анализ сезонов</SimpleCell>
+												<SimpleCell onClick={() => this.OpenModal('mediaArenaItems')} before={<Icon28GraphOutline/>} expandable>Анализ сезонов</SimpleCell>
 												<Spacing separator size={12} />
 											</React.Fragment>}
 											{isEmbedded&&<SimpleCell onClick={() => setActivePanel('1', true)} before={<Avatar mode="app" src={`${pathImages}labels/8.png`} />} description="Затраты на прохождение арены" expandable indicator={<React.Fragment>
@@ -2095,7 +2099,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 										<React.Fragment>
 											<Spacing size={6} />
 											{isEmbedded&&<React.Fragment>
-												<SimpleCell onClick={() => this.OpenModal('mediaEventsItems')} before={<Icon28GraphOutline/>} expandable badge={<Badge mode="prominent"/>}>Анализ ивентов</SimpleCell>
+												<SimpleCell onClick={() => this.OpenModal('mediaEventsItems')} before={<Icon28GraphOutline/>} expandable>Анализ ивентов</SimpleCell>
 												<Spacing separator size={12} />
 											</React.Fragment>}
 											{isEmbedded&&<SimpleCell onClick={() => setActivePanel('1', true)} before={<Avatar mode="app" src={`${pathImages}labels/26.png`} />} description="Затраты на улучшение предмета" expandable indicator={<React.Fragment>

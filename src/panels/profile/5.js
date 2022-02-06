@@ -113,22 +113,22 @@ class PANEL extends React.Component {
 										style={{color: 'var(--text_secondary)', cursor: 'pointer'}}
 										className="TableCell__row"
 										onClick={() => this.setState({ friendsMode: [1, friendsMode[0] == 1 ? !friendsMode[1] : 1] })}
-									><span>Урон</span>{friendsMode[0] == 1 && <Icon16ChevronOutline style={{transform: !friendsMode[1] ? 'rotate(90deg)' : 'rotate(-90deg)'}}/>}</div>
+									><span>урон</span>{friendsMode[0] == 1 && <Icon16ChevronOutline style={{transform: !friendsMode[1] ? 'rotate(90deg)' : 'rotate(-90deg)'}}/>}</div>
 									<div
 										style={{color: 'var(--text_secondary)', cursor: 'pointer'}}
 										className="TableCell__row"
 										onClick={() => this.setState({ friendsMode: [2, friendsMode[0] == 2 ? !friendsMode[1] : 1] })}
-									><span>Здоровье</span>{friendsMode[0] == 2 && <Icon16ChevronOutline style={{transform: !friendsMode[1] ? 'rotate(90deg)' : 'rotate(-90deg)'}}/>}</div>
+									><span>здоровье</span>{friendsMode[0] == 2 && <Icon16ChevronOutline style={{transform: !friendsMode[1] ? 'rotate(90deg)' : 'rotate(-90deg)'}}/>}</div>
 									<div
 										style={{color: 'var(--text_secondary)', cursor: 'pointer'}}
 										className="TableCell__row"
 										onClick={() => this.setState({ friendsMode: [3, friendsMode[0] == 3 ? !friendsMode[1] : 1] })}
-									><span>Уровень</span>{friendsMode[0] == 3 && <Icon16ChevronOutline style={{transform: !friendsMode[1] ? 'rotate(90deg)' : 'rotate(-90deg)'}}/>}</div>
+									><span>уровень</span>{friendsMode[0] == 3 && <Icon16ChevronOutline style={{transform: !friendsMode[1] ? 'rotate(90deg)' : 'rotate(-90deg)'}}/>}</div>
 									{state.isDesktop&&<div
 										style={{color: 'var(--text_secondary)', cursor: 'pointer'}}
 										className="TableCell__row"
 										onClick={() => this.setState({ friendsMode: [4, friendsMode[0] == 4 ? !friendsMode[1] : 1] })}
-									><span>Последний вход</span>{friendsMode[0] == 4 && <Icon16ChevronOutline style={{transform: !friendsMode[1] ? 'rotate(90deg)' : 'rotate(-90deg)'}}/>}</div>}
+									><span>последний вход</span>{friendsMode[0] == 4 && <Icon16ChevronOutline style={{transform: !friendsMode[1] ? 'rotate(90deg)' : 'rotate(-90deg)'}}/>}</div>}
 								</div>
 							</div>
 							<Spacing size={8} />
@@ -253,7 +253,7 @@ class PANEL extends React.Component {
 								<div className="TableCell__content">
 									<div className="TableCell__row">
 										<Skeleton height={16} width="35%"/>
-										<Skeleton height={28} width="20%"/>
+										<Skeleton height={30} width="20%"/>
 									</div>
 								</div>
 							</div>
