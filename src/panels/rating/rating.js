@@ -133,7 +133,7 @@ class PANEL extends React.Component {
 											}]}
 										/>)}
 										<Spacing size={16} separator />
-										{[this?.props?.state?.user?.vk?.id&&this.state.rating.users.find(user => user.vkId == this.props.state.user.vk.id)?this.state.rating.users.find(user => user.vkId == 153968505):this.state.rating.users[this.state.rating.users.length-1]].map((user, x) => <TableCell
+										{[this?.props?.state?.user?.vk?.id&&this.state.rating.users.find(user => user.vkId == this.props.state.user.vk.id)?this.state.rating.users.find(user => user.vkId == this.props.state.user.vk.id):this.state.rating.users[this.state.rating.users.length-1]].map((user, x) => <TableCell
 											key={x}
 											count={options.numberSpaces(this.state.rating.users.findIndex(userF => userF.vkId == user.vkId)+1, ' ')}
 											href={`https://vk.com/id${user.vkId}`}
