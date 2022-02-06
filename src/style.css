@@ -2861,12 +2861,21 @@ input::-webkit-inner-spin-button {
 		content: '';
 		display: block;
 		position: absolute;
-		right: calc(-100% - 21px);
+		right: 0;
 		left: 0;
 		top: -11px;
 		height: 1px;
 		background: var(--separator_common);
-		/* transform: scaleY(.5); */
+	}
+	@media (min-resolution: 2dppx) {
+		.HorizontalRatings .HorizontalRating:nth-child(1n+2):before {
+			transform: scaleY(.5);
+		}
+	}
+	@media (min-resolution: 3dppx) {
+		.HorizontalRatings .HorizontalRating:nth-child(1n+2):before {
+			transform: scaleY(.33);
+		}
 	}
 	.HorizontalRating + .HorizontalRating {
 		margin-top: 21px;
