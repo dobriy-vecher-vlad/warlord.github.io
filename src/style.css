@@ -1696,6 +1696,8 @@ body[scheme=space_gray] {
 	justify-content: space-between;
 	align-items: center;
 	white-space: nowrap;
+	overflow: hidden;
+    text-overflow: ellipsis;
 }
 .TableCell__row > span {
 	text-overflow: ellipsis;
@@ -2449,7 +2451,7 @@ input::-webkit-inner-spin-button {
 	}
 	.HorizontalRatings-wrap {
 		display: grid;
-		grid-template-columns: repeat(2, 1fr);
+		grid-template-columns: repeat(2, calc(50% - 21px / 2));
 		grid-gap: 21px;
 		position: relative;
 	}
