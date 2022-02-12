@@ -34,7 +34,7 @@ class DescriptionHeader extends React.Component {
 		return (<React.Fragment>
 			<ModalPageHeader
 				className="ModalPageHeader--preview"
-				left={!this.props.state.isDesktop&&<PanelHeaderButton onClick={() => this.props.options.BackModal()}><Icon28ChevronBack/></PanelHeaderButton>}
+				left={!this.props.state.isDesktop&&<PanelHeaderButton aria-label="back" onClick={() => this.props.options.BackModal()}><Icon28ChevronBack/></PanelHeaderButton>}
 				right={this.props.state.isDesktop&&this.props.options.getCopy(this.props.state.activeStory, this.props.state.activePanel, this.props.data.modal)}
 			/>
 			<Spacing size={24} />
@@ -58,7 +58,7 @@ class ModalHeader extends React.Component {
 			>{this.props.header}</ModalPageHeader>:<ModalPageHeader
 				className="ModalPageHeader--content"
 				left={<RichCell disabled before={(this.props.background||this.props.avatar)&&(this.props.background?<Avatar size={36} mode="app" className="Avatar--content"><div style={{background: this.props.background}}/></Avatar>:<Avatar size={36} mode="app" src={this.props.avatar} className="Avatar--content"/>)} caption={this.props.description}>{this.props.header}</RichCell>}
-				right={<PanelHeaderButton onClick={() => this.props.options.BackModal()}><Icon24Dismiss/></PanelHeaderButton>}
+				right={<PanelHeaderButton aria-label="back" onClick={() => this.props.options.BackModal()}><Icon24Dismiss/></PanelHeaderButton>}
 			>
 			</ModalPageHeader>}
 		</React.Fragment>)
@@ -285,6 +285,7 @@ class MODAL extends React.Component {
 
 
 			data.modalIndex == 25 && <ModalPage
+				className="ModalPage--classic"
 				id={this.props.id}
 				header={<ModalHeader state={state} options={options} data={data} header={'Создание противника'} description="Боссы — Калькулятор"/>}
 			>

@@ -28,6 +28,7 @@ class MODAL extends React.Component {
 		const { key } = this.state;
 		return (
 			<ModalPage
+				className="ModalPage--classic"
 				id={this.props.id}
 				header={<ModalPageHeader
 					left={<PanelHeaderBack onClick={() => options.BackModal()}/>}

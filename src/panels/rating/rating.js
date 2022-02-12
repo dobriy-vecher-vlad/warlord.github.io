@@ -11,7 +11,8 @@ import {
 	Avatar,
 	Counter,
 	PanelHeader,
-	PanelHeaderBack
+	PanelHeaderBack,
+	Input,
 } from '@vkontakte/vkui';
 
 import Skeleton from '../../components/skeleton';
@@ -37,7 +38,8 @@ class PANEL extends React.Component {
 		super(props);
 		this.state = {
 			snackbar: null,
-			rating: null
+			rating: null,
+			mainUser: this?.props?.state?.user?.vk?.id
 		};
 		this._isMounted = false;
 	};
@@ -134,7 +136,7 @@ class PANEL extends React.Component {
 											}]}
 										/>)}
 										<Spacing size={16} separator />
-										{[this?.props?.state?.user?.vk?.id&&this.state.rating.users.find(user => user.vkId == this.props.state.user.vk.id)?this.state.rating.users.find(user => user.vkId == this.props.state.user.vk.id):this.state.rating.users[this.state.rating.users.length-1]].map((user, x) => <TableCell
+										{[this.state.mainUser&&this.state.rating.users.find(user => user.vkId == this.state.mainUser)?this.state.rating.users.find(user => user.vkId == this.state.mainUser):this.state.rating.users[this.state.rating.users.length-1]].map((user, x) => <TableCell
 											key={x}
 											count={options.numberSpaces(this.state.rating.users.findIndex(userF => userF.vkId == user.vkId)+1, ' ')}
 											href={`https://vk.com/id${user.vkId}`}
@@ -172,6 +174,24 @@ class PANEL extends React.Component {
 							</div>)}
 						</div>
 					</div>
+					{state.isDesktop&&<React.Fragment>
+						<Spacing size={12} separator />
+						{this.state?.rating?<Input
+							type="text"
+							name="id"
+							placeholder="Введите номер пользователя"
+							align="center"
+							defaultValue={this.state.mainUser}
+							onChange={e => {
+								let id = Number(e.target.value);
+								if (id != 0 && Number.isInteger(id) && this.state.rating.users.find(user => user.vkId == id)) {
+									this.setState({ mainUser: id})
+								} else if (this.state.mainUser!=undefined) {
+									this.setState({ mainUser: undefined});
+								}
+							}}
+						/>:<Skeleton height={36}/>}
+					</React.Fragment>}
 					<Spacing size={8} />
 					{this.state?.rating?<Footer style={{margin: 0}}>Эрмун, обновлено {this.state.rating.time.replace(/(\d*).(\d*).(\d*)/g, '$3.$2.$1')} в 18:00, {options.numberSpaces(this.state.rating.users.length, ' ')} игроков</Footer>:<Footer style={{margin: 0}}><Skeleton height={16} width={'35%'} margin={'auto'}/></Footer>}
 				</Group>

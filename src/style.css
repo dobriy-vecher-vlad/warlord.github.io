@@ -2060,22 +2060,24 @@ input::-webkit-inner-spin-button {
 	overflow: visible;
 }
 
-
 .ModalPageHeader--content .ModalPageHeader__in {
 	height: calc(var(--modalheader_height_ios) + 8px);
 	padding: 4px;
 }
 .ModalPageHeader--content .RichCell {
 	min-height: unset;
-	padding: 0 8px;
+	padding: 0;
 }
 .ModalPageHeader--content .RichCell .Avatar {
 	margin-top: 0;
 	margin-bottom: 0;
+	margin-right: 4px;
+	margin-left: 4px;
 }
 .ModalPageHeader--content .RichCell .RichCell__in {
 	padding-top: 0;
 	padding-bottom: 0;
+	margin-left: 8px;
 }
 .ModalPageHeader--content .RichCell .RichCell__caption {
 	font-size: 13px;
@@ -2161,6 +2163,10 @@ input::-webkit-inner-spin-button {
 
 
 @media screen and (orientation: landscape) {
+	.ModalPage:not(.ModalPage--classic) .ModalPageHeader:after {
+		display: none;
+	}
+
 	.Panel__in {
 		overflow: hidden;
 	}
@@ -2731,6 +2737,9 @@ input::-webkit-inner-spin-button {
 	}
 	.PanelHeader {
 		padding-bottom: 5px;
+	}
+	.ModalPageHeader--content {
+		padding-bottom: 0;
 	}
 	.beautifulCard .Card__in {
 		padding: 12px;

@@ -523,7 +523,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 			if (parent) href += `#view=${parent}`;
 			if (child) href += `&panel=${child}`;
 			if (modal) href += `&modal=${modal}`;
-			return (<PanelHeaderButton onClick={isEmbedded?() => bridge.send(
+			return (<PanelHeaderButton aria-label="copy" onClick={isEmbedded?() => bridge.send(
 				"VKWebAppCopyText",
 				{"text": href},
 				this.openSnackbar({text: 'Ссылка скопирована', icon: 'done', action: href})
@@ -625,7 +625,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 				}
 				checkItems.null = false;
 				const item = Items[data.id];
-				if (isFull) console.log(item);
+				// if (isFull) console.log(item);
 				return (
 					<SimpleCell onClick={() => !isFull&&this.OpenModal('item', data)} key={x} className={`ItemCell ${isFull || data.tooltip ? "ItemCell--full" : ""}`}>
 						<RichCell
@@ -1489,7 +1489,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 			const { activeStory, activePanel, popout, user, theme } = this.state;
 			const { onStoryChange, numberForm, numberSpaces, setActivePanel, modal } = this;
 			return (
-				<SplitLayout style={{ justifyContent: "center" }} popout={popout} >
+				<SplitLayout style={{ justifyContent: "center" }} popout={popout} modal={modal()}>
 					{isDesktop && activeStory && (
 						<SplitCol fixed width="280px" maxWidth="280px">
 							<Panel id="navigation">
@@ -1618,7 +1618,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 
 
 
-							<View id="home" activePanel={!activePanel ? 'home' : activePanel} modal={modal()}>
+							<View id="home" activePanel={!activePanel ? 'home' : activePanel}>
 								<Panel id="home">
 									{!isDesktop && <PanelHeader className='HeaderFix'><PanelHeaderContent status={`Версия ${wikiVersion}`}>Warlord Helper</PanelHeaderContent></PanelHeader>}
 									<Group separator={isDesktop ? "auto" : "hide"} className="RoundSeparators">
@@ -1736,7 +1736,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 
 
 
-							<View id="profile" activePanel={!activePanel ? 'profile' : activePanel} modal={modal()}>
+							<View id="profile" activePanel={!activePanel ? 'profile' : activePanel}>
 								<Panel id="profile">
 									{!isDesktop && <PanelHeader>Мой профиль</PanelHeader>}
 									{user.vk && <Group>
@@ -1818,7 +1818,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 
 
 
-							<View id="rating" activePanel={!activePanel ? 'rating' : activePanel} modal={modal()}>
+							<View id="rating" activePanel={!activePanel ? 'rating' : activePanel}>
 								<PANEL_rating id='rating' parent='rating' state={this.state} options={this} setState={this.transmittedSetState} />
 								<PANEL_rating__1 id='1' parent='rating' state={this.state} options={this} />
 							</View>
@@ -1826,7 +1826,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 
 
 
-							<View id="map" activePanel={!activePanel ? 'map' : activePanel} modal={modal()}>
+							<View id="map" activePanel={!activePanel ? 'map' : activePanel}>
 								<Panel id="map">
 									{!isDesktop && <PanelHeader right={!isEmbedded&&this.getCopy(this.state.activeStory)} left={<PanelHeaderBack onClick={() => this.setState({ activeStory: 'home', activePanel: 'home' })}/>}>Карта</PanelHeader>}
 									<Group>
@@ -1886,7 +1886,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 
 
 
-							<View id="bosses" activePanel={!activePanel ? 'bosses' : activePanel} modal={modal()}>
+							<View id="bosses" activePanel={!activePanel ? 'bosses' : activePanel}>
 								<Panel id="bosses">
 									{!isDesktop && <PanelHeader right={!isEmbedded&&this.getCopy(this.state.activeStory)} left={<PanelHeaderBack onClick={() => this.setState({ activeStory: 'home', activePanel: 'home' })}/>}>Боссы</PanelHeader>}
 									<Group>
@@ -1921,7 +1921,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 
 
 
-							<View id="arena" activePanel={!activePanel ? 'arena' : activePanel} modal={modal()}>
+							<View id="arena" activePanel={!activePanel ? 'arena' : activePanel}>
 								<Panel id="arena">
 									{!isDesktop && <PanelHeader right={!isEmbedded&&this.getCopy(this.state.activeStory)} left={<PanelHeaderBack onClick={() => this.setState({ activeStory: 'home', activePanel: 'home' })}/>}>Арена</PanelHeader>}
 									<Group>
@@ -1970,7 +1970,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 
 
 
-							<View id="character" activePanel={!activePanel ? 'character' : activePanel} modal={modal()}>
+							<View id="character" activePanel={!activePanel ? 'character' : activePanel}>
 								<Panel id="character">
 									{!isDesktop && <PanelHeader right={!isEmbedded&&this.getCopy(this.state.activeStory)} left={<PanelHeaderBack onClick={() => this.setState({ activeStory: 'home', activePanel: 'home' })}/>}>Персонаж</PanelHeader>}
 									<Group>
@@ -2026,7 +2026,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 
 
 
-							<View id="guild" activePanel={!activePanel ? 'guild' : activePanel} modal={modal()}>
+							<View id="guild" activePanel={!activePanel ? 'guild' : activePanel}>
 								<Panel id="guild">
 								{!isDesktop && <PanelHeader right={!isEmbedded&&this.getCopy(this.state.activeStory)} left={<PanelHeaderBack onClick={() => this.setState({ activeStory: 'home', activePanel: 'home' })}/>}>Гильдия</PanelHeader>}
 									<Group>
@@ -2081,7 +2081,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 
 
 							
-							<View id="other" activePanel={!activePanel ? 'other' : activePanel} modal={modal()}>
+							<View id="other" activePanel={!activePanel ? 'other' : activePanel}>
 								<Panel id="other">
 								{!isDesktop && <PanelHeader right={!isEmbedded&&this.getCopy(this.state.activeStory)} left={<PanelHeaderBack onClick={() => this.setState({ activeStory: 'home', activePanel: 'home' })}/>}>Разное</PanelHeader>}
 									<Group>

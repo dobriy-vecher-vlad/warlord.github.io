@@ -34,8 +34,9 @@ class MODAL extends React.Component {
 		const { setState, state, options, data, isDonut } = this.props;
 		return (
 			<ModalPage
+				className="ModalPage--classic"
 				id={this.props.id}
-				header={<ModalPageHeader right={!state.isDesktop&&<PanelHeaderButton onClick={() => options.BackModal()}><Icon24Dismiss/></PanelHeaderButton>}>{data.mode == 'add' ? 'Новый профиль' : 'Настройки'}</ModalPageHeader>}
+				header={<ModalPageHeader right={!state.isDesktop&&<PanelHeaderButton aria-label="back" onClick={() => options.BackModal()}><Icon24Dismiss/></PanelHeaderButton>}>{data.mode == 'add' ? 'Новый профиль' : 'Настройки'}</ModalPageHeader>}
 			>
 				<Div style={{ padding: state.isDesktop ? 12 : '12px 0 0 0' }}>
 					{data.header&&data.subheader&&<React.Fragment>
