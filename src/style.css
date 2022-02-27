@@ -1494,6 +1494,7 @@ body[scheme=space_gray] {
 	margin: 0;
 	overflow: hidden;
 	-webkit-transform: translate3d(0, 0, 0);
+	cursor: pointer;
 }
 .ItemCell .RichCell {
 	min-height: unset;
@@ -1506,6 +1507,7 @@ body[scheme=space_gray] {
 	padding: 13px;
 	margin: 0;
 	border-radius: 0;
+	pointer-events: none;
 }
 .ItemCell.ItemCell--full .ItemCell__main + .ItemCell__tooltip::before {
 	content: '';

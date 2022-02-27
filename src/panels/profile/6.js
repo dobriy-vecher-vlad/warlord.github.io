@@ -1817,7 +1817,7 @@ class PANEL extends React.Component {
 							</React.Fragment>}
 						</div>
 					</React.Fragment>:<React.Fragment>
-						<div className="Scroll" style={{height: state.isDesktop ? '444px' : 'auto', display: 'flex', flexDirection: 'column', justifyContent: 'center', overflow: state.isDesktop ? 'visible' : 'visible'}}>
+						<div className="Scroll" style={{height: state.isDesktop ? '440px' : 'auto', display: 'flex', flexDirection: 'column', justifyContent: 'center', overflow: state.isDesktop ? 'visible' : 'visible'}}>
 							<CardGrid size="s" className="CustomRadioForm" onChange={(e) => this._isMounted && this.updateSelect(e)}>
 								<Card>
 									<Radio name="selectedRaid" value="1">

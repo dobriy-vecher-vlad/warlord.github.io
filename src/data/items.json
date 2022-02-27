@@ -9095,4 +9095,15 @@
 	"icon": "items/1898.png",
 	"price": 250,
 	"fragments": []
+}, {
+	"id": 1899,
+	"type": 12,
+	"title": "Наплечник Комиссара",
+	"description": "Награда ивента",
+	"dmg": 0,
+	"hp": 25,
+	"currency": 2,
+	"icon": "items/1899.png",
+	"price": 250,
+	"fragments": []
 }]
