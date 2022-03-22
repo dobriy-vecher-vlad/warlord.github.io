@@ -37,7 +37,7 @@ class PANEL extends React.Component {
 			if (data.response.count !== 0) {
 				for (let i = 0; i < Math.ceil(data.response.count/300); i++) {
 					if (this._isMounted) {
-						let dataGame = await this.props.state.getData('xml', `https://backup1.geronimo.su/${this.props.state.server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${clan_id}&api_type=vk&api_id=${api_id}&auth_key=${clan_auth}&UID=${this.props.state.user.vk.id}&f_data=<data>${data.response.items.slice(i*300, (i+1)*300).map((item, x) => {
+						let dataGame = await this.props.state.getData('xml', `https://tmp1-fb.geronimo.su/${this.props.state.server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${clan_id}&api_type=vk&api_id=${api_id}&auth_key=${clan_auth}&UID=${this.props.state.user.vk.id}&f_data=<data>${data.response.items.slice(i*300, (i+1)*300).map((item, x) => {
 							return `<u>${item.id}</u>`;
 						}).join('')}</data>&i=7`);
 						typeof dataGame.u == 'undefined' ? dataGame.u = [] : '';

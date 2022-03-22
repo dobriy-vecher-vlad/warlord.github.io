@@ -32,9 +32,9 @@ class MODAL extends React.Component {
 		console.log('[MODAL] >', this.props.id);
 		this._isMounted = true;
 		setTimeout(async() => {
-			let hub = this._isMounted && await this.props.state.getData('xml', `https://backup1.geronimo.su/gameHub/index.php?api_uid=${this.props.state.id}&api_type=vk`);
+			let hub = this._isMounted && await this.props.state.getData('xml', `https://tmp1-fb.geronimo.su/gameHub/index.php?api_uid=${this.props.state.id}&api_type=vk`);
 			if (hub && hub.s && hub.s.length && Number(hub.s[this.props.state.server-1]._uid) !== 0) {
-				let game = this._isMounted && await this.props.state.getData('xml', `https://backup1.geronimo.su/${this.props.state.server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${this.props.clan_id}&api_type=vk&api_id=${this.props.api_id}&auth_key=${this.props.clan_auth}&UID=${this.props.state.id}&t=${hub.s[this.props.state.server-1]._uid}&i=39`);
+				let game = this._isMounted && await this.props.state.getData('xml', `https://tmp1-fb.geronimo.su/${this.props.state.server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${this.props.clan_id}&api_type=vk&api_id=${this.props.api_id}&auth_key=${this.props.clan_auth}&UID=${this.props.state.id}&t=${hub.s[this.props.state.server-1]._uid}&i=39`);
 				if (game && game.i && game.i.length) {
 					let syncItems = game.i.map((data, x) => {
 						return Number(data._id);

@@ -769,10 +769,10 @@ class PANEL extends React.Component {
 			}
 			if (mode == 'move') {
 				if (this._isMounted && await updatePath('boss', null, null, to)) {
-					let dataGame = this._isMounted && await getData('xml', `https://backup1.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&i=77&t=${to}`);
+					let dataGame = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&i=77&t=${to}`);
 					// console.log(dataGame);
 					if (Number(dataGame.res._v) == 1) {
-						dataGame = this._isMounted && await getData('xml', `https://backup1.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&i=81`);
+						dataGame = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&i=81`);
 						// console.log(dataGame);
 						this._isMounted && setBotLog(`Успешно переместились в точку ${to}`, 'text');
 						data.point = to;
@@ -790,7 +790,7 @@ class PANEL extends React.Component {
 				if (barrel && barrel.status == 1) {
 					let player = this._isMounted && await BotAPI('getStats', auth_key, api_uid, sslt);
 					if (Number(player._en >= 3)) {
-						let dataGame = this._isMounted && await getData('xml', `https://backup1.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&i=82`);
+						let dataGame = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&i=82`);
 						// console.log(dataGame);
 						barrel.status = 0;
 						// setBotLog(`Успешно открыли бочку {point: ${barrel.point}, status: ${barrel.status}}`);
@@ -815,13 +815,13 @@ class PANEL extends React.Component {
 				if (boss && boss.status == 0) {
 					let player = this._isMounted && await BotAPI('getStats', auth_key, api_uid, sslt);
 					if ((boss.type == 1 && Number(player._en >= 6) || boss.type != 1 && Number(player._en >= 3))) {
-						let dataGame = this._isMounted && await getData('xml', `https://backup1.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&i=11&t=${boss.id}&t2=3&t3=0&t4=0&t5=0`);
+						let dataGame = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&i=11&t=${boss.id}&t2=3&t3=0&t4=0&t5=0`);
 						// console.log(dataGame);
 						if ((dataGame == null) || (dataGame && !dataGame.fight)) {
 							// setBotLog(`Ошибка при создании босса, пробуем снова... {point: ${boss.point}, status: ${boss.status}}`);
 							// setBotLog(`Ошибка при создании босса, пробуем снова...`);
 							await wait(3000);
-							dataGame = this._isMounted && await getData('xml', `https://backup1.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&i=11&t=${boss.id}&t2=3&t3=0&t4=0&t5=0`);
+							dataGame = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&i=11&t=${boss.id}&t2=3&t3=0&t4=0&t5=0`);
 						}
 						if (dataGame && dataGame.fight) {
 							let hp = Number(dataGame.fight._hp);
@@ -871,7 +871,7 @@ class PANEL extends React.Component {
 										dg="${количествоУдаров*dmg}"
 									/></data>`.replace(/\s+/g,' ')});
 									// console.log(hash);
-									dataGame = this._isMounted && await getData('xml', `https://backup1.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&i=12&t=${hash}`);
+									dataGame = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&i=12&t=${hash}`);
 									// console.log(dataGame);
 									if (dataGame && dataGame.fight && Number(dataGame.fight._hp) <= 0) {
 										boss.status = 1;
@@ -890,7 +890,7 @@ class PANEL extends React.Component {
 									this._isMounted && setBotLog(`Невозможно убить босса, вам не хватает свитков`, 'text', 'red');
 									this._isMounted && this.BotRaids('pause');
 									await wait(3000);
-									dataGame = this._isMounted && await getData('xml', `https://backup1.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&i=11&t=${boss.id}&t2=3&t3=0&t4=0&t5=0`);
+									dataGame = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&i=11&t=${boss.id}&t2=3&t3=0&t4=0&t5=0`);
 									return false;
 								}
 							} else {
@@ -898,7 +898,7 @@ class PANEL extends React.Component {
 								this._isMounted && setBotLog(`Невозможно убить босса, вы умрёте`, 'text', 'red');
 								this._isMounted && this.BotRaids('pause');
 								await wait(3000);
-								dataGame = this._isMounted && await getData('xml', `https://backup1.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&i=11&t=${boss.id}&t2=3&t3=0&t4=0&t5=0`);
+								dataGame = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&i=11&t=${boss.id}&t2=3&t3=0&t4=0&t5=0`);
 								return false;
 							}
 						} else {
@@ -932,7 +932,7 @@ class PANEL extends React.Component {
 				if (chests && chests.status == 1 && isChest) {
 					let player = this._isMounted && await BotAPI('getStats', auth_key, api_uid, sslt);
 					if (Number(player._en >= chests.en)) {
-						let dataGame = this._isMounted && await getData('xml', `https://backup1.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&t1=1&i=79`);
+						let dataGame = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&t1=1&i=79`);
 						// console.log(dataGame);
 						chests.status = 0;
 						// setBotLog(`Успешно открыли сундук {point: ${chests.point}, status: ${chests.status}, type: ${chests.type}}`);
@@ -953,7 +953,7 @@ class PANEL extends React.Component {
 				}
 			}
 		};
-		let dataGame = this._isMounted && await getData('xml', `https://backup1.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}`);
+		let dataGame = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}`);
 		// console.log(dataGame);
 		if (!dataGame?.u) {
 			// this.setState({ popout: null });
@@ -987,7 +987,7 @@ class PANEL extends React.Component {
 		if (mode == 'start') {
 			syncBot.raids = data;
 			if (dataGame == undefined && data.limit < 3) {
-				dataGame = this._isMounted && await getData('xml', `https://backup1.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&t=${botRaidsSettings.selectedRaid}&t1=${botRaidsSettings.selectedMode}&i=76`);
+				dataGame = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&t=${botRaidsSettings.selectedRaid}&t1=${botRaidsSettings.selectedMode}&i=76`);
 				// console.log(dataGame);
 				if (dataGame !== undefined && dataGame.uraid !== undefined) {
 					// this.setState({ popout: null });
@@ -1019,7 +1019,7 @@ class PANEL extends React.Component {
 			// console.log(botRaidsSettings.selectedRaid, botRaidsSettings.selectedMode);
 			syncBot.raids = data;
 			if (dataGame == undefined && data.limit < 3) {
-				dataGame = this._isMounted && await getData('xml', `https://backup1.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&t=${botRaidsSettings.selectedRaid}&t1=${botRaidsSettings.selectedMode}&i=76`);
+				dataGame = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&t=${botRaidsSettings.selectedRaid}&t1=${botRaidsSettings.selectedMode}&i=76`);
 				// console.log(dataGame);
 				if (dataGame !== undefined && dataGame.uraid !== undefined) {
 					// this.setState({ popout: null });
@@ -1047,7 +1047,7 @@ class PANEL extends React.Component {
 				this._isMounted && this.BotRaids('energy');
 				let player = this._isMounted && await BotAPI('getStats', auth_key, api_uid, sslt);
 				if (Number(player._en >= 5)) {
-					dataGame = this._isMounted && await getData('xml', `https://backup1.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&i=80`);
+					dataGame = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&i=80`);
 					if (Number(dataGame.res._v) == 1) {
 						this._isMounted && setBotLog(`Рейд успешно завершён`, 'text', 'green');
 						this._isMounted && await this.BotRaids('reload');

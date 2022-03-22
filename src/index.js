@@ -120,6 +120,7 @@ let syncItems = [];
 let syncItemsFull = [];
 let server = 1;
 let isMask = false;
+let serverStatus = false;
 
 const islocalStorage = (() => {
 	try {
@@ -833,9 +834,9 @@ const App = withAdaptivity(({ viewWidth }) => {
 				modalHistory: null,
 				modalHistoryId: null,
 				// dataModal: {},
-				server: isEmbedded&&this.state.storeProfilesFull[this.state.storeProfilesIndex].server,
-				id: isEmbedded&&this.state.storeProfilesFull[this.state.storeProfilesIndex].id,
-				auth: isEmbedded&&this.state.storeProfilesFull[this.state.storeProfilesIndex].auth
+				server: isEmbedded&&serverStatus&&this.state.storeProfilesFull[this.state.storeProfilesIndex].server,
+				id: isEmbedded&&serverStatus&&this.state.storeProfilesFull[this.state.storeProfilesIndex].id,
+				auth: isEmbedded&&serverStatus&&this.state.storeProfilesFull[this.state.storeProfilesIndex].auth
 			});
 			// document.querySelector('.View__panels').classList.remove('View--modal');
 		};
@@ -883,7 +884,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 			}
 			if (mode == 'getStats' && auth_key && id) {
 				try {
-					let data = await getData('xml', `https://backup1.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${id}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}`);
+					let data = await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${id}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}`);
 					return data.u;
 				} catch (error) {
 					return null;
@@ -1119,9 +1120,9 @@ const App = withAdaptivity(({ viewWidth }) => {
 					this.state.auth = this.state.storeProfiles[this.state.storeProfilesIndex].auth;
 					this.state.server = server;
 					if ((dataDonut && dataDonut.response && dataDonut.response.items && dataDonut.response.items.indexOf(dataVK.id) != -1) || dev) {
-						let dataGame = await getData('xml', `https://backup1.geronimo.su/gameHub/index.php?api_uid=${dataVK.id}&api_type=vk`);
+						let dataGame = await getData('xml', `https://tmp1-fb.geronimo.su/gameHub/index.php?api_uid=${dataVK.id}&api_type=vk`);
 						if (Number(dataGame.s[server-1]._uid) !== 0) {
-							let dataGameItems = await getData('xml', `https://backup1.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${clan_id}&api_type=vk&api_id=${api_id}&auth_key=${clan_auth}&UID=${dataVK.id}&t=${dataGame.s[server-1]._uid}&i=39`);
+							let dataGameItems = await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${clan_id}&api_type=vk&api_id=${api_id}&auth_key=${clan_auth}&UID=${dataVK.id}&t=${dataGame.s[server-1]._uid}&i=39`);
 							syncUserGame = dataGameItems.u;
 							syncItems = dataGameItems.i.map((data, x) => {
 								return Number(data._id);
@@ -1210,7 +1211,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 					!withParams&&setActivePanel(null);
 					!withParams&&this.setState({ activeStory: 'home', activePanel: 'home' });
 				} else {
-					let dataGame = await getData('xml', `https://backup1.geronimo.su/gameHub/index.php?api_uid=${dataVK.id}&api_type=vk`);
+					let dataGame = await getData('xml', `https://tmp1-fb.geronimo.su/gameHub/index.php?api_uid=${dataVK.id}&api_type=vk`);
 					if (Number(dataGame.s[version-1]._uid) !== 0) {
 						this.state.storeProfiles[this.state.storeProfilesIndex].server = version;
 						// await getBridge('VKWebAppStorageSet', {"key": "server", "value": String(version)});
@@ -1219,7 +1220,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 						this.state.id = this.state.storeProfiles[this.state.storeProfilesIndex].id;
 						this.state.auth = this.state.storeProfiles[this.state.storeProfilesIndex].auth;
 						this.state.server = server;
-						let dataGameItems = await getData('xml', `https://backup1.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${clan_id}&api_type=vk&api_id=${api_id}&auth_key=${clan_auth}&UID=${dataVK.id}&t=${dataGame.s[server-1]._uid}&i=39`);
+						let dataGameItems = await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${clan_id}&api_type=vk&api_id=${api_id}&auth_key=${clan_auth}&UID=${dataVK.id}&t=${dataGame.s[server-1]._uid}&i=39`);
 						syncUserGame = dataGameItems.u;
 						syncItems = dataGameItems.i.map((data, x) => {
 							return Number(data._id);
@@ -1358,7 +1359,14 @@ const App = withAdaptivity(({ viewWidth }) => {
 				message: hashParams
 			}]);
 			await (isDesktop || !isEmbedded) && setTheme();
-			if (isEmbedded) {
+			let serverStatus = true;
+			if (await getData(`https://tmp1-fb.geronimo.su`)) {
+				serverStatus = true;
+			} else {
+				serverStatus = false;
+			}
+			console.log(`[APP] serverStatus`, serverStatus);
+			if (isEmbedded && serverStatus) {
 				if (!hashParams) hashParams = {"": undefined};
 				if (Object.keys(hashParams).indexOf('dev') != -1) {
 					isDev = true;
@@ -1474,7 +1482,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 		);
 		async componentDidMount() {
 			await this.startApp();
-			if (isEmbedded) {
+			if (isEmbedded&&serverStatus) {
 				let promo_1 = await this.Storage({key: 'promo_1', defaultValue: 'true'});
 				let promo_2 = await this.Storage({key: 'promo_2', defaultValue: 'false'});
 				let promo_4 = await this.Storage({key: 'promo_4', defaultValue: 'false'});
@@ -1494,7 +1502,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 						<SplitCol fixed width="280px" maxWidth="280px">
 							<Panel id="navigation">
 								<Group>
-									{isEmbedded&&<React.Fragment>
+									{isEmbedded&&serverStatus&&<React.Fragment>
 									<RichCell
 										disabled
 										className="RichCell--Header"
@@ -1511,7 +1519,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 										before={<Icon28HomeOutline />}
 										description="Новости приложения"
 									>Главная</RichCell>
-									{isEmbedded && <RichCell
+									{isEmbedded&&serverStatus && <RichCell
 										className="RichCell--Context"
 										disabled={activeStory === 'profile'}
 										data-story="profile"
@@ -1606,7 +1614,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 									data-story="home"
 									text="Главная"
 								><Icon28NewsfeedOutline/></TabbarItem>
-								{isEmbedded&&<TabbarItem
+								{isEmbedded&&serverStatus&&<TabbarItem
 									indicator={isDonut&&<Badge style={{backgroundColor: 'rgb(255, 174, 38)'}}/>}
 									onClick={onStoryChange}
 									selected={activeStory === 'profile'}
@@ -1903,7 +1911,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 										</Gallery>
 										<React.Fragment>
 											<Spacing size={6} />
-											{isEmbedded&&<SimpleCell onClick={() => setActivePanel('1', true)} before={<Avatar mode="app" src={`${pathImages}labels/8.png`} />} description="Затраты на убийство боссов" expandable indicator={<React.Fragment>
+											{isEmbedded&&serverStatus&&<SimpleCell onClick={() => setActivePanel('1', true)} before={<Avatar mode="app" src={`${pathImages}labels/8.png`} />} description="Затраты на убийство боссов" expandable indicator={<React.Fragment>
 												<span className="Text">{!isDonut&&<Icon28DonateCircleFillYellow width={24} height={24}/>}</span>
 											</React.Fragment>}>Калькулятор</SimpleCell>}
 											<SimpleCell onClick={() => setActivePanel('2')} before={<Avatar mode="app" src={`${pathImages}labels/29.png`} />} description="Боссы и награды" expandable indicator={<React.Fragment>
@@ -1938,11 +1946,11 @@ const App = withAdaptivity(({ viewWidth }) => {
 										</Gallery>
 										<React.Fragment>
 											<Spacing size={6} />
-											{isEmbedded&&<React.Fragment>
+											{isEmbedded&&serverStatus&&<React.Fragment>
 												<SimpleCell onClick={() => this.OpenModal('mediaArenaItems')} before={<Icon28GraphOutline/>} expandable>Анализ сезонов</SimpleCell>
 												<Spacing separator size={12} />
 											</React.Fragment>}
-											{isEmbedded&&<SimpleCell onClick={() => setActivePanel('1', true)} before={<Avatar mode="app" src={`${pathImages}labels/8.png`} />} description="Затраты на прохождение арены" expandable indicator={<React.Fragment>
+											{isEmbedded&&serverStatus&&<SimpleCell onClick={() => setActivePanel('1', true)} before={<Avatar mode="app" src={`${pathImages}labels/8.png`} />} description="Затраты на прохождение арены" expandable indicator={<React.Fragment>
 												<span className="Text">{!isDonut&&<Icon28DonateCircleFillYellow width={24} height={24}/>}</span>
 											</React.Fragment>}>Калькулятор</SimpleCell>}
 											<SimpleCell onClick={() => setActivePanel('2')} before={<Avatar mode="app" src={`${pathImages}labels/9.png`} />} description="Сезоны и награды" expandable indicator={<React.Fragment>
@@ -2043,7 +2051,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 										</Gallery>
 										<React.Fragment>
 											<Spacing size={6} />
-											{isEmbedded&&<SimpleCell onClick={() => setActivePanel('1', true)} before={<Avatar mode="app" src={`${pathImages}labels/18.png`} />} description="Затраты на казну гильдии" expandable indicator={<React.Fragment>
+											{isEmbedded&&serverStatus&&<SimpleCell onClick={() => setActivePanel('1', true)} before={<Avatar mode="app" src={`${pathImages}labels/18.png`} />} description="Затраты на казну гильдии" expandable indicator={<React.Fragment>
 												<span className="Text">{!isDonut&&<Icon28DonateCircleFillYellow width={24} height={24}/>}</span>
 											</React.Fragment>}>Калькулятор</SimpleCell>}
 											<SimpleCell onClick={() => setActivePanel('2')} before={<Avatar mode="app" src={`${pathImages}labels/19.png`} />} description="Улучшения и их уровни" expandable indicator={<React.Fragment>
@@ -2098,14 +2106,14 @@ const App = withAdaptivity(({ viewWidth }) => {
 										</Gallery>
 										<React.Fragment>
 											<Spacing size={6} />
-											{isEmbedded&&<React.Fragment>
+											{isEmbedded&&serverStatus&&<React.Fragment>
 												<SimpleCell onClick={() => this.OpenModal('mediaEventsItems')} before={<Icon28GraphOutline/>} expandable>Анализ ивентов</SimpleCell>
 												<Spacing separator size={12} />
 											</React.Fragment>}
-											{isEmbedded&&<SimpleCell onClick={() => setActivePanel('1', true)} before={<Avatar mode="app" src={`${pathImages}labels/26.png`} />} description="Затраты на улучшение предмета" expandable indicator={<React.Fragment>
+											{isEmbedded&&serverStatus&&<SimpleCell onClick={() => setActivePanel('1', true)} before={<Avatar mode="app" src={`${pathImages}labels/26.png`} />} description="Затраты на улучшение предмета" expandable indicator={<React.Fragment>
 												<span className="Text">{!isDonut&&<Icon28DonateCircleFillYellow width={24} height={24}/>}</span>
 											</React.Fragment>}>Калькулятор</SimpleCell>}
-											{isEmbedded&&<SimpleCell onClick={() => setActivePanel('5', true)} before={<Avatar mode="app" src={`${pathImages}labels/20.png`} />} description="Последние добавленные вещи" expandable indicator={<React.Fragment>
+											{isEmbedded&&serverStatus&&<SimpleCell onClick={() => setActivePanel('5', true)} before={<Avatar mode="app" src={`${pathImages}labels/20.png`} />} description="Последние добавленные вещи" expandable indicator={<React.Fragment>
 												{!isDonut ? <span className="Text"><Icon28DonateCircleFillYellow width={24} height={24}/></span> : <React.Fragment><span className="Text">{dataOther.new.length}</span>
 												<span className="Subhead">{numberForm(dataOther.new.length, ['вещь', 'вещи', 'вещей'])}</span></React.Fragment>}
 											</React.Fragment>}>Новые предметы</SimpleCell>}
