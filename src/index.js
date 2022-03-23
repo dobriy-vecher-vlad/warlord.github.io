@@ -273,6 +273,10 @@ const App = withAdaptivity(({ viewWidth }) => {
 			try {
 				let data = await fetch(link);
 				data = await data.text();
+				if (data == 'Err. More than 1 request per second') {
+					await wait(1000);
+					return await getData(type, link);
+				}
 				try {
 					data = JSON.parse(data);
 				} catch (error) {

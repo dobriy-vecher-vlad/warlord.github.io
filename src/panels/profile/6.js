@@ -789,14 +789,19 @@ class PANEL extends React.Component {
 				let barrel = data.barrels.find(item => item.point === data.point);
 				if (barrel && barrel.status == 1) {
 					let player = this._isMounted && await BotAPI('getStats', auth_key, api_uid, sslt);
-					if (Number(player._en >= 3)) {
-						let dataGame = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&i=82`);
-						// console.log(dataGame);
-						barrel.status = 0;
-						// setBotLog(`Успешно открыли бочку {point: ${barrel.point}, status: ${barrel.status}}`);
-						this._isMounted && setBotLog(dataGame, 'barrel');
+					if (player) {
+						if (Number(player._en >= 3)) {
+							let dataGame = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&i=82`);
+							// console.log(dataGame);
+							barrel.status = 0;
+							// setBotLog(`Успешно открыли бочку {point: ${barrel.point}, status: ${barrel.status}}`);
+							this._isMounted && setBotLog(dataGame, 'barrel');
+						} else {
+							this._isMounted && setBotLog(`Не хватает энергии на открытие бочки`, 'text', 'red');
+							this._isMounted && this.BotRaids('pause');
+						}
 					} else {
-						this._isMounted && setBotLog(`Не хватает энергии на открытие бочки`, 'text', 'red');
+						this._isMounted && setBotLog(`Ошибочные данные персонажа`, 'text', 'red');
 						this._isMounted && this.BotRaids('pause');
 					}
 				} else if (barrel && barrel.status == 0) {
@@ -814,103 +819,108 @@ class PANEL extends React.Component {
 				let boss = data.bosses.find(item => item.point === to);
 				if (boss && boss.status == 0) {
 					let player = this._isMounted && await BotAPI('getStats', auth_key, api_uid, sslt);
-					if ((boss.type == 1 && Number(player._en >= 6) || boss.type != 1 && Number(player._en >= 3))) {
-						let dataGame = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&i=11&t=${boss.id}&t2=3&t3=0&t4=0&t5=0`);
-						// console.log(dataGame);
-						if ((dataGame == null) || (dataGame && !dataGame.fight)) {
-							// setBotLog(`Ошибка при создании босса, пробуем снова... {point: ${boss.point}, status: ${boss.status}}`);
-							// setBotLog(`Ошибка при создании босса, пробуем снова...`);
-							await wait(3000);
-							dataGame = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&i=11&t=${boss.id}&t2=3&t3=0&t4=0&t5=0`);
-						}
-						if (dataGame && dataGame.fight) {
-							let hp = Number(dataGame.fight._hp);
-							let dmg = Number(dataGame.fight._dmg);
-							let myhp = Number(dataGame.fight._myhp);
-							let mydmg = Number(data.player._dmgi);
-							let skill_3 = Number(data.player._s3);
-							let свитокМолнии = Number(data.player._item1);
-							let свитокОгня = Number(data.player._item3);
-							// свитокОгня = 0;
-							let свитокМолнииУрон = Math.floor(mydmg*1.5);
-							let свитокОгняУрон = mydmg*3;
-							let количествоУдаровВозможных = Math.ceil(myhp/dmg);
-							let количествоУдаров;
-							if (botRaidsSettings.useScrollLightning) {
-								количествоУдаров = Math.ceil(hp/свитокМолнииУрон);
-							} else if (botRaidsSettings.useScrollFire) {
-								количествоУдаров = Math.ceil(hp/свитокОгняУрон);
-							} else {
-								количествоУдаров = Math.ceil(hp/mydmg);
+					if (player) {
+						if ((boss.type == 1 && Number(player._en >= 6) || boss.type != 1 && Number(player._en >= 3))) {
+							let dataGame = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&i=11&t=${boss.id}&t2=3&t3=0&t4=0&t5=0`);
+							// console.log(dataGame);
+							if ((dataGame == null) || (dataGame && !dataGame.fight)) {
+								// setBotLog(`Ошибка при создании босса, пробуем снова... {point: ${boss.point}, status: ${boss.status}}`);
+								// setBotLog(`Ошибка при создании босса, пробуем снова...`);
+								await wait(3000);
+								dataGame = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&i=11&t=${boss.id}&t2=3&t3=0&t4=0&t5=0`);
 							}
-							let количествоУдаровНавыка = Math.floor((10+количествоУдаров)/9);
-							if (количествоУдаров <= количествоУдаровВозможных) {
-								if (
-									botRaidsSettings.useScrollLightning || botRaidsSettings.useScrollFire ? 
-										количествоУдаров <= (botRaidsSettings.useScrollLightning ?
-											свитокМолнии : 
-											botRaidsSettings.useScrollFire ? 
-												свитокОгня : 
-												0) : 
-										true
-								) {
-									let hash = this._isMounted && await BotAPI('getFightHash', null, null, null, {key: `<data><d 
-										s0="${botRaidsSettings.useScrollLightning || botRaidsSettings.useScrollFire ? 0 : количествоУдаров}"
-										s1="0"
-										s2="0"
-										s3="${количествоУдаровНавыка}"
-										s4="1"
-										c1="${botRaidsSettings.useScrollLightning ? количествоУдаров : 0}"
-										c2="0"
-										c3="${botRaidsSettings.useScrollFire ? количествоУдаров : 0}"
-										c4="0"
-										c5="0"
-										m0="3"
-										r="${количествоУдаров+количествоУдаровНавыка}"
-										dd="${(количествоУдаров*(botRaidsSettings.useScrollLightning ? свитокМолнииУрон : botRaidsSettings.useScrollFire ? свитокОгняУрон : mydmg))+(количествоУдаровНавыка*(mydmg+skill_3*7))}"
-										dg="${количествоУдаров*dmg}"
-									/></data>`.replace(/\s+/g,' ')});
-									// console.log(hash);
-									dataGame = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&i=12&t=${hash}`);
-									// console.log(dataGame);
-									if (dataGame && dataGame.fight && Number(dataGame.fight._hp) <= 0) {
-										boss.status = 1;
-										// setBotLog(`Успешно убили босса {point: ${boss.point}, status: ${boss.status}}`);
-										dataGame.fight.type = boss.type;
-										this._isMounted && setBotLog(dataGame.fight, 'boss');
-										return true;
+							if (dataGame && dataGame.fight) {
+								let hp = Number(dataGame.fight._hp);
+								let dmg = Number(dataGame.fight._dmg);
+								let myhp = Number(dataGame.fight._myhp);
+								let mydmg = Number(data.player._dmgi);
+								let skill_3 = Number(data.player._s3);
+								let свитокМолнии = Number(data.player._item1);
+								let свитокОгня = Number(data.player._item3);
+								// свитокОгня = 0;
+								let свитокМолнииУрон = Math.floor(mydmg*1.5);
+								let свитокОгняУрон = mydmg*3;
+								let количествоУдаровВозможных = Math.ceil(myhp/dmg);
+								let количествоУдаров;
+								if (botRaidsSettings.useScrollLightning) {
+									количествоУдаров = Math.ceil(hp/свитокМолнииУрон);
+								} else if (botRaidsSettings.useScrollFire) {
+									количествоУдаров = Math.ceil(hp/свитокОгняУрон);
+								} else {
+									количествоУдаров = Math.ceil(hp/mydmg);
+								}
+								let количествоУдаровНавыка = Math.floor((10+количествоУдаров)/9);
+								if (количествоУдаров <= количествоУдаровВозможных) {
+									if (
+										botRaidsSettings.useScrollLightning || botRaidsSettings.useScrollFire ? 
+											количествоУдаров <= (botRaidsSettings.useScrollLightning ?
+												свитокМолнии : 
+												botRaidsSettings.useScrollFire ? 
+													свитокОгня : 
+													0) : 
+											true
+									) {
+										let hash = this._isMounted && await BotAPI('getFightHash', null, null, null, {key: `<data><d 
+											s0="${botRaidsSettings.useScrollLightning || botRaidsSettings.useScrollFire ? 0 : количествоУдаров}"
+											s1="0"
+											s2="0"
+											s3="${количествоУдаровНавыка}"
+											s4="1"
+											c1="${botRaidsSettings.useScrollLightning ? количествоУдаров : 0}"
+											c2="0"
+											c3="${botRaidsSettings.useScrollFire ? количествоУдаров : 0}"
+											c4="0"
+											c5="0"
+											m0="3"
+											r="${количествоУдаров+количествоУдаровНавыка}"
+											dd="${(количествоУдаров*(botRaidsSettings.useScrollLightning ? свитокМолнииУрон : botRaidsSettings.useScrollFire ? свитокОгняУрон : mydmg))+(количествоУдаровНавыка*(mydmg+skill_3*7))}"
+											dg="${количествоУдаров*dmg}"
+										/></data>`.replace(/\s+/g,' ')});
+										// console.log(hash);
+										dataGame = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&i=12&t=${hash}`);
+										// console.log(dataGame);
+										if (dataGame && dataGame.fight && Number(dataGame.fight._hp) <= 0) {
+											boss.status = 1;
+											// setBotLog(`Успешно убили босса {point: ${boss.point}, status: ${boss.status}}`);
+											dataGame.fight.type = boss.type;
+											this._isMounted && setBotLog(dataGame.fight, 'boss');
+											return true;
+										} else {
+											// setBotLog(`Ошибка при убийстве босса {point: ${boss.point}, status: ${boss.status}}`);
+											this._isMounted && setBotLog(`Ошибка при убийстве босса`, 'text', 'red');
+											this._isMounted && this.BotRaids('pause');
+											return false;
+										}
 									} else {
-										// setBotLog(`Ошибка при убийстве босса {point: ${boss.point}, status: ${boss.status}}`);
-										this._isMounted && setBotLog(`Ошибка при убийстве босса`, 'text', 'red');
+										// setBotLog(`Невозможно убить босса, вам не хватает свитков {point: ${boss.point}, status: ${boss.status}}`);
+										this._isMounted && setBotLog(`Невозможно убить босса, вам не хватает свитков`, 'text', 'red');
 										this._isMounted && this.BotRaids('pause');
+										await wait(3000);
+										dataGame = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&i=11&t=${boss.id}&t2=3&t3=0&t4=0&t5=0`);
 										return false;
 									}
 								} else {
-									// setBotLog(`Невозможно убить босса, вам не хватает свитков {point: ${boss.point}, status: ${boss.status}}`);
-									this._isMounted && setBotLog(`Невозможно убить босса, вам не хватает свитков`, 'text', 'red');
+									// setBotLog(`Невозможно убить босса, вы умрёте {point: ${boss.point}, status: ${boss.status}}`);
+									this._isMounted && setBotLog(`Невозможно убить босса, вы умрёте`, 'text', 'red');
 									this._isMounted && this.BotRaids('pause');
 									await wait(3000);
 									dataGame = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&i=11&t=${boss.id}&t2=3&t3=0&t4=0&t5=0`);
 									return false;
 								}
 							} else {
-								// setBotLog(`Невозможно убить босса, вы умрёте {point: ${boss.point}, status: ${boss.status}}`);
-								this._isMounted && setBotLog(`Невозможно убить босса, вы умрёте`, 'text', 'red');
+								// setBotLog(`Невозможно создать босса {point: ${boss.point}, status: ${boss.status}}`);
+								this._isMounted && setBotLog(`Невозможно создать босса`, 'text', 'red');
 								this._isMounted && this.BotRaids('pause');
-								await wait(3000);
-								dataGame = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&i=11&t=${boss.id}&t2=3&t3=0&t4=0&t5=0`);
 								return false;
 							}
 						} else {
-							// setBotLog(`Невозможно создать босса {point: ${boss.point}, status: ${boss.status}}`);
-							this._isMounted && setBotLog(`Невозможно создать босса`, 'text', 'red');
+							this._isMounted && setBotLog(`Не хватает энергии на убийство босса`, 'text', 'red');
 							this._isMounted && this.BotRaids('pause');
 							return false;
 						}
 					} else {
-						this._isMounted && setBotLog(`Не хватает энергии на убийство босса`, 'text', 'red');
+						this._isMounted && setBotLog(`Ошибочные данные персонажа`, 'text', 'red');
 						this._isMounted && this.BotRaids('pause');
-						return false;
 					}
 				} else if (boss && boss.status == 1) {
 					// setBotLog(`Босс уже убит {point: ${boss.point}, status: ${boss.status}}`);
@@ -931,15 +941,20 @@ class PANEL extends React.Component {
 				// console.log('isChest', isChest);
 				if (chests && chests.status == 1 && isChest) {
 					let player = this._isMounted && await BotAPI('getStats', auth_key, api_uid, sslt);
-					if (Number(player._en >= chests.en)) {
-						let dataGame = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&t1=1&i=79`);
-						// console.log(dataGame);
-						chests.status = 0;
-						// setBotLog(`Успешно открыли сундук {point: ${chests.point}, status: ${chests.status}, type: ${chests.type}}`);
-						dataGame.type = chests.type;
-						this._isMounted && setBotLog(dataGame, 'chest');
+					if (player) {
+						if (Number(player._en >= chests.en)) {
+							let dataGame = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&t1=1&i=79`);
+							// console.log(dataGame);
+							chests.status = 0;
+							// setBotLog(`Успешно открыли сундук {point: ${chests.point}, status: ${chests.status}, type: ${chests.type}}`);
+							dataGame.type = chests.type;
+							this._isMounted && setBotLog(dataGame, 'chest');
+						} else {
+							this._isMounted && setBotLog(`Не хватает энергии на открытие сундука`, 'text', 'red');
+							this._isMounted && this.BotRaids('pause');
+						}
 					} else {
-						this._isMounted && setBotLog(`Не хватает энергии на открытие сундука`, 'text', 'red');
+						this._isMounted && setBotLog(`Ошибочные данные персонажа`, 'text', 'red');
 						this._isMounted && this.BotRaids('pause');
 					}
 				} else if (chests && (chests.status == 0 || chests.status == 2) && isChest) {
@@ -1046,59 +1061,64 @@ class PANEL extends React.Component {
 				this._isMounted && updateInfo(dataGame);
 				this._isMounted && this.BotRaids('energy');
 				let player = this._isMounted && await BotAPI('getStats', auth_key, api_uid, sslt);
-				if (Number(player._en >= 5)) {
-					dataGame = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&i=80`);
-					if (Number(dataGame.res._v) == 1) {
-						this._isMounted && setBotLog(`Рейд успешно завершён`, 'text', 'green');
-						this._isMounted && await this.BotRaids('reload');
-						this._isMounted && this.setBotLog('clear');
-						this.state.botRaidsSettings = {
-							barrels: true,
-							chestsTier1: true,
-							chestsTier2: true,
-							chestsTier3: true,
-							chestsTier4: true,
-							chestsTier5: true,
-							useScrollLightning: false,
-							useScrollFire: false,
-							selectedRaid: null,
-							selectRaid: [{
-								id: 1,
-								title: 'Подземелье форта',
-								icon: 'bot/raids/6.png'
-							}, {
-								id: 2,
-								title: 'Подвал часовни',
-								icon: 'bot/raids/25.png'
-							}, {
-								id: 3,
-								title: 'Паучий лес',
-								icon: 'bot/raids/28.png'
-							}],
-							selectedMode: null,
-							selectMode: [{
-								id: 0,
-								title: 'Лёгкий режим',
-								icon: 'bot/raids/30.png'
-							}, {
-								id: 1,
-								title: 'Обычный режим',
-								icon: 'bot/raids/31.png'
-							}, {
-								id: 2,
-								title: 'Героический режим',
-								icon: 'bot/raids/32.png'
-							}, {
-								id: 3,
-								title: 'Легендарный режим',
-								icon: 'bot/raids/33.png'
-							}]
-						};
+				if (player) {
+					if (Number(player._en >= 5)) {
+						dataGame = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&i=80`);
+						if (Number(dataGame.res._v) == 1) {
+							this._isMounted && setBotLog(`Рейд успешно завершён`, 'text', 'green');
+							this._isMounted && await this.BotRaids('reload');
+							this._isMounted && this.setBotLog('clear');
+							this.state.botRaidsSettings = {
+								barrels: true,
+								chestsTier1: true,
+								chestsTier2: true,
+								chestsTier3: true,
+								chestsTier4: true,
+								chestsTier5: true,
+								useScrollLightning: false,
+								useScrollFire: false,
+								selectedRaid: null,
+								selectRaid: [{
+									id: 1,
+									title: 'Подземелье форта',
+									icon: 'bot/raids/6.png'
+								}, {
+									id: 2,
+									title: 'Подвал часовни',
+									icon: 'bot/raids/25.png'
+								}, {
+									id: 3,
+									title: 'Паучий лес',
+									icon: 'bot/raids/28.png'
+								}],
+								selectedMode: null,
+								selectMode: [{
+									id: 0,
+									title: 'Лёгкий режим',
+									icon: 'bot/raids/30.png'
+								}, {
+									id: 1,
+									title: 'Обычный режим',
+									icon: 'bot/raids/31.png'
+								}, {
+									id: 2,
+									title: 'Героический режим',
+									icon: 'bot/raids/32.png'
+								}, {
+									id: 3,
+									title: 'Легендарный режим',
+									icon: 'bot/raids/33.png'
+								}]
+							};
+						} else {
+							this._isMounted && setBotLog(`Невозможно завершить рейд`, 'text', 'red');
+						}
 					} else {
-						this._isMounted && setBotLog(`Невозможно завершить рейд`, 'text', 'red');
+						this._isMounted && setBotLog(`Не хватает энергии на завершение рейда`, 'text', 'red');
 					}
 				} else {
-					this._isMounted && setBotLog(`Не хватает энергии на завершение рейда`, 'text', 'red');
+					this._isMounted && setBotLog(`Ошибочные данные персонажа`, 'text', 'red');
+					this._isMounted && this.BotRaids('pause');
 				}
 			} else {
 				this._isMounted && setBotLog(`Нет активного рейда`, 'text', 'red');
