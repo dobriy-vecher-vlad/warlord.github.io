@@ -1359,12 +1359,11 @@ const App = withAdaptivity(({ viewWidth }) => {
 				message: hashParams
 			}]);
 			await (isDesktop || !isEmbedded) && setTheme();
-			let serverStatus = true;
-			if (await getData(`https://tmp1-fb.geronimo.su`)) {
+			await fetch(`https://tmp1-fb.geronimo.su`).then(function() {
 				serverStatus = true;
-			} else {
+			}).catch(function() {
 				serverStatus = false;
-			}
+			});
 			console.log(`[APP] serverStatus`, serverStatus);
 			if (isEmbedded && serverStatus) {
 				if (!hashParams) hashParams = {"": undefined};
