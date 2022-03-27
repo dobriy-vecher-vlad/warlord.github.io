@@ -735,13 +735,100 @@ div.Scroll::-webkit-scrollbar-track {
 	justify-content: space-between;
 }
 
-.Checkbox__content {
+.Checkbox__content,
+.Checkbox__children {
 	text-overflow: ellipsis;
 	overflow: hidden;
 	-webkit-transform: translate3d(0, 0, 0);
 	white-space: nowrap;
 }
 
+
+.ModalCard#donut {
+	
+}
+.ModalCard#donut .Cell .Icon,
+.ModalCard#donut .Cell svg,
+.ModalCard#mediaSales .Cell .Icon,
+.ModalCard#mediaSales .Cell svg {
+	width: 32px!important;
+    height: 32px!important;
+	padding-top: 0;
+	padding-bottom: 0;
+}
+.ModalCard#donut .Cell .SimpleCell__content,
+.ModalCard#mediaSales .Cell .SimpleCell__content {
+	display: none!important;
+}
+.ModalCard#donut .Cell .SimpleCell__description,
+.ModalCard#mediaSales .Cell .SimpleCell__description {
+	color: var(--text_primary)!important;
+}
+.ModalCard#donut .Cell .Tappable,
+.ModalCard#mediaSales .Cell .Tappable {
+	border-radius: var(--vkui--size_border_radius--regular)!important;
+	display: flex;
+    align-items: center;
+	padding: 8px;
+	min-height: 34px;
+}
+.ModalCard#donut .Cell .Counter,
+.ModalCard#mediaSales .Cell .Counter {
+    border-radius: 4px;
+	background: var(--vkui--color_background_accent);
+	color: var(--vkui--color_text_contrast);
+}
+.ModalCard#donut .SimpleCell,
+.ModalCard#mediaSales .SimpleCell {
+	padding-left: 8px;
+    padding-right: 8px;
+}
+.ModalCard#donut .Cell .SimpleCell__after,
+.ModalCard#mediaSales .Cell .SimpleCell__after {
+	padding-top: 0;
+	padding-bottom: 0;
+    padding-left: 12px;
+}
+.ModalCard#donut .Cell .SimpleCell__main,
+.ModalCard#mediaSales .Cell .SimpleCell__main {
+	padding-top: 0;
+	padding-bottom: 0;
+}
+.ModalCard#donut .Cell .Subhead,
+.ModalCard#mediaSales .Cell .Subhead {
+	margin: 0;
+    font-size: 14px;
+    line-height: 17px;
+}
+.ModalCard#donut .Button,
+.ModalCard#mediaSales .Button {
+	min-height: 48px;
+}
+.ModalCard#donut .Button .Text,
+.ModalCard#mediaSales .Button .Text {
+    font-size: 15px;
+    line-height: 20px;
+}
+.ModalCard#donut .Cell.onlyIcons .Cell__content,
+.ModalCard#mediaSales .Cell.onlyIcons .Cell__content {
+	display: flex;
+	justify-content: center;
+	gap: 12px;
+}
+.ModalCard#donut .Cell.onlyIcons .SimpleCell__main,
+.ModalCard#donut .Cell.onlyIcons .SimpleCell__after,
+.ModalCard#mediaSales .Cell.onlyIcons .SimpleCell__main,
+.ModalCard#mediaSales .Cell.onlyIcons .SimpleCell__after {
+	display: none;
+}
+.ModalCard#donut .Cell.onlyIcons .Icon,
+.ModalCard#mediaSales .Cell.onlyIcons .Icon {
+	padding: 0;
+}
+.ModalCard__in {
+	/* overflow: hidden; */
+	width: -webkit-fill-available;
+}
 
 
 .DetailsWiki summary::-webkit-details-marker {
@@ -2091,9 +2178,6 @@ input::-webkit-inner-spin-button {
 .ModalCardBase__container {
 	padding: 0;
 	background: var(--background_content);
-}
-.ModalCard__in {
-	overflow: hidden;
 }
 
 
