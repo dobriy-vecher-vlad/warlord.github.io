@@ -1092,7 +1092,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 			if (syncUser == null || reload == true) {
 				let dataVK;
 				if (isMask) {
-					dataVK = await getBridge('VKWebAppCallAPIMethod', {"method": "users.get", "params": {"user_ids": isMask, "fields": "photo_100,photo_200,photo_max_orig", "v": '5.130', "access_token": "15e5bbc95629b19197fbe7c83f5f21370ceccd8bf95ed1b6010c9658237a430ddc6d78554d064d5c2410a"}});
+					dataVK = await getBridge('VKWebAppCallAPIMethod', {"method": "users.get", "params": {"user_ids": isMask, "fields": "photo_100,photo_200,photo_max_orig", "v": '5.130', "access_token": "9942dca8c434ee910f1745a2989105b6b66d712e4f6d96b474278ca18ea7e6d7a8db5f4e569b16c6d1d20"}});
 					if (dataVK && dataVK.response) {
 						dataVK = dataVK.response[0];
 					} else {
@@ -1103,8 +1103,8 @@ const App = withAdaptivity(({ viewWidth }) => {
 				}
 				if (!reload) {
 					syncUser = true;
-					let dataDonut = await getBridge('VKWebAppCallAPIMethod', {"method": "execute.getMembers", "params": {"v": '5.130', "access_token": "15e5bbc95629b19197fbe7c83f5f21370ceccd8bf95ed1b6010c9658237a430ddc6d78554d064d5c2410a"}});
-					await getBridge('VKWebAppCallAPIMethod', {"method": "execute.getMembersFull", "params": {"v": '5.130', "access_token": "15e5bbc95629b19197fbe7c83f5f21370ceccd8bf95ed1b6010c9658237a430ddc6d78554d064d5c2410a"}}).then(data => {
+					let dataDonut = await getBridge('VKWebAppCallAPIMethod', {"method": "execute.getMembers", "params": {"v": '5.130', "access_token": "9942dca8c434ee910f1745a2989105b6b66d712e4f6d96b474278ca18ea7e6d7a8db5f4e569b16c6d1d20"}});
+					await getBridge('VKWebAppCallAPIMethod', {"method": "execute.getMembersFull", "params": {"v": '5.130', "access_token": "9942dca8c434ee910f1745a2989105b6b66d712e4f6d96b474278ca18ea7e6d7a8db5f4e569b16c6d1d20"}}).then(data => {
 						if (data && data.response) {
 							dataDonutUser = data;
 						}
@@ -1325,15 +1325,6 @@ const App = withAdaptivity(({ viewWidth }) => {
 		referals = async(parent, child, mode) => {
 			console.log(parent, child, mode);
 			if (mode == 'set') {
-				// let test = await getData('json', `https://api.vk.com/method/storage.get?user_id=${child}&key=parent&v=${5.131}&access_token=71659bdb71659bdb71659bdbf7711349317716571659bdb113ae37f56c8a8fd038c01bc`);
-				// // let test = await getBridge('VKWebAppCallAPIMethod', {"method": "storage.get", "params": {"key": "parent", "v": '5.131', "access_token": "71659bdb71659bdb71659bdbf7711349317716571659bdb113ae37f56c8a8fd038c01bc"}});
-				// console.log(test);
-				// let storage = await getBridge('VKWebAppStorageGet', {"keys": ["parent"]});
-				// if (storage.keys[0].value === "") {
-				// 	await getBridge('VKWebAppStorageSet', {"key": "parent", "value": String(parent)});
-				// } else {
-				// 	console.log(Number(storage.keys[0].value));
-				// }
 			}
 		};
 		parseQueryString = (string = '') => {
