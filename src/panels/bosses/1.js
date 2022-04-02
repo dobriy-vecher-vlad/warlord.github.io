@@ -27,6 +27,26 @@ let countBossAll = {
 	spell_3: 0
 };
 let newBossID = 5;
+let discount = 0;
+let discountArray = [{
+	title: 'Стандартная сила',
+	value: 0
+}, {
+	title: 'Слабее на 10%',
+	value: 10
+}, {
+	title: 'Слабее на 20%',
+	value: 20
+}, {
+	title: 'Слабее на 30%',
+	value: 30
+}, {
+	title: 'Слабее на 40%',
+	value: 40
+}, {
+	title: 'Слабее на 50%',
+	value: 50
+}];
 
 class PANEL extends React.Component {
 	constructor(props) {
@@ -133,8 +153,8 @@ class PANEL extends React.Component {
 	CalcBoss = async() => {
 		let mode = 2;
 		let Boss = Bosses[newBossID];
-		let BossDamage = Boss.dmg; //урон босса
-		let BossHealth = Boss.hp; //здоровье босса
+		let BossDamage = Boss.dmg-(Boss.dmg/100*discount); //урон босса
+		let BossHealth = Boss.hp-(Boss.hp/100*discount); //здоровье босса
 		let MyDamage = Number(countBossAll.skill_2); //урон игрока
 		let MyHealth = Number(countBossAll.skill_1); //здоровье игрока
 		let MyBonus = Number(countBossAll.skill_3); //невидимый удар
@@ -250,19 +270,27 @@ class PANEL extends React.Component {
 						</div>
 						<Spacing size={8} />
 					</div>
-					<CardGrid size="m">
+					<CardGrid size="m" className="CardInfinityGrid">
 						<Select
 							value={newBossID}
-							searchable="true"
+							searchable={true}
 							onChange={(e) => {newBossID = e.target.value, this.CalcBoss()}}
-							style={{width: 'calc(50% - 4px)', marginRight: 8}}
 							placeholder="Не выбран" 
 							options={this.state.newBossArray.map((data, x) => ({ label: data.name, value: Bosses.indexOf(data), avatar: `${pathImages}${data.icon}` }))}
 							renderOption={({ option, ...restProps }) => (
 								<CustomSelectOption {...restProps} before={<Avatar size={24} src={option.avatar} />} />
 							)}
 						/>
-						<Button style={{width: 'calc(50% - 4px)'}} stretched size="l" mode="secondary" onClick={() => this.setNewBoss('open')}>Создать своего</Button>
+						<Button stretched size="l" mode="secondary" onClick={() => this.setNewBoss('open')}>Создать своего</Button>
+						<Select
+							value={discount}
+							onChange={(e) => {discount = e.target.value, this.CalcBoss()}}
+							placeholder="Не выбрана" 
+							options={discountArray.map((data, x) => ({ label: data.title, value: data.value }))}
+							renderOption={({ option, ...restProps }) => (
+								<CustomSelectOption {...restProps} />
+							)}
+						/>
 					</CardGrid>
 					<Spacing size={8} />
 					{[Bosses[newBossID]].map((item, x) => 
@@ -276,10 +304,10 @@ class PANEL extends React.Component {
 								actions={
 									<CardGrid size="m">
 										<Card className="CardWithAvatar">
-											<Cell description="Здоровье">{options.numberSpaces(item.hp)}</Cell>
+											<Cell description="Здоровье">{options.numberSpaces(item.hp-(item.hp/100*discount))}</Cell>
 										</Card>
 										<Card className="CardWithAvatar">
-											<Cell description="Атака">{options.numberSpaces(item.dmg)}</Cell>
+											<Cell description="Атака">{options.numberSpaces(item.dmg-(item.dmg/100*discount))}</Cell>
 										</Card>
 										<Card className="CardWithAvatar">
 											<Cell description="Чистый урон">{options.numberSpaces(this.state.count_boss.clearDamage)}</Cell>
