@@ -44,7 +44,8 @@ import {
 	Text,
 	Counter,
 	CardScroll,
-	AppearanceProvider
+	AppearanceProvider,
+	useAppearance
 } from '@vkontakte/vkui';
 import {
 	Icon28HomeOutline,
@@ -2161,7 +2162,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 	window.innerWidth = window.innerWidth;
 	window.innerHeight = window.innerHeight;
 	// return <ConfigProvider platform={isDesktop ? 'ios' : usePlatform()}><Wiki/></ConfigProvider>;
-	return <ConfigProvider platform='ios' webviewType='internal'><Wiki/></ConfigProvider>;
+	return <ConfigProvider appearance={!isDesktop&&useAppearance()} platform='ios' webviewType='internal'><Wiki/></ConfigProvider>;
 }, {
 	viewWidth: true
 });

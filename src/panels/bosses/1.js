@@ -293,6 +293,7 @@ class PANEL extends React.Component {
 						/>
 					</CardGrid>:<><CardGrid size="m" style={{display: 'flex', flexWrap: 'nowrap', flexDirection: 'row', alignItems: 'center', gap: 8}}>
 						<Select
+							style={{width: '50%'}}
 							value={newBossID}
 							searchable={true}
 							onChange={(e) => {newBossID = e.target.value, this.CalcBoss()}}
@@ -302,8 +303,9 @@ class PANEL extends React.Component {
 								<CustomSelectOption {...restProps} before={<Avatar size={24} src={option.avatar} />} />
 							)}
 						/>
-						<Button stretched size="l" mode="secondary" onClick={() => this.setNewBoss('open')}>Создать своего</Button>
+						<Button style={{width: '50%'}} stretched size="l" mode="secondary" onClick={() => this.setNewBoss('open')}>Создать своего</Button>
 					</CardGrid><Spacing size={8} /><CardGrid><Select
+						style={{width: '100%'}}
 						value={discount}
 						onChange={(e) => {discount = e.target.value, this.CalcBoss()}}
 						placeholder="Не выбрана" 
