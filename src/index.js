@@ -237,6 +237,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 	const isIframe = bridge.isIframe();
 	const isStandalone = bridge.isStandalone();
 	const isDesktop = viewWidth >= ViewWidth.SMALL_TABLET;
+	const appearance = useAppearance();
 	logger('[APP] Navigator', [{
 		label: 'platform',
 		message: platform
@@ -1509,7 +1510,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 			const { activeStory, activePanel, popout, user, theme } = this.state;
 			const { onStoryChange, numberForm, numberSpaces, setActivePanel, modal } = this;
 			return (
-				<AppearanceProvider appearance={isDesktop?this.state.AppearanceProvider:useAppearance()}>
+				<AppearanceProvider appearance={isDesktop?this.state.AppearanceProvider:appearance}>
 					<SplitLayout style={{ justifyContent: "center" }} popout={popout} modal={modal()}>
 						{isDesktop && activeStory && (
 							<SplitCol fixed width="280px" maxWidth="280px">
