@@ -2248,15 +2248,6 @@ input::-webkit-inner-spin-button {
 }
 
 
-.CardInfinityGrid {
-	display: flex;
-	align-items: center;
-	flex-wrap: nowrap;
-	flex-direction: row;
-	gap: 8px;
-}
-
-
 @media screen and (orientation: landscape) {
 	.ModalPage:not(.ModalPage--classic) .ModalPageHeader:after {
 		display: none;

@@ -134,7 +134,7 @@ const islocalStorage = (() => {
 })();
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
-const wikiVersion = '1.5.8';
+const wikiVersion = '1.5.9';
 const pathImages = 'https://dobriy-vecher-vlad.github.io/warlord-helper/media/images/';
 
 
@@ -1508,7 +1508,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 			const { activeStory, activePanel, popout, user, theme } = this.state;
 			const { onStoryChange, numberForm, numberSpaces, setActivePanel, modal } = this;
 			return (
-				<AppearanceProvider appearance={this.state.AppearanceProvider}>
+				<AppearanceProvider appearance={isDesktop&&this.state.AppearanceProvider}>
 					<SplitLayout style={{ justifyContent: "center" }} popout={popout} modal={modal()}>
 						{isDesktop && activeStory && (
 							<SplitCol fixed width="280px" maxWidth="280px">

@@ -270,7 +270,7 @@ class PANEL extends React.Component {
 						</div>
 						<Spacing size={8} />
 					</div>
-					<CardGrid size="m" className="CardInfinityGrid">
+					{state.isDesktop ? <CardGrid size="m" style={{display: 'flex', flexWrap: 'nowrap', flexDirection: 'row', alignItems: 'center', gap: 8}}>
 						<Select
 							value={newBossID}
 							searchable={true}
@@ -291,7 +291,27 @@ class PANEL extends React.Component {
 								<CustomSelectOption {...restProps} />
 							)}
 						/>
-					</CardGrid>
+					</CardGrid>:<><CardGrid size="m" style={{display: 'flex', flexWrap: 'nowrap', flexDirection: 'row', alignItems: 'center', gap: 8}}>
+						<Select
+							value={newBossID}
+							searchable={true}
+							onChange={(e) => {newBossID = e.target.value, this.CalcBoss()}}
+							placeholder="Не выбран" 
+							options={this.state.newBossArray.map((data, x) => ({ label: data.name, value: Bosses.indexOf(data), avatar: `${pathImages}${data.icon}` }))}
+							renderOption={({ option, ...restProps }) => (
+								<CustomSelectOption {...restProps} before={<Avatar size={24} src={option.avatar} />} />
+							)}
+						/>
+						<Button stretched size="l" mode="secondary" onClick={() => this.setNewBoss('open')}>Создать своего</Button>
+					</CardGrid><Spacing size={8} /><CardGrid><Select
+						value={discount}
+						onChange={(e) => {discount = e.target.value, this.CalcBoss()}}
+						placeholder="Не выбрана" 
+						options={discountArray.map((data, x) => ({ label: data.title, value: data.value }))}
+						renderOption={({ option, ...restProps }) => (
+							<CustomSelectOption {...restProps} />
+						)}
+					/></CardGrid></>}
 					<Spacing size={8} />
 					{[Bosses[newBossID]].map((item, x) => 
 						<React.Fragment key={x}>
