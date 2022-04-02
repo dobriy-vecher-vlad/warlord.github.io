@@ -1509,7 +1509,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 			const { activeStory, activePanel, popout, user, theme } = this.state;
 			const { onStoryChange, numberForm, numberSpaces, setActivePanel, modal } = this;
 			return (
-				<AppearanceProvider appearance={isDesktop&&this.state.AppearanceProvider}>
+				<AppearanceProvider appearance={isDesktop?this.state.AppearanceProvider:useAppearance()}>
 					<SplitLayout style={{ justifyContent: "center" }} popout={popout} modal={modal()}>
 						{isDesktop && activeStory && (
 							<SplitCol fixed width="280px" maxWidth="280px">
@@ -2162,7 +2162,10 @@ const App = withAdaptivity(({ viewWidth }) => {
 	window.innerWidth = window.innerWidth;
 	window.innerHeight = window.innerHeight;
 	// return <ConfigProvider platform={isDesktop ? 'ios' : usePlatform()}><Wiki/></ConfigProvider>;
-	return <ConfigProvider appearance={!isDesktop&&useAppearance()} platform='ios' webviewType='internal'><Wiki/></ConfigProvider>;
+	
+	// return <ConfigProvider appearance={!isDesktop&&useAppearance()} platform='ios' webviewType='internal'><Wiki/></ConfigProvider>;
+	
+	return <ConfigProvider platform='ios' webviewType='internal'><Wiki/></ConfigProvider>;
 }, {
 	viewWidth: true
 });
