@@ -1845,7 +1845,7 @@ class PANEL extends React.Component {
 											{/* <Avatar mode="app" size={96} src={`${pathImages}bot/raids/109.png`} /> */}
 											<SVG_turmalin className="CustomRadioForm__cell--shadow" style={{height: 75, width: 100}}/>
 											<SVG_turmalin className="CustomRadioForm__cell--image" style={{height: 75, width: 100, zIndex: 1}}/>
-											<Title level="2" weight="medium" style={{zIndex: 1}}>{botRaidsSettings.selectRaid[0].title}</Title>
+											<Title level="2" weight="2" style={{zIndex: 1}}>{botRaidsSettings.selectRaid[0].title}</Title>
 											<Text style={{ marginTop: 8, color: 'var(--text_secondary)', zIndex: 1 }}>турмалины</Text>
 										</div>
 									</Radio>
@@ -1856,7 +1856,7 @@ class PANEL extends React.Component {
 											{/* <Avatar mode="app" size={96} src={`${pathImages}bot/raids/110.png`} /> */}
 											<SVG_stone className="CustomRadioForm__cell--shadow" style={{height: 75, width: 100}}/>
 											<SVG_stone className="CustomRadioForm__cell--image" style={{height: 75, width: 100, zIndex: 1}}/>
-											<Title level="2" weight="medium" style={{zIndex: 1}}>{botRaidsSettings.selectRaid[1].title}</Title>
+											<Title level="2" weight="2" style={{zIndex: 1}}>{botRaidsSettings.selectRaid[1].title}</Title>
 											<Text style={{ marginTop: 8, color: 'var(--text_secondary)', zIndex: 1 }}>камни</Text>
 										</div>
 									</Radio>
@@ -1866,7 +1866,7 @@ class PANEL extends React.Component {
 										<div className="CustomRadioForm__cell">
 											<SVG_web className="CustomRadioForm__cell--shadow" style={{height: 75, width: 100}}/>
 											<SVG_web className="CustomRadioForm__cell--image" style={{height: 75, width: 100, zIndex: 1}}/>
-											<Title level="2" weight="medium">{botRaidsSettings.selectRaid[2].title}</Title>
+											<Title level="2" weight="2">{botRaidsSettings.selectRaid[2].title}</Title>
 											<Text style={{ marginTop: 8, color: 'var(--text_secondary)' }}>питомец</Text>
 										</div>
 									</Radio>
@@ -1880,7 +1880,7 @@ class PANEL extends React.Component {
 											<svg className="CustomRadioForm__cell--shadow" width="100" height="50" viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="75" cy="75" r="75" fill="#7BC838"/></svg>
 											<SVG_numberI className="CustomRadioForm__cell--image" style={{height: 50, width: 100, zIndex: 1}}/>
 											<Spacing size={8} />
-											<Title level="3" weight="medium">{botRaidsSettings.selectMode[0].title}</Title>
+											<Title level="3" weight="2">{botRaidsSettings.selectMode[0].title}</Title>
 										</div>
 									</Radio>
 								</Card>
@@ -1890,7 +1890,7 @@ class PANEL extends React.Component {
 											<svg className="CustomRadioForm__cell--shadow" width="100" height="50" viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="75" cy="75" r="75" fill="#557CFD"/></svg>
 											<SVG_numberII className="CustomRadioForm__cell--image" style={{height: 50, width: 100, zIndex: 1}}/>
 											<Spacing size={8} />
-											<Title level="3" weight="medium">{botRaidsSettings.selectMode[1].title}</Title>
+											<Title level="3" weight="2">{botRaidsSettings.selectMode[1].title}</Title>
 										</div>
 									</Radio>
 								</Card>
@@ -1900,7 +1900,7 @@ class PANEL extends React.Component {
 											<svg className="CustomRadioForm__cell--shadow" width="100" height="50" viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="75" cy="75" r="75" fill="#B14296"/></svg>
 											<SVG_numberIII className="CustomRadioForm__cell--image" style={{height: 50, width: 100, zIndex: 1}}/>
 											<Spacing size={8} />
-											<Title level="3" weight="medium">{botRaidsSettings.selectMode[2].title}</Title>
+											<Title level="3" weight="2">{botRaidsSettings.selectMode[2].title}</Title>
 										</div>
 									</Radio>
 								</Card>
@@ -1910,7 +1910,7 @@ class PANEL extends React.Component {
 											<svg className="CustomRadioForm__cell--shadow" width="100" height="50" viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="75" cy="75" r="75" fill="#FFAC0F"/></svg>
 											<SVG_numberIV className="CustomRadioForm__cell--image" style={{height: 50, width: 100, zIndex: 1}}/>
 											<Spacing size={8} />
-											<Title level="3" weight="medium">{botRaidsSettings.selectMode[3].title}</Title>
+											<Title level="3" weight="2">{botRaidsSettings.selectMode[3].title}</Title>
 										</div>
 									</Radio>
 								</Card>

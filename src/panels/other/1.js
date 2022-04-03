@@ -102,13 +102,13 @@ class PANEL extends React.Component {
 						<CardGrid size="l">
 							<Select
 								value={this.state.itemId}
-								searchable="true"
+								searchable
 								style={{width: '100%'}}
 								onChange={(e) => this.setState({ itemId: Number(e.target.value) }, async() => this.setState({ item: await this.getEnchStats(Items[this.state.itemId]) }))}
 								placeholder="Не выбран"
-								options={Items.map((item, x) => ({ label: item.title, value: x, avatar: `${pathImages}${item.icon}` }))}
+								options={Items.map((item, x) => ({ label: item.title, description: item.description, value: x, avatar: `${pathImages}${item.icon}` }))}
 								renderOption={({ option, ...restProps }) => (
-									<CustomSelectOption {...restProps} before={<Avatar size={24} src={option.avatar} />} />
+									<CustomSelectOption {...restProps} before={<Avatar size={24} src={option.avatar} />} description={option.description} />
 								)}
 							/>
 						</CardGrid>

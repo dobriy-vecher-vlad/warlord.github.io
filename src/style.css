@@ -1069,6 +1069,7 @@ div.Scroll::-webkit-scrollbar-track {
 	font-size: 13px;
 	line-height: 16px;
 	color: var(--text_secondary);
+	font-weight: 500;
 }
 
 .Horizontal__Cells .Card {
@@ -2245,6 +2246,24 @@ input::-webkit-inner-spin-button {
 }
 .HorizontalRating .TableCell__row:last-child {
 	justify-content: flex-end;
+}
+
+.PullToRefresh__controls {
+	width: unset!important;
+	display: flex;
+	justify-content: center;
+	left: 0;
+	right: 0;
+	position: sticky!important;
+}
+.PullToRefresh__controls.FixedLayout:after {
+	display: none;
+}
+.PullToRefresh__controls .PullToRefresh__spinner {
+	margin: 0;
+}
+.PullToRefresh__controls + * {
+	margin-top: -40px;
 }
 
 

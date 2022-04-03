@@ -30,21 +30,27 @@ let newBossID = 5;
 let discount = 0;
 let discountArray = [{
 	title: 'Стандартная сила',
+	description: 'Здоровье и атака без изменения',
 	value: 0
 }, {
 	title: 'Слабее на 10%',
+	description: 'Здоровье и атака меньше на 10%',
 	value: 10
 }, {
 	title: 'Слабее на 20%',
+	description: 'Здоровье и атака меньше на 20%',
 	value: 20
 }, {
 	title: 'Слабее на 30%',
+	description: 'Здоровье и атака меньше на 30%',
 	value: 30
 }, {
 	title: 'Слабее на 40%',
+	description: 'Здоровье и атака меньше на 40%',
 	value: 40
 }, {
 	title: 'Слабее на 50%',
+	description: 'Здоровье и атака меньше на 50%',
 	value: 50
 }];
 
@@ -273,12 +279,12 @@ class PANEL extends React.Component {
 					{state.isDesktop ? <CardGrid size="m" style={{display: 'flex', flexWrap: 'nowrap', flexDirection: 'row', alignItems: 'center', gap: 8}}>
 						<Select
 							value={newBossID}
-							searchable={true}
+							searchable
 							onChange={(e) => {newBossID = e.target.value, this.CalcBoss()}}
 							placeholder="Не выбран" 
-							options={this.state.newBossArray.map((data, x) => ({ label: data.name, value: Bosses.indexOf(data), avatar: `${pathImages}${data.icon}` }))}
+							options={this.state.newBossArray.map((data, x) => ({ label: data.name, description: data.description, value: Bosses.indexOf(data), avatar: `${pathImages}${data.icon}` }))}
 							renderOption={({ option, ...restProps }) => (
-								<CustomSelectOption {...restProps} before={<Avatar size={24} src={option.avatar} />} />
+								<CustomSelectOption {...restProps} before={<Avatar size={24} src={option.avatar} />} description={option.description} />
 							)}
 						/>
 						<Button stretched size="l" mode="secondary" onClick={() => this.setNewBoss('open')}>Создать своего</Button>
@@ -286,21 +292,21 @@ class PANEL extends React.Component {
 							value={discount}
 							onChange={(e) => {discount = e.target.value, this.CalcBoss()}}
 							placeholder="Не выбрана" 
-							options={discountArray.map((data, x) => ({ label: data.title, value: data.value }))}
+							options={discountArray.map((data, x) => ({ label: data.title, description: data.description, value: data.value }))}
 							renderOption={({ option, ...restProps }) => (
-								<CustomSelectOption {...restProps} />
+								<CustomSelectOption {...restProps} description={option.description}/>
 							)}
 						/>
 					</CardGrid>:<><CardGrid size="m" style={{display: 'flex', flexWrap: 'nowrap', flexDirection: 'row', alignItems: 'center', gap: 8}}>
 						<Select
 							style={{width: '50%'}}
 							value={newBossID}
-							searchable={true}
+							searchable
 							onChange={(e) => {newBossID = e.target.value, this.CalcBoss()}}
 							placeholder="Не выбран" 
-							options={this.state.newBossArray.map((data, x) => ({ label: data.name, value: Bosses.indexOf(data), avatar: `${pathImages}${data.icon}` }))}
+							options={this.state.newBossArray.map((data, x) => ({ label: data.name, description: data.description, value: Bosses.indexOf(data), avatar: `${pathImages}${data.icon}` }))}
 							renderOption={({ option, ...restProps }) => (
-								<CustomSelectOption {...restProps} before={<Avatar size={24} src={option.avatar} />} />
+								<CustomSelectOption {...restProps} before={<Avatar size={24} src={option.avatar} />} description={option.description} />
 							)}
 						/>
 						<Button style={{width: '50%'}} stretched size="l" mode="secondary" onClick={() => this.setNewBoss('open')}>Создать своего</Button>
@@ -309,9 +315,9 @@ class PANEL extends React.Component {
 						value={discount}
 						onChange={(e) => {discount = e.target.value, this.CalcBoss()}}
 						placeholder="Не выбрана" 
-						options={discountArray.map((data, x) => ({ label: data.title, value: data.value }))}
+						options={discountArray.map((data, x) => ({ label: data.title, description: data.description, value: data.value }))}
 						renderOption={({ option, ...restProps }) => (
-							<CustomSelectOption {...restProps} />
+							<CustomSelectOption {...restProps} description={option.description}/>
 						)}
 					/></CardGrid></>}
 					<Spacing size={8} />

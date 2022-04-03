@@ -44,8 +44,8 @@ import {
 	Text,
 	Counter,
 	CardScroll,
-	AppearanceProvider,
-	useAppearance
+	Footer,
+	PullToRefresh
 } from '@vkontakte/vkui';
 import {
 	Icon28HomeOutline,
@@ -83,7 +83,8 @@ import {
 	Icon56MessageReadOutline,
 	Icon28KeyOutline,
 	Icon28UserCardOutline,
-	Icon28UserOutline
+	Icon28UserOutline,
+	Icon12OnlineVkmobile
 } from '@vkontakte/icons';
 
 // import Tasks from './panels/home/tasks.js';
@@ -123,6 +124,7 @@ let syncItemsFull = [];
 let server = 1;
 let isMask = false;
 let serverStatus = false;
+let serverStatusTime = 0;
 
 const islocalStorage = (() => {
 	try {
@@ -237,7 +239,6 @@ const App = withAdaptivity(({ viewWidth }) => {
 	const isIframe = bridge.isIframe();
 	const isStandalone = bridge.isStandalone();
 	const isDesktop = viewWidth >= ViewWidth.SMALL_TABLET;
-	const appearance = useAppearance();
 	logger('[APP] Navigator', [{
 		label: 'platform',
 		message: platform
@@ -354,6 +355,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 				modalHistory: null,
 				dataModal: {}, // home
 				theme: 'bright_light',
+				fetching: false,
 
 				user: {vk: null, game: null},
 				storeProfiles: [],
@@ -392,60 +394,55 @@ const App = withAdaptivity(({ viewWidth }) => {
 				console.log(error);
 			}
 		};
+		checkServer = async() => {
+			serverStatusTime = +new Date;
+			await fetch(`https://tmp1-fb.geronimo.su`).then(function() {
+				serverStatus = true;
+			}).catch(function() {
+				serverStatus = false;
+			});
+			serverStatusTime = +new Date - serverStatusTime;
+			console.log(`[APP] serverStatus`, serverStatus, serverStatusTime);
+			this.forceUpdate();
+		};
 		setTheme = async(update = false) => {
 			const { activePanel, activeStory } = this.state;
 			const { OpenModal } = this;
 			isDev&&console.warn('setTheme', activeStory, activePanel);
 			let theme = 'bright_light';
-			let AppearanceProvider = 'light';
 			if (islocalStorage) {
 				try {
 					theme = localStorage.getItem('VKWikiTheme');
-					AppearanceProvider = localStorage.getItem('VKWikiAppearanceProvider');
 					if (!theme) {
 						localStorage.setItem('VKWikiTheme', 'bright_light');
-						localStorage.setItem('VKWikiAppearanceProvider', 'light');
 						theme = 'bright_light';
-						AppearanceProvider = 'light';
 					}
 					if (update) {
 						theme = theme == 'bright_light' ? 'space_gray' : 'bright_light';
-						AppearanceProvider = theme == 'bright_light' ? 'light' : 'dark';
 						localStorage.setItem('VKWikiTheme', theme);
-						localStorage.setItem('VKWikiAppearanceProvider', AppearanceProvider);
 					}
 				} catch (error) {
 					OpenModal(`alert`, {header: 'Ошибка при обновлении темы', subheader: `Разрешите доступ к cookies на этом сайте`}, null, 'card');
 					theme = 'bright_light';
-					AppearanceProvider = 'light';
 				}
 			} else if (isEmbedded) {
 				try {
 					theme = await this.Storage({key: 'VKWikiTheme', defaultValue: theme});
-					AppearanceProvider = await this.Storage({key: 'VKWikiAppearanceProvider', defaultValue: AppearanceProvider});
 					if (theme) theme = theme.value;
-					if (AppearanceProvider) AppearanceProvider = AppearanceProvider.value;
 					if (theme && update) {
 						theme = theme == 'bright_light' ? 'space_gray' : 'bright_light';
 						theme = await this.Storage({key: 'VKWikiTheme', value: theme});
 						if (theme) theme = theme.value;
 					}
-					if (AppearanceProvider && update) {
-						AppearanceProvider = theme == 'bright_light' ? 'light' : 'dark';
-						AppearanceProvider = await this.Storage({key: 'VKWikiAppearanceProvider', value: AppearanceProvider});
-						if (AppearanceProvider) AppearanceProvider = AppearanceProvider.value;
-					}
 				} catch (error) {
 					OpenModal(`alert`, {header: 'Ошибка при обновлении темы', subheader: `Разрешите доступ к cookies на этом сайте`}, null, 'card');
 					theme = 'bright_light';
-					AppearanceProvider = 'light';
 				}
 			} else {
 				OpenModal(`alert`, {header: 'Ошибка при обновлении темы', subheader: `Разрешите доступ к cookies на этом сайте`}, null, 'card');
 				theme = 'bright_light';
-				AppearanceProvider = 'light';
 			}
-			this.setState({theme, AppearanceProvider});
+			this.setState({theme});
 			document.body.setAttribute('scheme', theme);
 		};
 		Storage = async(data = {key: 'key', defaultValue: 'defaultValue', value: 'value', delete: false}) => {
@@ -1028,6 +1025,11 @@ const App = withAdaptivity(({ viewWidth }) => {
 				return hash;
 			}
 		};
+		storeProfilesRefresh = async() => {
+			this.setState({ fetching: true });
+			await this.storeProfiles(this.state.storeProfilesIndex);
+			this.setState({ fetching: false});
+		};
 		storeProfiles = async(id) => {
 			const { activePanel, activeStory } = this.state;
 			isDev&&console.warn('loadProfile', activeStory, activePanel);
@@ -1362,7 +1364,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 			}
 		};
 		startApp = async(resize = false) => {
-			const { loadProfile, setTheme, setActivePanel, parseQueryString } = this;
+			const { loadProfile, setTheme, checkServer, setActivePanel, parseQueryString } = this;
 			queryParams = parseQueryString(window.location.search);
 			hashParams = parseQueryString(window.location.hash);
 			logger('[APP] Params', [{
@@ -1373,12 +1375,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 				message: hashParams
 			}]);
 			await (isDesktop || !isEmbedded) && setTheme();
-			await fetch(`https://tmp1-fb.geronimo.su`).then(function() {
-				serverStatus = true;
-			}).catch(function() {
-				serverStatus = false;
-			});
-			console.log(`[APP] serverStatus`, serverStatus);
+			await checkServer();
 			if (isEmbedded && serverStatus) {
 				if (!hashParams) hashParams = {"": undefined};
 				if (Object.keys(hashParams).indexOf('dev') != -1) {
@@ -1510,161 +1507,208 @@ const App = withAdaptivity(({ viewWidth }) => {
 			const { activeStory, activePanel, popout, user, theme } = this.state;
 			const { onStoryChange, numberForm, numberSpaces, setActivePanel, modal } = this;
 			return (
-				<AppearanceProvider appearance={isDesktop?this.state.AppearanceProvider:appearance}>
-					<SplitLayout style={{ justifyContent: "center" }} popout={popout} modal={modal()}>
-						{isDesktop && activeStory && (
-							<SplitCol fixed width="280px" maxWidth="280px">
-								<Panel id="navigation">
-									<Group>
-										{isEmbedded&&serverStatus&&<React.Fragment>
-										<RichCell
-											disabled
-											className="RichCell--Header"
-											before={<Avatar size={36} src={user && user.vk ? user.vk.photo_200 : 'https://vk.com/images/camera_200.png'}/>}
-											caption={`${server == 1 ? 'Эрмун' : 'Антарес'}, ${isDev ? 'режим разработчика' : isDonut ? 'полный доступ' : 'обычный доступ'}`}
-										>{user && user.vk ? `${user.vk.first_name} ${user.vk.last_name}` : 'Пользователь'}</RichCell>
-										<Spacing size={16} />	
-										</React.Fragment>}
-										<RichCell
-											className="RichCell--Context"
-											disabled={activeStory === 'home'}
-											data-story="home"
-											onClick={onStoryChange}
-											before={<Icon28HomeOutline />}
-											description="Новости приложения"
-										>Главная</RichCell>
-										{isEmbedded&&serverStatus && <RichCell
-											className="RichCell--Context"
-											disabled={activeStory === 'profile'}
-											data-story="profile"
-											onClick={onStoryChange}
-											before={<Icon28UserOutline />}
-											// after={<Counter size="s" mode="prominent">НОВОЕ</Counter>}
-										>Мой профиль</RichCell>}
-										<RichCell
-											className="RichCell--Context"
-											disabled={activeStory === 'rating'}
-											data-story="rating"
-											onClick={onStoryChange}
-											before={<Icon28UserCardOutline />}
-											after={<Counter size="s" mode="prominent">НОВОЕ</Counter>}
-										>Рейтинг</RichCell>
-										{/* {isEmbedded && <RichCell
-											className="RichCell--Context"
-											disabled={activePanel === 'tasks'}
-											data-story="tasks"
-											onClick={() => setActivePanel('tasks')}
-											before={<Icon28UserCircleOutline />}
-											after={isEmbedded&&<Counter size="s" mode="prominent">НОВОЕ</Counter>}
-										>Задания</RichCell>} */}
-										<Spacing separator size={16} />
-										<RichCell
-											className="RichCell--Context"
-											disabled={activeStory === 'map'}
-											data-story="map"
-											onClick={onStoryChange}
-											before={<Icon28GlobeOutline />}
-											description="Рейды, приключения"
-										>Карта</RichCell>
-										<RichCell
-											className="RichCell--Context"
-											disabled={activeStory === 'bosses'}
-											data-story="bosses"
-											onClick={onStoryChange}
-											before={<Icon28PawOutline />}
-											description="Cписки боссов"
-										>Боссы</RichCell>
-										<RichCell
-											className="RichCell--Context"
-											disabled={activeStory === 'arena'}
-											data-story="arena"
-											onClick={onStoryChange}
-											before={<Icon28Smiles2Outline />}
-											description="Сезоны, сундуки"
-											// after={isEmbedded&&<Counter size="s" mode="prominent">НОВОЕ</Counter>}
-										>Арена</RichCell>
-										<RichCell
-											className="RichCell--Context"
-											disabled={activeStory === 'character'}
-											data-story="character"
-											onClick={onStoryChange}
-											before={<Icon28IncognitoOutline />}
-											description="Питомцы, достижения"
-										>Персонаж</RichCell>
-										<RichCell
-											className="RichCell--Context"
-											disabled={activeStory === 'guild'}
-											data-story="guild"
-											onClick={onStoryChange}
-											before={<Icon28Users3Outline />} 
-											description="Кузница, набеги"
-										>Гильдия</RichCell>
-										<RichCell
-											className="RichCell--Context"
-											disabled={activeStory === 'other'}
-											data-story="other"
-											onClick={onStoryChange}
-											before={<Icon28GridSquareOutline />} 
-											description="События, лотерея"
-											// after={isEmbedded&&<Counter size="s" mode="prominent">НОВОЕ</Counter>}
-										>Разное</RichCell>
-										<Spacing separator size={16} />
-										<RichCell
-											className="RichCell--Context"
-											onClick={() => this.setTheme(true)}
-											before={theme == 'bright_light' ? <Icon28MoonOutline/> : <Icon28SunOutline/>}
-											description={theme == 'bright_light' ? 'Установлена светлая тема' : 'Установлена тёмная тема'}
-										>{theme == 'bright_light' ? 'Тёмная тема' : 'Светлая тема'}</RichCell>
-									</Group>
-								</Panel>
-							</SplitCol>
-						)}
-						<SplitCol animate={!isDesktop} spaced={isDesktop} width={isDesktop && activeStory ? '560px' : '100%'} maxWidth={isDesktop && activeStory ? '560px' : '100%'}>
-							<Epic activeStory={activeStory} tabbar={!isDesktop && activeStory &&
-								<Tabbar>
-									<TabbarItem
-										onClick={onStoryChange}
-										selected={['home', 'map', 'bosses', 'arena', 'character', 'guild', 'other'].includes(activeStory)}
+				<SplitLayout style={{ justifyContent: "center" }} popout={popout} modal={modal()}>
+					{isDesktop && activeStory && (
+						<SplitCol fixed width="280px" maxWidth="280px">
+							<Panel id="navigation">
+								<Group>
+									{isEmbedded&&serverStatus&&<React.Fragment>
+									<RichCell
+										disabled
+										className="RichCell--Header"
+										before={<Avatar size={36} src={user && user.vk ? user.vk.photo_200 : 'https://vk.com/images/camera_200.png'}/>}
+										caption={`${server == 1 ? 'Эрмун' : 'Антарес'}, ${isDev ? 'режим разработчика' : isDonut ? 'полный доступ' : 'обычный доступ'}`}
+									>{user && user.vk ? `${user.vk.first_name} ${user.vk.last_name}` : 'Пользователь'}</RichCell>
+									<Spacing size={16} />	
+									</React.Fragment>}
+									<RichCell
+										className="RichCell--Context"
+										disabled={activeStory === 'home'}
 										data-story="home"
-										text="Главная"
-									><Icon28NewsfeedOutline/></TabbarItem>
-									{isEmbedded&&serverStatus&&<TabbarItem
-										indicator={isDonut&&<Badge style={{backgroundColor: 'rgb(255, 174, 38)'}}/>}
 										onClick={onStoryChange}
-										selected={activeStory === 'profile'}
+										before={<Icon28HomeOutline />}
+										description="Новости приложения"
+									>Главная</RichCell>
+									{isEmbedded&&serverStatus && <RichCell
+										className="RichCell--Context"
+										disabled={activeStory === 'profile'}
 										data-story="profile"
-										text={user && user.vk ? `${user.vk.first_name} ${user.vk.last_name}` : 'Пользователь'}
-									><Avatar size={28} src={user && user.vk ? user.vk.photo_200 : 'https://vk.com/images/camera_200.png'}/></TabbarItem>}
-								</Tabbar>
-							}>
+										onClick={onStoryChange}
+										before={<Icon28UserOutline />}
+										// after={<Counter size="s" mode="prominent">НОВОЕ</Counter>}
+									>Мой профиль</RichCell>}
+									<RichCell
+										className="RichCell--Context"
+										disabled={activeStory === 'rating'}
+										data-story="rating"
+										onClick={onStoryChange}
+										before={<Icon28UserCardOutline />}
+										after={<Counter size="s" mode="prominent">НОВОЕ</Counter>}
+									>Рейтинг</RichCell>
+									{/* {isEmbedded && <RichCell
+										className="RichCell--Context"
+										disabled={activePanel === 'tasks'}
+										data-story="tasks"
+										onClick={() => setActivePanel('tasks')}
+										before={<Icon28UserCircleOutline />}
+										after={isEmbedded&&<Counter size="s" mode="prominent">НОВОЕ</Counter>}
+									>Задания</RichCell>} */}
+									<Spacing separator size={16} />
+									<RichCell
+										className="RichCell--Context"
+										disabled={activeStory === 'map'}
+										data-story="map"
+										onClick={onStoryChange}
+										before={<Icon28GlobeOutline />}
+										description="Рейды, приключения"
+									>Карта</RichCell>
+									<RichCell
+										className="RichCell--Context"
+										disabled={activeStory === 'bosses'}
+										data-story="bosses"
+										onClick={onStoryChange}
+										before={<Icon28PawOutline />}
+										description="Cписки боссов"
+									>Боссы</RichCell>
+									<RichCell
+										className="RichCell--Context"
+										disabled={activeStory === 'arena'}
+										data-story="arena"
+										onClick={onStoryChange}
+										before={<Icon28Smiles2Outline />}
+										description="Сезоны, сундуки"
+										// after={isEmbedded&&<Counter size="s" mode="prominent">НОВОЕ</Counter>}
+									>Арена</RichCell>
+									<RichCell
+										className="RichCell--Context"
+										disabled={activeStory === 'character'}
+										data-story="character"
+										onClick={onStoryChange}
+										before={<Icon28IncognitoOutline />}
+										description="Питомцы, достижения"
+									>Персонаж</RichCell>
+									<RichCell
+										className="RichCell--Context"
+										disabled={activeStory === 'guild'}
+										data-story="guild"
+										onClick={onStoryChange}
+										before={<Icon28Users3Outline />} 
+										description="Кузница, набеги"
+									>Гильдия</RichCell>
+									<RichCell
+										className="RichCell--Context"
+										disabled={activeStory === 'other'}
+										data-story="other"
+										onClick={onStoryChange}
+										before={<Icon28GridSquareOutline />} 
+										description="События, лотерея"
+										// after={isEmbedded&&<Counter size="s" mode="prominent">НОВОЕ</Counter>}
+									>Разное</RichCell>
+									<Spacing separator size={16} />
+									<RichCell
+										className="RichCell--Context"
+										onClick={() => this.setTheme(true)}
+										before={theme == 'bright_light' ? <Icon28MoonOutline/> : <Icon28SunOutline/>}
+										description={theme == 'bright_light' ? 'Установлена светлая тема' : 'Установлена тёмная тема'}
+									>{theme == 'bright_light' ? 'Тёмная тема' : 'Светлая тема'}</RichCell>
+									{isEmbedded&&serverStatus&&<Footer style={{display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '8px 0 0 0', cursor: 'pointer', userSelect: 'none', gap: 8}} onClick={() => this.checkServer()}><Icon12OnlineVkmobile/>Задержка сервера {serverStatusTime} мс.</Footer>}
+								</Group>
+							</Panel>
+						</SplitCol>
+					)}
+					<SplitCol animate={!isDesktop} spaced={isDesktop} width={isDesktop && activeStory ? '560px' : '100%'} maxWidth={isDesktop && activeStory ? '560px' : '100%'}>
+						<Epic activeStory={activeStory} tabbar={!isDesktop && activeStory &&
+							<Tabbar>
+								<TabbarItem
+									onClick={onStoryChange}
+									selected={['home', 'map', 'bosses', 'arena', 'character', 'guild', 'other'].includes(activeStory)}
+									data-story="home"
+									text="Главная"
+								><Icon28NewsfeedOutline/></TabbarItem>
+								{isEmbedded&&serverStatus&&<TabbarItem
+									indicator={isDonut&&<Badge style={{backgroundColor: 'rgb(255, 174, 38)'}}/>}
+									onClick={onStoryChange}
+									selected={activeStory === 'profile'}
+									data-story="profile"
+									text={user && user.vk ? `${user.vk.first_name} ${user.vk.last_name}` : 'Пользователь'}
+								><Avatar size={28} src={user && user.vk ? user.vk.photo_200 : 'https://vk.com/images/camera_200.png'}/></TabbarItem>}
+							</Tabbar>
+						}>
 
 
 
-								<View id="home" activePanel={!activePanel ? 'home' : activePanel}>
-									<Panel id="home">
-										{!isDesktop && <PanelHeader className='HeaderFix'><PanelHeaderContent status={`Версия ${wikiVersion}`}>Warlord Helper</PanelHeaderContent></PanelHeader>}
-										<Group separator={isDesktop ? "auto" : "hide"} className="RoundSeparators">
-											{isDesktop && <PanelHeader className='HeaderFix' fixed={false} separator={true}><PanelHeaderContent status={`Версия ${wikiVersion}`}>Warlord Helper</PanelHeaderContent></PanelHeader>}
-											<Gallery 
-												bullets={false} 
-												isDraggable={!isDesktop} 
-												showArrows 
-												className={`Gallery__banners infinityGallery ${!isDesktop&&'isDraggable'}`} 
-												slideWidth={isDesktop?375:318+8} 
-												align="center" 
-												timeout="5000"
-												getRef={this.ref__mainSlider}
-												slideIndex={this.state.mainSlider}
-												onChange={(index) => this.infinityGallery(index, dataMain.banners.length, 'mainSlider', this.ref__mainSlider)}
-											>
-												{[1, 2, 3].map(()=>dataMain.banners.map((data, x) => <Banner actions={<Button href={data.link} target="_blank" size={isDesktop?"l":"s"}>{data.action}</Button>} key={x} className="Gallery__banner" mode="image" size="m" background={<React.Fragment>
-														<Spinner size="large" className="Gallery__bannerPreload" />
-														<div className="Gallery__bannerImage" style={{backgroundImage: `url(${pathImages}${data.icon})`}}/>
-													</React.Fragment>}/>))}
-											</Gallery>
-											{isDesktop && <React.Fragment>
+							<View id="home" activePanel={!activePanel ? 'home' : activePanel}>
+								<Panel id="home">
+									{!isDesktop && <PanelHeader className='HeaderFix'><PanelHeaderContent status={`Версия ${wikiVersion}`}>Warlord Helper</PanelHeaderContent></PanelHeader>}
+									<Group separator={isDesktop ? "auto" : "hide"} className="RoundSeparators">
+										{isDesktop && <PanelHeader className='HeaderFix' fixed={false} separator={true}><PanelHeaderContent status={`Версия ${wikiVersion}`}>Warlord Helper</PanelHeaderContent></PanelHeader>}
+										<Gallery 
+											bullets={false} 
+											isDraggable={!isDesktop} 
+											showArrows 
+											className={`Gallery__banners infinityGallery ${!isDesktop&&'isDraggable'}`} 
+											slideWidth={isDesktop?375:318+8} 
+											align="center" 
+											timeout="5000"
+											getRef={this.ref__mainSlider}
+											slideIndex={this.state.mainSlider}
+											onChange={(index) => this.infinityGallery(index, dataMain.banners.length, 'mainSlider', this.ref__mainSlider)}
+										>
+											{[1, 2, 3].map(()=>dataMain.banners.map((data, x) => <Banner actions={<Button href={data.link} target="_blank" size={isDesktop?"l":"s"}>{data.action}</Button>} key={x} className="Gallery__banner" mode="image" size="m" background={<React.Fragment>
+													<Spinner size="large" className="Gallery__bannerPreload" />
+													<div className="Gallery__bannerImage" style={{backgroundImage: `url(${pathImages}${data.icon})`}}/>
+												</React.Fragment>}/>))}
+										</Gallery>
+										{isDesktop && <React.Fragment>
+											<Spacing size={8}/>
+											<CardGrid size="s" className="CardsNews">
+												{dataMain.news.map((data, x) =>
+													<Card key={x}>
+														<Link href={data.link} target="_blank">
+															<HorizontalCell size='l' header={data.title} subtitle={data.description}>
+																<Avatar size={128} mode='image' style={{
+																	backgroundImage: `url(${pathImages}${data.icon})`
+																}}/>
+															</HorizontalCell>
+														</Link>
+													</Card>
+												)}
+											</CardGrid>
+										</React.Fragment>}
+										{!isDesktop && <React.Fragment>
+											<Spacing size={8}/>
+											<Group>
+												<CardGrid className={`CardsNews withIcon CardGrid--xs`}>
+													<Card data-story="map" onClick={onStoryChange}><HorizontalCell size='l' header="Карта"><Icon28GlobeOutline style={{['--fill']: 'var(--systemBlue)' }}/></HorizontalCell></Card>
+													<Card data-story="bosses" onClick={onStoryChange}><HorizontalCell size='l' header="Боссы"><Icon28PawOutline style={{['--fill']: 'var(--systemRed)' }}/></HorizontalCell></Card>
+													<Card data-story="arena" onClick={onStoryChange}><HorizontalCell size='l' header="Арена"><Icon28Smiles2Outline style={{['--fill']: 'var(--systemOrange)' }}/></HorizontalCell></Card>
+													<Card data-story="character" onClick={onStoryChange}><HorizontalCell size='l' header="Персонаж"><Icon28IncognitoOutline style={{['--fill']: 'var(--systemGreen)' }}/></HorizontalCell></Card>
+													<Card data-story="guild" onClick={onStoryChange}><HorizontalCell size='l' header="Гильдия"><Icon28Users3Outline style={{['--fill']: 'var(--systemYellow)' }}/></HorizontalCell></Card>
+													<Card data-story="other" onClick={onStoryChange}><HorizontalCell size='l' header="Разное"><Icon28GridSquareOutline style={{['--fill']: 'var(--systemPurple)' }}/></HorizontalCell></Card>
+													<Card data-story="rating" onClick={onStoryChange}><HorizontalCell size='l' header="Рейтинг"><Icon28UserCardOutline style={{['--fill']: 'var(--systemIndigo)' }}/></HorizontalCell></Card>
+													<Card><HorizontalCell disabled size='l' header=" "><Icon28GridSquareOutline style={{['--fill']: '#505050' }}/></HorizontalCell></Card>
+												</CardGrid>
+												<Spacing size={16} separator/>
+												<CardGrid className={`CardsNews withIcon CardGrid--xs`}>
+													{isEmbedded&&<Card onClick={() => this.OpenModal('mediaSales')}><HorizontalCell size='l' header="Акция"><Icon28LikeOutline style={{['--fill']: 'var(--systemRed)' }}/></HorizontalCell></Card>}
+													{isEmbedded&&<Card onClick={() => this.OpenModal('donut')}><HorizontalCell size='l' header="Подписка"><Icon28LikeOutline style={{['--fill']: 'var(--systemTeal)' }}/></HorizontalCell></Card>}
+													{isEmbedded&&<Card><Link href={`https://vk.com/@wiki.warlord-authkey`} target="_blank"><HorizontalCell size='l' header="Ключ"><Icon28KeyOutline style={{['--fill']: 'var(--systemTeal)' }}/></HorizontalCell></Link></Card>}
+													<Card><Link href={`https://vk.com/@wiki.warlord-faq`} target="_blank"><HorizontalCell size='l' header="Помощь"><Icon28HelpOutline style={{['--fill']: 'var(--systemTeal)' }}/></HorizontalCell></Link></Card>
+													{!isEmbedded&&<Card><HorizontalCell disabled size='l' header=" "><Icon28GridSquareOutline style={{['--fill']: '#505050' }}/></HorizontalCell></Card>}
+													{!isEmbedded&&<Card><HorizontalCell disabled size='l' header=" "><Icon28GridSquareOutline style={{['--fill']: '#505050' }}/></HorizontalCell></Card>}
+													{!isEmbedded&&<Card><HorizontalCell disabled size='l' header=" "><Icon28GridSquareOutline style={{['--fill']: '#505050' }}/></HorizontalCell></Card>}
+												</CardGrid>
+											</Group>
+											<Spacing size={20*2+8} className="withRound"/>
+											<Group>
 												<Spacing size={8}/>
-												<CardGrid size="s" className="CardsNews">
+												{isEmbedded?<React.Fragment><Title className="Group__Head" level="1" weight="2">Привет, {user && user.vk ? user.vk.first_name : 'Пользователь'}</Title>
+												<Title className="Group__Subhead" level="1" weight="1">новости приложения для тебя</Title>
+												</React.Fragment>:<React.Fragment><Title className="Group__Head" level="1" weight="2">Новости</Title>
+												<Title className="Group__Subhead" level="1" weight="1">новости приложения</Title>
+												</React.Fragment>}
+												<Spacing size={16}/>
+												<CardScroll size="m" className="CardsNews">
 													{dataMain.news.map((data, x) =>
 														<Card key={x}>
 															<Link href={data.link} target="_blank">
@@ -1676,93 +1720,47 @@ const App = withAdaptivity(({ viewWidth }) => {
 															</Link>
 														</Card>
 													)}
-												</CardGrid>
-											</React.Fragment>}
-											{!isDesktop && <React.Fragment>
-												<Spacing size={8}/>
-												<Group>
-													<CardGrid className={`CardsNews withIcon CardGrid--xs`}>
-														<Card data-story="map" onClick={onStoryChange}><HorizontalCell size='l' header="Карта"><Icon28GlobeOutline style={{['--fill']: 'var(--systemBlue)' }}/></HorizontalCell></Card>
-														<Card data-story="bosses" onClick={onStoryChange}><HorizontalCell size='l' header="Боссы"><Icon28PawOutline style={{['--fill']: 'var(--systemRed)' }}/></HorizontalCell></Card>
-														<Card data-story="arena" onClick={onStoryChange}><HorizontalCell size='l' header="Арена"><Icon28Smiles2Outline style={{['--fill']: 'var(--systemOrange)' }}/></HorizontalCell></Card>
-														<Card data-story="character" onClick={onStoryChange}><HorizontalCell size='l' header="Персонаж"><Icon28IncognitoOutline style={{['--fill']: 'var(--systemGreen)' }}/></HorizontalCell></Card>
-														<Card data-story="guild" onClick={onStoryChange}><HorizontalCell size='l' header="Гильдия"><Icon28Users3Outline style={{['--fill']: 'var(--systemYellow)' }}/></HorizontalCell></Card>
-														<Card data-story="other" onClick={onStoryChange}><HorizontalCell size='l' header="Разное"><Icon28GridSquareOutline style={{['--fill']: 'var(--systemPurple)' }}/></HorizontalCell></Card>
-														<Card data-story="rating" onClick={onStoryChange}><HorizontalCell size='l' header="Рейтинг"><Icon28UserCardOutline style={{['--fill']: 'var(--systemIndigo)' }}/></HorizontalCell></Card>
-														<Card><HorizontalCell disabled size='l' header=" "><Icon28GridSquareOutline style={{['--fill']: '#505050' }}/></HorizontalCell></Card>
-													</CardGrid>
-													<Spacing size={16} separator/>
-													<CardGrid className={`CardsNews withIcon CardGrid--xs`}>
-														{isEmbedded&&<Card onClick={() => this.OpenModal('mediaSales')}><HorizontalCell size='l' header="Акция"><Icon28LikeOutline style={{['--fill']: 'var(--systemRed)' }}/></HorizontalCell></Card>}
-														{isEmbedded&&<Card onClick={() => this.OpenModal('donut')}><HorizontalCell size='l' header="Подписка"><Icon28LikeOutline style={{['--fill']: 'var(--systemTeal)' }}/></HorizontalCell></Card>}
-														{isEmbedded&&<Card><Link href={`https://vk.com/@wiki.warlord-authkey`} target="_blank"><HorizontalCell size='l' header="Ключ"><Icon28KeyOutline style={{['--fill']: 'var(--systemTeal)' }}/></HorizontalCell></Link></Card>}
-														<Card><Link href={`https://vk.com/@wiki.warlord-faq`} target="_blank"><HorizontalCell size='l' header="Помощь"><Icon28HelpOutline style={{['--fill']: 'var(--systemTeal)' }}/></HorizontalCell></Link></Card>
-														{!isEmbedded&&<Card><HorizontalCell disabled size='l' header=" "><Icon28GridSquareOutline style={{['--fill']: '#505050' }}/></HorizontalCell></Card>}
-														{!isEmbedded&&<Card><HorizontalCell disabled size='l' header=" "><Icon28GridSquareOutline style={{['--fill']: '#505050' }}/></HorizontalCell></Card>}
-														{!isEmbedded&&<Card><HorizontalCell disabled size='l' header=" "><Icon28GridSquareOutline style={{['--fill']: '#505050' }}/></HorizontalCell></Card>}
-													</CardGrid>
-												</Group>
-												<Spacing size={20*2+8} className="withRound"/>
-												<Group>
-													<Spacing size={8}/>
-													{isEmbedded?<React.Fragment><Title className="Group__Head" level="1" weight="semibold">Привет, {user && user.vk ? user.vk.first_name : 'Пользователь'}</Title>
-													<Title className="Group__Subhead" level="1" weight="regular">новости приложения для тебя</Title>
-													</React.Fragment>:<React.Fragment><Title className="Group__Head" level="1" weight="semibold">Новости</Title>
-													<Title className="Group__Subhead" level="1" weight="regular">новости приложения</Title>
-													</React.Fragment>}
-													<Spacing size={16}/>
-													<CardScroll size="m" className="CardsNews">
-														{dataMain.news.map((data, x) =>
-															<Card key={x}>
-																<Link href={data.link} target="_blank">
-																	<HorizontalCell size='l' header={data.title} subtitle={data.description}>
-																		<Avatar size={128} mode='image' style={{
-																			backgroundImage: `url(${pathImages}${data.icon})`
-																		}}/>
-																	</HorizontalCell>
-																</Link>
-															</Card>
-														)}
-													</CardScroll>
-												</Group>
-											</React.Fragment>}
-										</Group>
-									</Panel>
-									{/* <Tasks 
-										id="tasks"
-										view="home"
-										isDesktop={isDesktop}
-										activeStory={this.state.activeStory}
-										activePanel={this.state.activePanel}
-										setActivePanel={this.setActivePanel}
-										snackbar={this.state.snackbar}
-										openSnackbar={this.openSnackbar}
-										setPopout={(popout) => this.setState({ popout: popout })}
-										Storage={this.Storage}
-										params={{hashParams: hashParams, queryParams: queryParams}}
-									/> */}
-									<Panel id="referals">
-										{!isDesktop && <PanelHeader right={!isEmbedded&&this.getCopy(this.state.activeStory)} left={<PanelHeaderBack onClick={() => setActivePanel('home')}/>}>Рефералы</PanelHeader>}
-										<Group>
-											{isDesktop && <PanelHeader className='HeaderFix' fixed={false} separator={true} left={<PanelHeaderBack onClick={() => setActivePanel('home')}/>} right={isEmbedded&&<PanelHeaderButton onClick={() => bridge.send("VKWebAppCopyText", {"text": `https://vk.com/app7787242#view=${this.state.activeStory}&panel=${this.state.activePanel}`}, this.openSnackbar({text: 'Ссылка на подраздел скопирована', icon: 'done'}))}><Icon28CopyOutline/></PanelHeaderButton>}>Рефералы</PanelHeader>}
-											<Placeholder 
-												icon={<Icon56LikeOutline width="56" height="56" style={{color: 'var(--systemRed)'}}/>}
-												header="В разработке"
-											>
-												Функция ещё не готова,<br/>но совсем скоро всё будет
-											</Placeholder>
-										</Group>
-										{this.state.snackbar}
-									</Panel>
-								</View>
+												</CardScroll>
+											</Group>
+										</React.Fragment>}
+									</Group>
+								</Panel>
+								{/* <Tasks 
+									id="tasks"
+									view="home"
+									isDesktop={isDesktop}
+									activeStory={this.state.activeStory}
+									activePanel={this.state.activePanel}
+									setActivePanel={this.setActivePanel}
+									snackbar={this.state.snackbar}
+									openSnackbar={this.openSnackbar}
+									setPopout={(popout) => this.setState({ popout: popout })}
+									Storage={this.Storage}
+									params={{hashParams: hashParams, queryParams: queryParams}}
+								/> */}
+								<Panel id="referals">
+									{!isDesktop && <PanelHeader right={!isEmbedded&&this.getCopy(this.state.activeStory)} left={<PanelHeaderBack onClick={() => setActivePanel('home')}/>}>Рефералы</PanelHeader>}
+									<Group>
+										{isDesktop && <PanelHeader className='HeaderFix' fixed={false} separator={true} left={<PanelHeaderBack onClick={() => setActivePanel('home')}/>} right={isEmbedded&&<PanelHeaderButton onClick={() => bridge.send("VKWebAppCopyText", {"text": `https://vk.com/app7787242#view=${this.state.activeStory}&panel=${this.state.activePanel}`}, this.openSnackbar({text: 'Ссылка на подраздел скопирована', icon: 'done'}))}><Icon28CopyOutline/></PanelHeaderButton>}>Рефералы</PanelHeader>}
+										<Placeholder 
+											icon={<Icon56LikeOutline width="56" height="56" style={{color: 'var(--systemRed)'}}/>}
+											header="В разработке"
+										>
+											Функция ещё не готова,<br/>но совсем скоро всё будет
+										</Placeholder>
+									</Group>
+									{this.state.snackbar}
+								</Panel>
+							</View>
 
 
 
-								<View id="profile" activePanel={!activePanel ? 'profile' : activePanel}>
-									<Panel id="profile">
-										{!isDesktop && <PanelHeader>Мой профиль</PanelHeader>}
-										{user.vk && <Group>
-											{isDesktop && <PanelHeader className='HeaderFix' fixed={false} separator={true} right={this.getCopy(this.state.activeStory)}>Мой профиль</PanelHeader>}
+							<View id="profile" activePanel={!activePanel ? 'profile' : activePanel}>
+								<Panel id="profile">
+									{!isDesktop && <PanelHeader>Мой профиль</PanelHeader>}
+									{user.vk && <Group>
+										{isDesktop && <PanelHeader className='HeaderFix' fixed={false} separator={true} right={this.getCopy(this.state.activeStory)}>Мой профиль</PanelHeader>}
+										<PullToRefresh onRefresh={this.storeProfilesRefresh} isFetching={this.state.fetching}>
 											<Spacing size={6} />
 											<Gallery
 												getRef={this.storeProfilesRef}
@@ -1777,18 +1775,18 @@ const App = withAdaptivity(({ viewWidth }) => {
 												{isDonut?this.state.storeProfiles.map((item, x) => item.id?<div className={x == this.state.storeProfilesIndex ? "selected" : ""} key={x}>
 														<Avatar size={96} src={this.state.storeProfilesFull[x].photo_200 ? this.state.storeProfilesFull[x].photo_200 : 'https://vk.com/images/camera_200.png'} />
 														<Spacing size={8} />
-														<Title level="2" weight="medium" style={{whiteSpace: "pre-wrap"}}>{this.state.storeProfilesFull[x].first_name ? `${this.state.storeProfilesFull[x].first_name}\n${this.state.storeProfilesFull[x].last_name}` : `Player\n${item.id}`}</Title>
+														<Title level="2" weight="2" style={{whiteSpace: "pre-wrap"}}>{this.state.storeProfilesFull[x].first_name ? `${this.state.storeProfilesFull[x].first_name}\n${this.state.storeProfilesFull[x].last_name}` : `Player\n${item.id}`}</Title>
 														<Text style={{ marginTop: 8, color: 'var(--text_secondary)' }}>королевство {['Эрмун', 'Антарес'][item.server-1]}</Text>
 													</div>:<div key={x}>
 														<Avatar size={96} shadow={false}><Icon56FaceIdOutline/></Avatar>
 														<Spacing size={8} />
-														<Title level="2" weight="medium">Профиль</Title>
+														<Title level="2" weight="2">Профиль</Title>
 														<Link style={{ marginTop: 8, color: 'var(--text_secondary)' }}>Свободный слот</Link>
 													</div>
 												):<div className="selected">
 													<Avatar size={96} src={this.state.storeProfilesFull[0].photo_200 ? this.state.storeProfilesFull[0].photo_200 : 'https://vk.com/images/camera_200.png'} />
 													<Spacing size={8} />
-													<Title level="2" weight="medium" style={{whiteSpace: "pre-wrap"}}>{this.state.storeProfilesFull[0].first_name ? `${this.state.storeProfilesFull[0].first_name}\n${this.state.storeProfilesFull[0].last_name}` : `Player\n${this.state.storeProfilesFull[0].id}`}</Title>
+													<Title level="2" weight="2" style={{whiteSpace: "pre-wrap"}}>{this.state.storeProfilesFull[0].first_name ? `${this.state.storeProfilesFull[0].first_name}\n${this.state.storeProfilesFull[0].last_name}` : `Player\n${this.state.storeProfilesFull[0].id}`}</Title>
 													<Text style={{ marginTop: 8, color: 'var(--text_secondary)' }}>королевство {['Эрмун', 'Антарес'][this.state.storeProfilesFull[0].server-1]}</Text>
 												</div>}
 											</Gallery>
@@ -1825,338 +1823,338 @@ const App = withAdaptivity(({ viewWidth }) => {
 													<span className="Subhead">{numberForm(syncUserGame._ap, ['кубок', 'кубка', 'кубков'])}</span></React.Fragment>}
 												</React.Fragment>}>Арена</SimpleCell>
 											</React.Fragment>
-										</Group>}
-										{this.state.snackbar}
-									</Panel>
-									<PANEL_profile__1 id='1' parent='profile' state={this.state} options={this} syncItems={syncItems} />
-									<PANEL_profile__2 id='2' parent='profile' state={this.state} options={this} syncItems={syncItems} />
-									<PANEL_profile__3 id='3' parent='profile' state={this.state} options={this} syncItems={syncItemsFull} />
-									<PANEL_profile__4 id='4' parent='profile' state={this.state} options={this} dataDonutUser={dataDonutUser} />
-									<PANEL_profile__5 id='5' parent='profile' state={this.state} options={this} />
-									<PANEL_profile__6 id='6' parent='profile' state={this.state} options={this} />
-									<PANEL_profile__7 id='7' parent='profile' state={this.state} options={this} />
-								</View>
+										</PullToRefresh>
+									</Group>}
+									{this.state.snackbar}
+								</Panel>
+								<PANEL_profile__1 id='1' parent='profile' state={this.state} options={this} syncItems={syncItems} />
+								<PANEL_profile__2 id='2' parent='profile' state={this.state} options={this} syncItems={syncItems} />
+								<PANEL_profile__3 id='3' parent='profile' state={this.state} options={this} syncItems={syncItemsFull} />
+								<PANEL_profile__4 id='4' parent='profile' state={this.state} options={this} dataDonutUser={dataDonutUser} />
+								<PANEL_profile__5 id='5' parent='profile' state={this.state} options={this} />
+								<PANEL_profile__6 id='6' parent='profile' state={this.state} options={this} />
+								<PANEL_profile__7 id='7' parent='profile' state={this.state} options={this} />
+							</View>
 
 
 
 
-								<View id="rating" activePanel={!activePanel ? 'rating' : activePanel}>
-									<PANEL_rating id='rating' parent='rating' state={this.state} options={this} setState={this.transmittedSetState} />
-									<PANEL_rating__1 id='1' parent='rating' state={this.state} options={this} />
-								</View>
+							<View id="rating" activePanel={!activePanel ? 'rating' : activePanel}>
+								<PANEL_rating id='rating' parent='rating' state={this.state} options={this} setState={this.transmittedSetState} />
+								<PANEL_rating__1 id='1' parent='rating' state={this.state} options={this} />
+							</View>
 
 
 
 
-								<View id="map" activePanel={!activePanel ? 'map' : activePanel}>
-									<Panel id="map">
-										{!isDesktop && <PanelHeader right={!isEmbedded&&this.getCopy(this.state.activeStory)} left={<PanelHeaderBack onClick={() => this.setState({ activeStory: 'home', activePanel: 'home' })}/>}>Карта</PanelHeader>}
-										<Group>
-											{isDesktop && <PanelHeader className='HeaderFix' fixed={false} separator={true} right={this.getCopy(this.state.activeStory)}>Карта</PanelHeader>}
-											<Gallery bullets={false} showArrows className="Gallery__banners" style={{'--offset': isDesktop?'14px':'24px'}} slideWidth='100%' align="center" timeout="5000">
-												{dataMap.images.map((data, x) => <Banner key={x} className="Gallery__banner --shadow" mode="image" size="m" 
-													header="Информация карты"
-													subheader="Мустафа, обыск, походы, рейды, приключения, районы, захват"
-													background={<React.Fragment>
-														<Spinner size="large" className="Gallery__bannerPreload" />
-														<div className="Gallery__bannerImage" style={{backgroundImage: `url(${pathImages}${data})`}}/>
-													</React.Fragment>}
-												/>)}
-											</Gallery>
-											<React.Fragment>
-												<Spacing size={6} />
-												<SimpleCell onClick={() => setActivePanel('1')} before={<Avatar mode="app" src={`${pathImages}labels/1.png`} />} description="Предметы и цены" expandable indicator={<React.Fragment>
-													<span className="Text">{dataMap.shop.length}</span>
-													<span className="Subhead">{numberForm(dataMap.shop.length, ['вещь', 'вещи', 'вещей'])}</span>
-												</React.Fragment>}>Мустафа</SimpleCell>
-												<SimpleCell onClick={() => setActivePanel('2')} before={<Avatar mode="app" src={`${pathImages}labels/2.png`} />} description="Постройки для обыска" expandable indicator={<React.Fragment>
-													<span className="Text">{dataMap.builds.length}</span>
-													<span className="Subhead">{numberForm(dataMap.builds.length, ['постройка', 'постройки', 'построек'])}</span>
-												</React.Fragment>}>Обыск</SimpleCell>
-												<SimpleCell onClick={() => setActivePanel('3')} before={<Avatar mode="app" src={`${pathImages}labels/3.png`} />} description="Походы и награды" expandable indicator={<React.Fragment>
-													<span className="Text">{dataMap.crusade.points.length}</span>
-													<span className="Subhead">{numberForm(dataMap.crusade.points.length, ['поход', 'похода', 'походов'])}</span>
-												</React.Fragment>}>Походы</SimpleCell>
-												<SimpleCell onClick={() => setActivePanel('4')} before={<Avatar mode="app" src={`${pathImages}labels/4.png`} />} description="Рейды и награды" expandable indicator={<React.Fragment>
-													<span className="Text">{dataMap.raids.length}</span>
-													<span className="Subhead">{numberForm(dataMap.raids.length, ['рейд', 'рейда', 'рейдов'])}</span>
-												</React.Fragment>}>Рейды</SimpleCell>
-												<SimpleCell onClick={() => setActivePanel('5')} before={<Avatar mode="app" src={`${pathImages}labels/5.png`} />} description="Приключения и награды" expandable indicator={<React.Fragment>
-													<span className="Text">{dataMap.adventures.length}</span>
-													<span className="Subhead">{numberForm(dataMap.adventures.length, ['приключение', 'приключения', 'приключений'])}</span>
-												</React.Fragment>}>Приключения</SimpleCell>
-												<SimpleCell onClick={() => setActivePanel('6')} before={<Avatar mode="app" src={`${pathImages}labels/6.png`} />} description="Описания районов" expandable indicator={<React.Fragment>
-													<span className="Text">{dataMap.regions.map((item) => item.items.map(() => 1).reduce((x, y) => x + y)).reduce((x, y) => x + y)}</span>
-													<span className="Subhead">{numberForm(dataMap.regions.map((item) => item.items.map(() => 1).reduce((x, y) => x + y)).reduce((x, y) => x + y), ['район', 'района', 'районов'])}</span>
-												</React.Fragment>}>Районы</SimpleCell>
-												<SimpleCell onClick={() => setActivePanel('7')} before={<Avatar mode="app" src={`${pathImages}labels/7.png`} />} description="Районы для захвата" expandable indicator={<React.Fragment>
-													<span className="Text">{dataMap.capture.length}</span>
-													<span className="Subhead">{numberForm(dataMap.capture.length, ['район', 'района', 'районов'])}</span>
-												</React.Fragment>}>Захват</SimpleCell>
-											</React.Fragment>
-										</Group>
-										{this.state.snackbar}
-									</Panel>
-									<PANEL_map__1 id='1' parent='map' state={this.state} options={this} />
-									<PANEL_map__2 id='2' parent='map' state={this.state} options={this} />
-									<PANEL_map__3 id='3' parent='map' state={this.state} options={this} />
-									<PANEL_map__4 id='4' parent='map' state={this.state} options={this} />
-									<PANEL_map__5 id='5' parent='map' state={this.state} options={this} />
-									<PANEL_map__6 id='6' parent='map' state={this.state} options={this} />
-									<PANEL_map__7 id='7' parent='map' state={this.state} options={this} />
-								</View>
-
-
-
-								<View id="bosses" activePanel={!activePanel ? 'bosses' : activePanel}>
-									<Panel id="bosses">
-										{!isDesktop && <PanelHeader right={!isEmbedded&&this.getCopy(this.state.activeStory)} left={<PanelHeaderBack onClick={() => this.setState({ activeStory: 'home', activePanel: 'home' })}/>}>Боссы</PanelHeader>}
-										<Group>
-											{isDesktop && <PanelHeader className='HeaderFix' fixed={false} separator={true} right={this.getCopy(this.state.activeStory)}>Боссы</PanelHeader>}
-											<Gallery bullets={false} showArrows className="Gallery__banners" style={{'--offset': isDesktop?'14px':'24px'}} slideWidth='100%' align="center" timeout="5000">
-												{dataBosses.images.map((data, x) => <Banner key={x} className="Gallery__banner --shadow" mode="image" size="m" 
-													header="Информация боссов"
-													subheader="Калькулятор, список боссов"
-													background={<React.Fragment>
-														<Spinner size="large" className="Gallery__bannerPreload" />
-														<div className="Gallery__bannerImage" style={{backgroundImage: `url(${pathImages}${data})`}}/>
-													</React.Fragment>}
-												/>)}
-											</Gallery>
-											<React.Fragment>
-												<Spacing size={6} />
-												{isEmbedded&&serverStatus&&<SimpleCell onClick={() => setActivePanel('1', true)} before={<Avatar mode="app" src={`${pathImages}labels/8.png`} />} description="Затраты на убийство боссов" expandable indicator={<React.Fragment>
-													<span className="Text">{!isDonut&&<Icon28DonateCircleFillYellow width={24} height={24}/>}</span>
-												</React.Fragment>}>Калькулятор</SimpleCell>}
-												<SimpleCell onClick={() => setActivePanel('2')} before={<Avatar mode="app" src={`${pathImages}labels/29.png`} />} description="Боссы и награды" expandable indicator={<React.Fragment>
-													<span className="Text">{dataBosses.bosses.map((item) => item.mobs.map(() => 1).reduce((x, y) => x + y)).reduce((x, y) => x + y)}</span>
-													<span className="Subhead">{numberForm(dataBosses.bosses.map((item) => item.mobs.map(() => 1).reduce((x, y) => x + y)).reduce((x, y) => x + y), ['босс', 'босса', 'боссов'])}</span>
-												</React.Fragment>}>Список боссов</SimpleCell>
-											</React.Fragment>
-										</Group>
-										{this.state.snackbar}
-									</Panel>
-									<PANEL_bosses__1 id='1' parent='bosses' state={this.state} options={this} game={syncUserGame} />
-									<PANEL_bosses__2 id='2' parent='bosses' state={this.state} options={this} />
-								</View>
-
-
-
-
-								<View id="arena" activePanel={!activePanel ? 'arena' : activePanel}>
-									<Panel id="arena">
-										{!isDesktop && <PanelHeader right={!isEmbedded&&this.getCopy(this.state.activeStory)} left={<PanelHeaderBack onClick={() => this.setState({ activeStory: 'home', activePanel: 'home' })}/>}>Арена</PanelHeader>}
-										<Group>
-											{isDesktop && <PanelHeader className='HeaderFix' fixed={false} separator={true} right={this.getCopy(this.state.activeStory)}>Арена</PanelHeader>}
-											<Gallery bullets={false} showArrows className="Gallery__banners" style={{'--offset': isDesktop?'14px':'24px'}} slideWidth='100%' align="center" timeout="5000">
-												{dataArena.images.map((data, x) => <Banner key={x} className="Gallery__banner --shadow" mode="image" size="m" 
-													header="Информация арены"
-													subheader="Калькулятор, сезоны, лиги, сундуки"
-													background={<React.Fragment>
-														<Spinner size="large" className="Gallery__bannerPreload" />
-														<div className="Gallery__bannerImage" style={{backgroundImage: `url(${pathImages}${data})`}}/>
-													</React.Fragment>}
-												/>)}
-											</Gallery>
-											<React.Fragment>
-												<Spacing size={6} />
-												{isEmbedded&&serverStatus&&<React.Fragment>
-													<SimpleCell onClick={() => this.OpenModal('mediaArenaItems')} before={<Icon28GraphOutline/>} expandable>Анализ сезонов</SimpleCell>
-													<Spacing separator size={12} />
+							<View id="map" activePanel={!activePanel ? 'map' : activePanel}>
+								<Panel id="map">
+									{!isDesktop && <PanelHeader right={!isEmbedded&&this.getCopy(this.state.activeStory)} left={<PanelHeaderBack onClick={() => this.setState({ activeStory: 'home', activePanel: 'home' })}/>}>Карта</PanelHeader>}
+									<Group>
+										{isDesktop && <PanelHeader className='HeaderFix' fixed={false} separator={true} right={this.getCopy(this.state.activeStory)}>Карта</PanelHeader>}
+										<Gallery bullets={false} showArrows className="Gallery__banners" style={{'--offset': isDesktop?'14px':'24px'}} slideWidth='100%' align="center" timeout="5000">
+											{dataMap.images.map((data, x) => <Banner key={x} className="Gallery__banner --shadow" mode="image" size="m" 
+												header="Информация карты"
+												subheader="Мустафа, обыск, походы, рейды, приключения, районы, захват"
+												background={<React.Fragment>
+													<Spinner size="large" className="Gallery__bannerPreload" />
+													<div className="Gallery__bannerImage" style={{backgroundImage: `url(${pathImages}${data})`}}/>
 												</React.Fragment>}
-												{isEmbedded&&serverStatus&&<SimpleCell onClick={() => setActivePanel('1', true)} before={<Avatar mode="app" src={`${pathImages}labels/8.png`} />} description="Затраты на прохождение арены" expandable indicator={<React.Fragment>
-													<span className="Text">{!isDonut&&<Icon28DonateCircleFillYellow width={24} height={24}/>}</span>
-												</React.Fragment>}>Калькулятор</SimpleCell>}
-												<SimpleCell onClick={() => setActivePanel('2')} before={<Avatar mode="app" src={`${pathImages}labels/9.png`} />} description="Сезоны и награды" expandable indicator={<React.Fragment>
-													<span className="Text">{dataArena.season.map((item) => item.month.map(() => 1).reduce((x, y) => x + y)).reduce((x, y) => x + y)}</span>
-													<span className="Subhead">{numberForm(dataArena.season.map((item) => item.month.map(() => 1).reduce((x, y) => x + y)).reduce((x, y) => x + y), ['сезон', 'сезона', 'сезонов'])}</span>
-												</React.Fragment>}>Сезоны</SimpleCell>
-												<SimpleCell onClick={() => setActivePanel('3')} before={<Avatar mode="app" src={`${pathImages}labels/10.png`} />} description="Лиги и награды" expandable indicator={<React.Fragment>
-													<span className="Text">{dataArena.league.length}</span>
-													<span className="Subhead">{numberForm(dataArena.league.length, ['лига', 'лиги', 'лиг'])}</span>
-												</React.Fragment>}>Лиги</SimpleCell>
-												<SimpleCell onClick={() => setActivePanel('4')} before={<Avatar mode="app" src={`${pathImages}labels/11.png`} />} description="Сундуки и награды" expandable indicator={<React.Fragment>
-													<span className="Text">{dataArena.chest.length}</span>
-													<span className="Subhead">{numberForm(dataArena.chest.length, ['сундук', 'сундука', 'сундуков'])}</span>
-												</React.Fragment>}>Сундуки</SimpleCell>
-											</React.Fragment>
-										</Group>
-										{this.state.snackbar}
-									</Panel>
-									<PANEL_arena__1 id='1' parent='arena' state={this.state} options={this} />
-									<PANEL_arena__2 id='2' parent='arena' state={this.state} options={this} />
-									<PANEL_arena__3 id='3' parent='arena' state={this.state} options={this} />
-									<PANEL_arena__4 id='4' parent='arena' state={this.state} options={this} />
-								</View>
+											/>)}
+										</Gallery>
+										<React.Fragment>
+											<Spacing size={6} />
+											<SimpleCell onClick={() => setActivePanel('1')} before={<Avatar mode="app" src={`${pathImages}labels/1.png`} />} description="Предметы и цены" expandable indicator={<React.Fragment>
+												<span className="Text">{dataMap.shop.length}</span>
+												<span className="Subhead">{numberForm(dataMap.shop.length, ['вещь', 'вещи', 'вещей'])}</span>
+											</React.Fragment>}>Мустафа</SimpleCell>
+											<SimpleCell onClick={() => setActivePanel('2')} before={<Avatar mode="app" src={`${pathImages}labels/2.png`} />} description="Постройки для обыска" expandable indicator={<React.Fragment>
+												<span className="Text">{dataMap.builds.length}</span>
+												<span className="Subhead">{numberForm(dataMap.builds.length, ['постройка', 'постройки', 'построек'])}</span>
+											</React.Fragment>}>Обыск</SimpleCell>
+											<SimpleCell onClick={() => setActivePanel('3')} before={<Avatar mode="app" src={`${pathImages}labels/3.png`} />} description="Походы и награды" expandable indicator={<React.Fragment>
+												<span className="Text">{dataMap.crusade.points.length}</span>
+												<span className="Subhead">{numberForm(dataMap.crusade.points.length, ['поход', 'похода', 'походов'])}</span>
+											</React.Fragment>}>Походы</SimpleCell>
+											<SimpleCell onClick={() => setActivePanel('4')} before={<Avatar mode="app" src={`${pathImages}labels/4.png`} />} description="Рейды и награды" expandable indicator={<React.Fragment>
+												<span className="Text">{dataMap.raids.length}</span>
+												<span className="Subhead">{numberForm(dataMap.raids.length, ['рейд', 'рейда', 'рейдов'])}</span>
+											</React.Fragment>}>Рейды</SimpleCell>
+											<SimpleCell onClick={() => setActivePanel('5')} before={<Avatar mode="app" src={`${pathImages}labels/5.png`} />} description="Приключения и награды" expandable indicator={<React.Fragment>
+												<span className="Text">{dataMap.adventures.length}</span>
+												<span className="Subhead">{numberForm(dataMap.adventures.length, ['приключение', 'приключения', 'приключений'])}</span>
+											</React.Fragment>}>Приключения</SimpleCell>
+											<SimpleCell onClick={() => setActivePanel('6')} before={<Avatar mode="app" src={`${pathImages}labels/6.png`} />} description="Описания районов" expandable indicator={<React.Fragment>
+												<span className="Text">{dataMap.regions.map((item) => item.items.map(() => 1).reduce((x, y) => x + y)).reduce((x, y) => x + y)}</span>
+												<span className="Subhead">{numberForm(dataMap.regions.map((item) => item.items.map(() => 1).reduce((x, y) => x + y)).reduce((x, y) => x + y), ['район', 'района', 'районов'])}</span>
+											</React.Fragment>}>Районы</SimpleCell>
+											<SimpleCell onClick={() => setActivePanel('7')} before={<Avatar mode="app" src={`${pathImages}labels/7.png`} />} description="Районы для захвата" expandable indicator={<React.Fragment>
+												<span className="Text">{dataMap.capture.length}</span>
+												<span className="Subhead">{numberForm(dataMap.capture.length, ['район', 'района', 'районов'])}</span>
+											</React.Fragment>}>Захват</SimpleCell>
+										</React.Fragment>
+									</Group>
+									{this.state.snackbar}
+								</Panel>
+								<PANEL_map__1 id='1' parent='map' state={this.state} options={this} />
+								<PANEL_map__2 id='2' parent='map' state={this.state} options={this} />
+								<PANEL_map__3 id='3' parent='map' state={this.state} options={this} />
+								<PANEL_map__4 id='4' parent='map' state={this.state} options={this} />
+								<PANEL_map__5 id='5' parent='map' state={this.state} options={this} />
+								<PANEL_map__6 id='6' parent='map' state={this.state} options={this} />
+								<PANEL_map__7 id='7' parent='map' state={this.state} options={this} />
+							</View>
 
 
 
-
-								<View id="character" activePanel={!activePanel ? 'character' : activePanel}>
-									<Panel id="character">
-										{!isDesktop && <PanelHeader right={!isEmbedded&&this.getCopy(this.state.activeStory)} left={<PanelHeaderBack onClick={() => this.setState({ activeStory: 'home', activePanel: 'home' })}/>}>Персонаж</PanelHeader>}
-										<Group>
-											{isDesktop && <PanelHeader className='HeaderFix' fixed={false} separator={true} right={this.getCopy(this.state.activeStory)}>Персонаж</PanelHeader>}
-											<Gallery bullets={false} showArrows className="Gallery__banners" style={{'--offset': isDesktop?'14px':'24px'}} slideWidth='100%' align="center" timeout="5000">
-												{dataCharacter.images.map((data, x) => <Banner key={x} className="Gallery__banner --shadow" mode="image" size="m" 
-													header="Информация персонажа"
-													subheader="Таланты, достижения, ресурсы, питомцы, аватары, фоны"
-													background={<React.Fragment>
-														<Spinner size="large" className="Gallery__bannerPreload" />
-														<div className="Gallery__bannerImage" style={{backgroundImage: `url(${pathImages}${data})`}}/>
-													</React.Fragment>}
-												/>)}
-											</Gallery>
-											<React.Fragment>
-												<Spacing size={6} />
-												<SimpleCell onClick={() => setActivePanel('1')} before={<Avatar mode="app" src={`${pathImages}labels/12.png`} />} description="Таланты персонажа" expandable indicator={<React.Fragment>
-													<span className="Text">{dataCharacter.talents.length}</span>
-													<span className="Subhead">{numberForm(dataCharacter.talents.length, ['талант', 'таланта', 'талантов'])}</span>
-												</React.Fragment>}>Таланты</SimpleCell>
-												<SimpleCell onClick={() => setActivePanel('2')} before={<Avatar mode="app" src={`${pathImages}labels/13.png`} />} description="Достижения и их условия" expandable indicator={<React.Fragment>
-													<span className="Text">{dataCharacter.achievements.map((item) => item.items.map(() => 1).reduce((x, y) => x + y)).reduce((x, y) => x + y)}</span>
-													<span className="Subhead">{numberForm(dataCharacter.achievements.map((item) => item.items.map(() => 1).reduce((x, y) => x + y)).reduce((x, y) => x + y), ['достижение', 'достижения', 'достижений'])}</span>
-												</React.Fragment>}>Достижения</SimpleCell>
-												<SimpleCell onClick={() => setActivePanel('3')} before={<Avatar mode="app" src={`${pathImages}labels/14.png`} />} description="Ресурсы и их получение" expandable indicator={<React.Fragment>
-													<span className="Text">{dataCharacter.resources.length}</span>
-													<span className="Subhead">{numberForm(dataCharacter.resources.length, ['ресурс', 'ресурса', 'ресурсов'])}</span>
-												</React.Fragment>}>Ресурсы</SimpleCell>
-												<SimpleCell onClick={() => setActivePanel('4')} before={<Avatar mode="app" src={`${pathImages}labels/15.png`} />} description="Питомцы и награды" expandable indicator={<React.Fragment>
-													<span className="Text">{dataCharacter.pets.length}</span>
-													<span className="Subhead">{numberForm(dataCharacter.pets.length, ['питомец', 'питомеца', 'питомецев'])}</span>
-												</React.Fragment>}>Питомцы</SimpleCell>
-												<SimpleCell onClick={() => setActivePanel('6')} before={<Avatar mode="app" src={`${pathImages}labels/16.png`} />} description="Аватары и их получение" expandable indicator={<React.Fragment>
-													<span className="Text">{dataCharacter.avatars.length}</span>
-													<span className="Subhead">{numberForm(dataCharacter.avatars.length, ['аватар', 'аватара', 'аватаров'])}</span>
-												</React.Fragment>}>Аватары</SimpleCell>
-												<SimpleCell onClick={() => setActivePanel('5')} before={<Avatar mode="app" src={`${pathImages}labels/17.png`} />} description="Фоны и их получение" expandable indicator={<React.Fragment>
-													<span className="Text">{dataCharacter.backgrounds.length}</span>
-													<span className="Subhead">{numberForm(dataCharacter.backgrounds.length, ['фон', 'фона', 'фонов'])}</span>
-												</React.Fragment>}>Фоны</SimpleCell>
-											</React.Fragment>
-										</Group>
-										{this.state.snackbar}
-									</Panel>
-									<PANEL_character__1 id='1' parent='character' state={this.state} options={this} />
-									<PANEL_character__2 id='2' parent='character' state={this.state} options={this} />
-									<PANEL_character__3 id='3' parent='character' state={this.state} options={this} />
-									<PANEL_character__4 id='4' parent='character' state={this.state} options={this} />
-									<PANEL_character__5 id='5' parent='character' state={this.state} options={this} />
-									<PANEL_character__6 id='6' parent='character' state={this.state} options={this} />
-								</View>
-
-
-
-
-								<View id="guild" activePanel={!activePanel ? 'guild' : activePanel}>
-									<Panel id="guild">
-									{!isDesktop && <PanelHeader right={!isEmbedded&&this.getCopy(this.state.activeStory)} left={<PanelHeaderBack onClick={() => this.setState({ activeStory: 'home', activePanel: 'home' })}/>}>Гильдия</PanelHeader>}
-										<Group>
-											{isDesktop && <PanelHeader className='HeaderFix' fixed={false} separator={true} right={this.getCopy(this.state.activeStory)}>Гильдия</PanelHeader>}
-											<Gallery bullets={false} showArrows className="Gallery__banners" style={{'--offset': isDesktop?'14px':'24px'}} slideWidth='100%' align="center" timeout="5000">
-												{dataGuild.images.map((data, x) => <Banner key={x} className="Gallery__banner --shadow" mode="image" size="m" 
-													header="Информация гильдии"
-													subheader="Калькулятор, улучшения, кузница, академия, набеги, рейды"
-													background={<React.Fragment>
-														<Spinner size="large" className="Gallery__bannerPreload" />
-														<div className="Gallery__bannerImage" style={{backgroundImage: `url(${pathImages}${data})`}}/>
-													</React.Fragment>}
-												/>)}
-											</Gallery>
-											<React.Fragment>
-												<Spacing size={6} />
-												{isEmbedded&&serverStatus&&<SimpleCell onClick={() => setActivePanel('1', true)} before={<Avatar mode="app" src={`${pathImages}labels/18.png`} />} description="Затраты на казну гильдии" expandable indicator={<React.Fragment>
-													<span className="Text">{!isDonut&&<Icon28DonateCircleFillYellow width={24} height={24}/>}</span>
-												</React.Fragment>}>Калькулятор</SimpleCell>}
-												<SimpleCell onClick={() => setActivePanel('2')} before={<Avatar mode="app" src={`${pathImages}labels/19.png`} />} description="Улучшения и их уровни" expandable indicator={<React.Fragment>
-													<span className="Text">{dataGuild.builds.length}</span>
-													<span className="Subhead">{numberForm(dataGuild.builds.length, ['постройка', 'постройки', 'построек'])}</span>
-												</React.Fragment>}>Улучшения</SimpleCell>
-												<SimpleCell onClick={() => setActivePanel('3')} before={<Avatar mode="app" src={`${pathImages}labels/20.png`} />} description="Экипировка и цены" expandable indicator={<React.Fragment>
-													<span className="Text">{dataGuild.items.length}</span>
-													<span className="Subhead">{numberForm(dataGuild.items.length, ['вещь', 'вещи', 'вещей'])}</span>
-												</React.Fragment>}>Кузница</SimpleCell>
-												<SimpleCell onClick={() => setActivePanel('4')} before={<Avatar mode="app" src={`${pathImages}labels/21.png`} />} description="Навыки и их уровни" expandable indicator={<React.Fragment>
-													<span className="Text">{dataGuild.academy.length}</span>
-													<span className="Subhead">{numberForm(dataGuild.academy.length, ['навык', 'навыка', 'навыков'])}</span>
-												</React.Fragment>}>Академия</SimpleCell>
-												<SimpleCell onClick={() => setActivePanel('5')} before={<Avatar mode="app" src={`${pathImages}labels/22.png`} />} description="Набеги и награды" expandable indicator={<React.Fragment>
-													<span className="Text">{dataGuild.raids.length}</span>
-													<span className="Subhead">{numberForm(dataGuild.raids.length, ['набег', 'набега', 'набегов'])}</span>
-												</React.Fragment>}>Набеги</SimpleCell>
-												<SimpleCell onClick={() => setActivePanel('6')} before={<Avatar mode="app" src={`${pathImages}labels/23.png`} />} description="Рейды и награды" expandable indicator={<React.Fragment>
-													<span className="Text">{dataGuild.bosses.length}</span>
-													<span className="Subhead">{numberForm(dataGuild.bosses.length, ['рейд', 'рейда', 'рейдов'])}</span>
-												</React.Fragment>}>Рейды</SimpleCell>
-											</React.Fragment>
-										</Group>
-										{this.state.snackbar}
-									</Panel>
-									<PANEL_guild__1 id='1' parent='guild' state={this.state} options={this} />
-									<PANEL_guild__2 id='2' parent='guild' state={this.state} options={this} />
-									<PANEL_guild__3 id='3' parent='guild' state={this.state} options={this} />
-									<PANEL_guild__4 id='4' parent='guild' state={this.state} options={this} />
-									<PANEL_guild__5 id='5' parent='guild' state={this.state} options={this} />
-									<PANEL_guild__6 id='6' parent='guild' state={this.state} options={this} />
-								</View>
-
-
-
-								
-								<View id="other" activePanel={!activePanel ? 'other' : activePanel}>
-									<Panel id="other">
-									{!isDesktop && <PanelHeader right={!isEmbedded&&this.getCopy(this.state.activeStory)} left={<PanelHeaderBack onClick={() => this.setState({ activeStory: 'home', activePanel: 'home' })}/>}>Разное</PanelHeader>}
-										<Group>
-											{isDesktop && <PanelHeader className='HeaderFix' fixed={false} separator={true} right={this.getCopy(this.state.activeStory)}>Разное</PanelHeader>}
-											<Gallery bullets={false} showArrows className="Gallery__banners" style={{'--offset': isDesktop?'14px':'24px'}} slideWidth='100%' align="center" timeout="5000">
-												{dataOther.images.map((data, x) => <Banner key={x} className="Gallery__banner --shadow" mode="image" size="m" 
-													header="Прочая информация"
-													subheader="Калькулятор, новые предметы, события, лотерея, обыск друзей"
-													background={<React.Fragment>
-														<Spinner size="large" className="Gallery__bannerPreload" />
-														<div className="Gallery__bannerImage" style={{backgroundImage: `url(${pathImages}${data})`}}/>
-													</React.Fragment>}
-												/>)}
-											</Gallery>
-											<React.Fragment>
-												<Spacing size={6} />
-												{isEmbedded&&serverStatus&&<React.Fragment>
-													<SimpleCell onClick={() => this.OpenModal('mediaEventsItems')} before={<Icon28GraphOutline/>} expandable>Анализ ивентов</SimpleCell>
-													<Spacing separator size={12} />
+							<View id="bosses" activePanel={!activePanel ? 'bosses' : activePanel}>
+								<Panel id="bosses">
+									{!isDesktop && <PanelHeader right={!isEmbedded&&this.getCopy(this.state.activeStory)} left={<PanelHeaderBack onClick={() => this.setState({ activeStory: 'home', activePanel: 'home' })}/>}>Боссы</PanelHeader>}
+									<Group>
+										{isDesktop && <PanelHeader className='HeaderFix' fixed={false} separator={true} right={this.getCopy(this.state.activeStory)}>Боссы</PanelHeader>}
+										<Gallery bullets={false} showArrows className="Gallery__banners" style={{'--offset': isDesktop?'14px':'24px'}} slideWidth='100%' align="center" timeout="5000">
+											{dataBosses.images.map((data, x) => <Banner key={x} className="Gallery__banner --shadow" mode="image" size="m" 
+												header="Информация боссов"
+												subheader="Калькулятор, список боссов"
+												background={<React.Fragment>
+													<Spinner size="large" className="Gallery__bannerPreload" />
+													<div className="Gallery__bannerImage" style={{backgroundImage: `url(${pathImages}${data})`}}/>
 												</React.Fragment>}
-												{isEmbedded&&serverStatus&&<SimpleCell onClick={() => setActivePanel('1', true)} before={<Avatar mode="app" src={`${pathImages}labels/26.png`} />} description="Затраты на улучшение предмета" expandable indicator={<React.Fragment>
-													<span className="Text">{!isDonut&&<Icon28DonateCircleFillYellow width={24} height={24}/>}</span>
-												</React.Fragment>}>Калькулятор</SimpleCell>}
-												{isEmbedded&&serverStatus&&<SimpleCell onClick={() => setActivePanel('5', true)} before={<Avatar mode="app" src={`${pathImages}labels/20.png`} />} description="Последние добавленные вещи" expandable indicator={<React.Fragment>
-													{!isDonut ? <span className="Text"><Icon28DonateCircleFillYellow width={24} height={24}/></span> : <React.Fragment><span className="Text">{dataOther.new.length}</span>
-													<span className="Subhead">{numberForm(dataOther.new.length, ['вещь', 'вещи', 'вещей'])}</span></React.Fragment>}
-												</React.Fragment>}>Новые предметы</SimpleCell>}
-												<SimpleCell onClick={() => setActivePanel('3')} before={<Avatar mode="app" src={`${pathImages}labels/28.png`} />} description="Ивенты и награды" expandable indicator={<React.Fragment>
-													<span className="Text">{dataOther.events.map((item) => item.items.map(() => 1).reduce((x, y) => x + y)).reduce((x, y) => x + y)}</span>
-													<span className="Subhead">{numberForm(dataOther.events.map((item) => item.items.map(() => 1).reduce((x, y) => x + y)).reduce((x, y) => x + y), ['событие', 'события', 'событий'])}</span>
-												</React.Fragment>}>События</SimpleCell>
-												<SimpleCell onClick={() => setActivePanel('2')} before={<Avatar mode="app" src={`${pathImages}labels/27.png`} />} description="Награды с лото" expandable indicator={<React.Fragment>
-													<span className="Text">{dataOther.lottery.length}</span>
-													<span className="Subhead">{numberForm(dataOther.lottery.length, ['вещь', 'вещи', 'вещей'])}</span>
-												</React.Fragment>}>Лотерея</SimpleCell>
-												<SimpleCell onClick={() => setActivePanel('4')} before={<Avatar mode="app" src={`${pathImages}labels/30.png`} />} description="Награды с обыска" expandable indicator={<React.Fragment>
-													<span className="Text">{dataOther.search.length}</span>
-													<span className="Subhead">{numberForm(dataOther.search.length, ['вещь', 'вещи', 'вещей'])}</span>
-												</React.Fragment>}>Обыск друзей</SimpleCell>
-											</React.Fragment>
-										</Group>
-										{this.state.snackbar}
-									</Panel>
-									<PANEL_other__1 id='1' parent='other' state={this.state} options={this} />
-									<PANEL_other__2 id='2' parent='other' state={this.state} options={this} />
-									<PANEL_other__3 id='3' parent='other' state={this.state} options={this} />
-									<PANEL_other__4 id='4' parent='other' state={this.state} options={this} />
-									<PANEL_other__5 id='5' parent='other' state={this.state} options={this} />
-								</View>
-							</Epic>
-						</SplitCol>
-					</SplitLayout>
-				</AppearanceProvider>
+											/>)}
+										</Gallery>
+										<React.Fragment>
+											<Spacing size={6} />
+											{isEmbedded&&serverStatus&&<SimpleCell onClick={() => setActivePanel('1', true)} before={<Avatar mode="app" src={`${pathImages}labels/8.png`} />} description="Затраты на убийство боссов" expandable indicator={<React.Fragment>
+												<span className="Text">{!isDonut&&<Icon28DonateCircleFillYellow width={24} height={24}/>}</span>
+											</React.Fragment>}>Калькулятор</SimpleCell>}
+											<SimpleCell onClick={() => setActivePanel('2')} before={<Avatar mode="app" src={`${pathImages}labels/29.png`} />} description="Боссы и награды" expandable indicator={<React.Fragment>
+												<span className="Text">{dataBosses.bosses.map((item) => item.mobs.map(() => 1).reduce((x, y) => x + y)).reduce((x, y) => x + y)}</span>
+												<span className="Subhead">{numberForm(dataBosses.bosses.map((item) => item.mobs.map(() => 1).reduce((x, y) => x + y)).reduce((x, y) => x + y), ['босс', 'босса', 'боссов'])}</span>
+											</React.Fragment>}>Список боссов</SimpleCell>
+										</React.Fragment>
+									</Group>
+									{this.state.snackbar}
+								</Panel>
+								<PANEL_bosses__1 id='1' parent='bosses' state={this.state} options={this} game={syncUserGame} />
+								<PANEL_bosses__2 id='2' parent='bosses' state={this.state} options={this} />
+							</View>
+
+
+
+
+							<View id="arena" activePanel={!activePanel ? 'arena' : activePanel}>
+								<Panel id="arena">
+									{!isDesktop && <PanelHeader right={!isEmbedded&&this.getCopy(this.state.activeStory)} left={<PanelHeaderBack onClick={() => this.setState({ activeStory: 'home', activePanel: 'home' })}/>}>Арена</PanelHeader>}
+									<Group>
+										{isDesktop && <PanelHeader className='HeaderFix' fixed={false} separator={true} right={this.getCopy(this.state.activeStory)}>Арена</PanelHeader>}
+										<Gallery bullets={false} showArrows className="Gallery__banners" style={{'--offset': isDesktop?'14px':'24px'}} slideWidth='100%' align="center" timeout="5000">
+											{dataArena.images.map((data, x) => <Banner key={x} className="Gallery__banner --shadow" mode="image" size="m" 
+												header="Информация арены"
+												subheader="Калькулятор, сезоны, лиги, сундуки"
+												background={<React.Fragment>
+													<Spinner size="large" className="Gallery__bannerPreload" />
+													<div className="Gallery__bannerImage" style={{backgroundImage: `url(${pathImages}${data})`}}/>
+												</React.Fragment>}
+											/>)}
+										</Gallery>
+										<React.Fragment>
+											<Spacing size={6} />
+											{isEmbedded&&serverStatus&&<React.Fragment>
+												<SimpleCell onClick={() => this.OpenModal('mediaArenaItems')} before={<Icon28GraphOutline/>} expandable>Анализ сезонов</SimpleCell>
+												<Spacing separator size={12} />
+											</React.Fragment>}
+											{isEmbedded&&serverStatus&&<SimpleCell onClick={() => setActivePanel('1', true)} before={<Avatar mode="app" src={`${pathImages}labels/8.png`} />} description="Затраты на прохождение арены" expandable indicator={<React.Fragment>
+												<span className="Text">{!isDonut&&<Icon28DonateCircleFillYellow width={24} height={24}/>}</span>
+											</React.Fragment>}>Калькулятор</SimpleCell>}
+											<SimpleCell onClick={() => setActivePanel('2')} before={<Avatar mode="app" src={`${pathImages}labels/9.png`} />} description="Сезоны и награды" expandable indicator={<React.Fragment>
+												<span className="Text">{dataArena.season.map((item) => item.month.map(() => 1).reduce((x, y) => x + y)).reduce((x, y) => x + y)}</span>
+												<span className="Subhead">{numberForm(dataArena.season.map((item) => item.month.map(() => 1).reduce((x, y) => x + y)).reduce((x, y) => x + y), ['сезон', 'сезона', 'сезонов'])}</span>
+											</React.Fragment>}>Сезоны</SimpleCell>
+											<SimpleCell onClick={() => setActivePanel('3')} before={<Avatar mode="app" src={`${pathImages}labels/10.png`} />} description="Лиги и награды" expandable indicator={<React.Fragment>
+												<span className="Text">{dataArena.league.length}</span>
+												<span className="Subhead">{numberForm(dataArena.league.length, ['лига', 'лиги', 'лиг'])}</span>
+											</React.Fragment>}>Лиги</SimpleCell>
+											<SimpleCell onClick={() => setActivePanel('4')} before={<Avatar mode="app" src={`${pathImages}labels/11.png`} />} description="Сундуки и награды" expandable indicator={<React.Fragment>
+												<span className="Text">{dataArena.chest.length}</span>
+												<span className="Subhead">{numberForm(dataArena.chest.length, ['сундук', 'сундука', 'сундуков'])}</span>
+											</React.Fragment>}>Сундуки</SimpleCell>
+										</React.Fragment>
+									</Group>
+									{this.state.snackbar}
+								</Panel>
+								<PANEL_arena__1 id='1' parent='arena' state={this.state} options={this} />
+								<PANEL_arena__2 id='2' parent='arena' state={this.state} options={this} />
+								<PANEL_arena__3 id='3' parent='arena' state={this.state} options={this} />
+								<PANEL_arena__4 id='4' parent='arena' state={this.state} options={this} />
+							</View>
+
+
+
+
+							<View id="character" activePanel={!activePanel ? 'character' : activePanel}>
+								<Panel id="character">
+									{!isDesktop && <PanelHeader right={!isEmbedded&&this.getCopy(this.state.activeStory)} left={<PanelHeaderBack onClick={() => this.setState({ activeStory: 'home', activePanel: 'home' })}/>}>Персонаж</PanelHeader>}
+									<Group>
+										{isDesktop && <PanelHeader className='HeaderFix' fixed={false} separator={true} right={this.getCopy(this.state.activeStory)}>Персонаж</PanelHeader>}
+										<Gallery bullets={false} showArrows className="Gallery__banners" style={{'--offset': isDesktop?'14px':'24px'}} slideWidth='100%' align="center" timeout="5000">
+											{dataCharacter.images.map((data, x) => <Banner key={x} className="Gallery__banner --shadow" mode="image" size="m" 
+												header="Информация персонажа"
+												subheader="Таланты, достижения, ресурсы, питомцы, аватары, фоны"
+												background={<React.Fragment>
+													<Spinner size="large" className="Gallery__bannerPreload" />
+													<div className="Gallery__bannerImage" style={{backgroundImage: `url(${pathImages}${data})`}}/>
+												</React.Fragment>}
+											/>)}
+										</Gallery>
+										<React.Fragment>
+											<Spacing size={6} />
+											<SimpleCell onClick={() => setActivePanel('1')} before={<Avatar mode="app" src={`${pathImages}labels/12.png`} />} description="Таланты персонажа" expandable indicator={<React.Fragment>
+												<span className="Text">{dataCharacter.talents.length}</span>
+												<span className="Subhead">{numberForm(dataCharacter.talents.length, ['талант', 'таланта', 'талантов'])}</span>
+											</React.Fragment>}>Таланты</SimpleCell>
+											<SimpleCell onClick={() => setActivePanel('2')} before={<Avatar mode="app" src={`${pathImages}labels/13.png`} />} description="Достижения и их условия" expandable indicator={<React.Fragment>
+												<span className="Text">{dataCharacter.achievements.map((item) => item.items.map(() => 1).reduce((x, y) => x + y)).reduce((x, y) => x + y)}</span>
+												<span className="Subhead">{numberForm(dataCharacter.achievements.map((item) => item.items.map(() => 1).reduce((x, y) => x + y)).reduce((x, y) => x + y), ['достижение', 'достижения', 'достижений'])}</span>
+											</React.Fragment>}>Достижения</SimpleCell>
+											<SimpleCell onClick={() => setActivePanel('3')} before={<Avatar mode="app" src={`${pathImages}labels/14.png`} />} description="Ресурсы и их получение" expandable indicator={<React.Fragment>
+												<span className="Text">{dataCharacter.resources.length}</span>
+												<span className="Subhead">{numberForm(dataCharacter.resources.length, ['ресурс', 'ресурса', 'ресурсов'])}</span>
+											</React.Fragment>}>Ресурсы</SimpleCell>
+											<SimpleCell onClick={() => setActivePanel('4')} before={<Avatar mode="app" src={`${pathImages}labels/15.png`} />} description="Питомцы и награды" expandable indicator={<React.Fragment>
+												<span className="Text">{dataCharacter.pets.length}</span>
+												<span className="Subhead">{numberForm(dataCharacter.pets.length, ['питомец', 'питомеца', 'питомецев'])}</span>
+											</React.Fragment>}>Питомцы</SimpleCell>
+											<SimpleCell onClick={() => setActivePanel('6')} before={<Avatar mode="app" src={`${pathImages}labels/16.png`} />} description="Аватары и их получение" expandable indicator={<React.Fragment>
+												<span className="Text">{dataCharacter.avatars.length}</span>
+												<span className="Subhead">{numberForm(dataCharacter.avatars.length, ['аватар', 'аватара', 'аватаров'])}</span>
+											</React.Fragment>}>Аватары</SimpleCell>
+											<SimpleCell onClick={() => setActivePanel('5')} before={<Avatar mode="app" src={`${pathImages}labels/17.png`} />} description="Фоны и их получение" expandable indicator={<React.Fragment>
+												<span className="Text">{dataCharacter.backgrounds.length}</span>
+												<span className="Subhead">{numberForm(dataCharacter.backgrounds.length, ['фон', 'фона', 'фонов'])}</span>
+											</React.Fragment>}>Фоны</SimpleCell>
+										</React.Fragment>
+									</Group>
+									{this.state.snackbar}
+								</Panel>
+								<PANEL_character__1 id='1' parent='character' state={this.state} options={this} />
+								<PANEL_character__2 id='2' parent='character' state={this.state} options={this} />
+								<PANEL_character__3 id='3' parent='character' state={this.state} options={this} />
+								<PANEL_character__4 id='4' parent='character' state={this.state} options={this} />
+								<PANEL_character__5 id='5' parent='character' state={this.state} options={this} />
+								<PANEL_character__6 id='6' parent='character' state={this.state} options={this} />
+							</View>
+
+
+
+
+							<View id="guild" activePanel={!activePanel ? 'guild' : activePanel}>
+								<Panel id="guild">
+								{!isDesktop && <PanelHeader right={!isEmbedded&&this.getCopy(this.state.activeStory)} left={<PanelHeaderBack onClick={() => this.setState({ activeStory: 'home', activePanel: 'home' })}/>}>Гильдия</PanelHeader>}
+									<Group>
+										{isDesktop && <PanelHeader className='HeaderFix' fixed={false} separator={true} right={this.getCopy(this.state.activeStory)}>Гильдия</PanelHeader>}
+										<Gallery bullets={false} showArrows className="Gallery__banners" style={{'--offset': isDesktop?'14px':'24px'}} slideWidth='100%' align="center" timeout="5000">
+											{dataGuild.images.map((data, x) => <Banner key={x} className="Gallery__banner --shadow" mode="image" size="m" 
+												header="Информация гильдии"
+												subheader="Калькулятор, улучшения, кузница, академия, набеги, рейды"
+												background={<React.Fragment>
+													<Spinner size="large" className="Gallery__bannerPreload" />
+													<div className="Gallery__bannerImage" style={{backgroundImage: `url(${pathImages}${data})`}}/>
+												</React.Fragment>}
+											/>)}
+										</Gallery>
+										<React.Fragment>
+											<Spacing size={6} />
+											{isEmbedded&&serverStatus&&<SimpleCell onClick={() => setActivePanel('1', true)} before={<Avatar mode="app" src={`${pathImages}labels/18.png`} />} description="Затраты на казну гильдии" expandable indicator={<React.Fragment>
+												<span className="Text">{!isDonut&&<Icon28DonateCircleFillYellow width={24} height={24}/>}</span>
+											</React.Fragment>}>Калькулятор</SimpleCell>}
+											<SimpleCell onClick={() => setActivePanel('2')} before={<Avatar mode="app" src={`${pathImages}labels/19.png`} />} description="Улучшения и их уровни" expandable indicator={<React.Fragment>
+												<span className="Text">{dataGuild.builds.length}</span>
+												<span className="Subhead">{numberForm(dataGuild.builds.length, ['постройка', 'постройки', 'построек'])}</span>
+											</React.Fragment>}>Улучшения</SimpleCell>
+											<SimpleCell onClick={() => setActivePanel('3')} before={<Avatar mode="app" src={`${pathImages}labels/20.png`} />} description="Экипировка и цены" expandable indicator={<React.Fragment>
+												<span className="Text">{dataGuild.items.length}</span>
+												<span className="Subhead">{numberForm(dataGuild.items.length, ['вещь', 'вещи', 'вещей'])}</span>
+											</React.Fragment>}>Кузница</SimpleCell>
+											<SimpleCell onClick={() => setActivePanel('4')} before={<Avatar mode="app" src={`${pathImages}labels/21.png`} />} description="Навыки и их уровни" expandable indicator={<React.Fragment>
+												<span className="Text">{dataGuild.academy.length}</span>
+												<span className="Subhead">{numberForm(dataGuild.academy.length, ['навык', 'навыка', 'навыков'])}</span>
+											</React.Fragment>}>Академия</SimpleCell>
+											<SimpleCell onClick={() => setActivePanel('5')} before={<Avatar mode="app" src={`${pathImages}labels/22.png`} />} description="Набеги и награды" expandable indicator={<React.Fragment>
+												<span className="Text">{dataGuild.raids.length}</span>
+												<span className="Subhead">{numberForm(dataGuild.raids.length, ['набег', 'набега', 'набегов'])}</span>
+											</React.Fragment>}>Набеги</SimpleCell>
+											<SimpleCell onClick={() => setActivePanel('6')} before={<Avatar mode="app" src={`${pathImages}labels/23.png`} />} description="Рейды и награды" expandable indicator={<React.Fragment>
+												<span className="Text">{dataGuild.bosses.length}</span>
+												<span className="Subhead">{numberForm(dataGuild.bosses.length, ['рейд', 'рейда', 'рейдов'])}</span>
+											</React.Fragment>}>Рейды</SimpleCell>
+										</React.Fragment>
+									</Group>
+									{this.state.snackbar}
+								</Panel>
+								<PANEL_guild__1 id='1' parent='guild' state={this.state} options={this} />
+								<PANEL_guild__2 id='2' parent='guild' state={this.state} options={this} />
+								<PANEL_guild__3 id='3' parent='guild' state={this.state} options={this} />
+								<PANEL_guild__4 id='4' parent='guild' state={this.state} options={this} />
+								<PANEL_guild__5 id='5' parent='guild' state={this.state} options={this} />
+								<PANEL_guild__6 id='6' parent='guild' state={this.state} options={this} />
+							</View>
+
+
+
+							
+							<View id="other" activePanel={!activePanel ? 'other' : activePanel}>
+								<Panel id="other">
+								{!isDesktop && <PanelHeader right={!isEmbedded&&this.getCopy(this.state.activeStory)} left={<PanelHeaderBack onClick={() => this.setState({ activeStory: 'home', activePanel: 'home' })}/>}>Разное</PanelHeader>}
+									<Group>
+										{isDesktop && <PanelHeader className='HeaderFix' fixed={false} separator={true} right={this.getCopy(this.state.activeStory)}>Разное</PanelHeader>}
+										<Gallery bullets={false} showArrows className="Gallery__banners" style={{'--offset': isDesktop?'14px':'24px'}} slideWidth='100%' align="center" timeout="5000">
+											{dataOther.images.map((data, x) => <Banner key={x} className="Gallery__banner --shadow" mode="image" size="m" 
+												header="Прочая информация"
+												subheader="Калькулятор, новые предметы, события, лотерея, обыск друзей"
+												background={<React.Fragment>
+													<Spinner size="large" className="Gallery__bannerPreload" />
+													<div className="Gallery__bannerImage" style={{backgroundImage: `url(${pathImages}${data})`}}/>
+												</React.Fragment>}
+											/>)}
+										</Gallery>
+										<React.Fragment>
+											<Spacing size={6} />
+											{isEmbedded&&serverStatus&&<React.Fragment>
+												<SimpleCell onClick={() => this.OpenModal('mediaEventsItems')} before={<Icon28GraphOutline/>} expandable>Анализ ивентов</SimpleCell>
+												<Spacing separator size={12} />
+											</React.Fragment>}
+											{isEmbedded&&serverStatus&&<SimpleCell onClick={() => setActivePanel('1', true)} before={<Avatar mode="app" src={`${pathImages}labels/26.png`} />} description="Затраты на улучшение предмета" expandable indicator={<React.Fragment>
+												<span className="Text">{!isDonut&&<Icon28DonateCircleFillYellow width={24} height={24}/>}</span>
+											</React.Fragment>}>Калькулятор</SimpleCell>}
+											{isEmbedded&&serverStatus&&<SimpleCell onClick={() => setActivePanel('5', true)} before={<Avatar mode="app" src={`${pathImages}labels/20.png`} />} description="Последние добавленные вещи" expandable indicator={<React.Fragment>
+												{!isDonut ? <span className="Text"><Icon28DonateCircleFillYellow width={24} height={24}/></span> : <React.Fragment><span className="Text">{dataOther.new.length}</span>
+												<span className="Subhead">{numberForm(dataOther.new.length, ['вещь', 'вещи', 'вещей'])}</span></React.Fragment>}
+											</React.Fragment>}>Новые предметы</SimpleCell>}
+											<SimpleCell onClick={() => setActivePanel('3')} before={<Avatar mode="app" src={`${pathImages}labels/28.png`} />} description="Ивенты и награды" expandable indicator={<React.Fragment>
+												<span className="Text">{dataOther.events.map((item) => item.items.map(() => 1).reduce((x, y) => x + y)).reduce((x, y) => x + y)}</span>
+												<span className="Subhead">{numberForm(dataOther.events.map((item) => item.items.map(() => 1).reduce((x, y) => x + y)).reduce((x, y) => x + y), ['событие', 'события', 'событий'])}</span>
+											</React.Fragment>}>События</SimpleCell>
+											<SimpleCell onClick={() => setActivePanel('2')} before={<Avatar mode="app" src={`${pathImages}labels/27.png`} />} description="Награды с лото" expandable indicator={<React.Fragment>
+												<span className="Text">{dataOther.lottery.length}</span>
+												<span className="Subhead">{numberForm(dataOther.lottery.length, ['вещь', 'вещи', 'вещей'])}</span>
+											</React.Fragment>}>Лотерея</SimpleCell>
+											<SimpleCell onClick={() => setActivePanel('4')} before={<Avatar mode="app" src={`${pathImages}labels/30.png`} />} description="Награды с обыска" expandable indicator={<React.Fragment>
+												<span className="Text">{dataOther.search.length}</span>
+												<span className="Subhead">{numberForm(dataOther.search.length, ['вещь', 'вещи', 'вещей'])}</span>
+											</React.Fragment>}>Обыск друзей</SimpleCell>
+										</React.Fragment>
+									</Group>
+									{this.state.snackbar}
+								</Panel>
+								<PANEL_other__1 id='1' parent='other' state={this.state} options={this} />
+								<PANEL_other__2 id='2' parent='other' state={this.state} options={this} />
+								<PANEL_other__3 id='3' parent='other' state={this.state} options={this} />
+								<PANEL_other__4 id='4' parent='other' state={this.state} options={this} />
+								<PANEL_other__5 id='5' parent='other' state={this.state} options={this} />
+							</View>
+						</Epic>
+					</SplitCol>
+				</SplitLayout>
 			);
 		};
 	};
@@ -2164,9 +2162,8 @@ const App = withAdaptivity(({ viewWidth }) => {
 	window.innerHeight = window.innerHeight;
 	// return <ConfigProvider platform={isDesktop ? 'ios' : usePlatform()}><Wiki/></ConfigProvider>;
 	
-	// return <ConfigProvider appearance={!isDesktop&&useAppearance()} platform='ios' webviewType='internal'><Wiki/></ConfigProvider>;
 	
-	return <ConfigProvider platform='ios' webviewType='internal'><Wiki/></ConfigProvider>;
+	return <ConfigProvider scheme="inherit" platform='ios' webviewType='internal'><Wiki/></ConfigProvider>;
 }, {
 	viewWidth: true
 });
