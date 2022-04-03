@@ -102,7 +102,7 @@ class PANEL extends React.Component {
 						<CardGrid size="l">
 							<Select
 								value={this.state.itemId}
-								searchable={true}
+								// searchable={true}
 								style={{width: '100%'}}
 								onChange={(e) => this.setState({ itemId: Number(e.target.value) }, async() => this.setState({ item: await this.getEnchStats(Items[this.state.itemId]) }))}
 								placeholder="Не выбран"
