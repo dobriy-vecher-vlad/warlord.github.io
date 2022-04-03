@@ -1,7 +1,7 @@
 import bridge from "@vkontakte/vk-bridge";
 import X2JS from './xml2js.js';
 import React from 'react';
-import ReactDOM from 'react-dom';
+import * as ReactDOM from 'react-dom/client';
 import {
 	CardGrid,
 	Card,
@@ -70,9 +70,7 @@ import {
 	Icon28DonateCircleFillYellow,
 	Icon28ListCircleFillGray,
 	Icon28NewsfeedOutline,
-	Icon28DonateOutline,
 	Icon28HelpOutline,
-	Icon28MessagesOutline,
 	Icon28LikeOutline,
 	Icon56LikeOutline,
 	Icon28CopyOutline,
@@ -80,7 +78,6 @@ import {
 	Icon28PinOutline,
 	Icon56FaceIdOutline,
 	Icon28GraphOutline,
-	Icon56MessageReadOutline,
 	Icon28KeyOutline,
 	Icon28UserCardOutline,
 	Icon28UserOutline,
@@ -137,7 +134,7 @@ const islocalStorage = (() => {
 })();
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
-const wikiVersion = '1.5.9';
+const wikiVersion = '1.6.0';
 const pathImages = 'https://dobriy-vecher-vlad.github.io/warlord-helper/media/images/';
 
 
@@ -277,7 +274,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 			try {
 				let data = await fetch(link);
 				data = await data.text();
-				if (data == 'Err. More than 1 request per second') {
+				if (data == 'Err. More than 1 request per second' || data == 'Too many requests per second.') {
 					await wait(1000);
 					return await getData(type, link);
 				}
@@ -1375,7 +1372,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 				message: hashParams
 			}]);
 			await (isDesktop || !isEmbedded) && setTheme();
-			await checkServer();
+			if (isEmbedded) await checkServer();
 			if (isEmbedded && serverStatus) {
 				if (!hashParams) hashParams = {"": undefined};
 				if (Object.keys(hashParams).indexOf('dev') != -1) {
@@ -1611,7 +1608,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 										before={theme == 'bright_light' ? <Icon28MoonOutline/> : <Icon28SunOutline/>}
 										description={theme == 'bright_light' ? 'Установлена светлая тема' : 'Установлена тёмная тема'}
 									>{theme == 'bright_light' ? 'Тёмная тема' : 'Светлая тема'}</RichCell>
-									{isEmbedded&&serverStatus&&<Footer style={{display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '8px 0 0 0', cursor: 'pointer', userSelect: 'none', gap: 8}} onClick={() => this.checkServer()}><Icon12OnlineVkmobile/>Задержка сервера {serverStatusTime} мс.</Footer>}
+									{isEmbedded&&serverStatus&&<Footer style={{display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '8px 0 0 0', cursor: 'pointer', userSelect: 'none', gap: 8, color: serverStatusTime<50?'var(--dynamic_green)':serverStatusTime<150?'var(--dynamic_orange)':'var(--dynamic_red)'}} onClick={() => this.checkServer()}><Icon12OnlineVkmobile/>Задержка сервера {serverStatusTime} мс.</Footer>}
 								</Group>
 							</Panel>
 						</SplitCol>
@@ -2168,8 +2165,8 @@ const App = withAdaptivity(({ viewWidth }) => {
 	viewWidth: true
 });
 
-ReactDOM.render(<AdaptivityProvider><AppRoot><App/></AppRoot></AdaptivityProvider>, document.getElementById('root'));
+ReactDOM.createRoot(document.getElementById('root')).render(<AdaptivityProvider><AppRoot><App/></AppRoot></AdaptivityProvider>);
 
-if (islocalStorage && process?.env?.NODE_ENV === "development") {
-	import("./eruda").then(({ default: eruda }) => {});
-}
+// if (islocalStorage && process?.env?.NODE_ENV === "development") {
+// 	import("./eruda").then(({ default: eruda }) => {});
+// }

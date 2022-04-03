@@ -1230,6 +1230,12 @@ div.Scroll::-webkit-scrollbar-track {
 .Card__Item .Card__imageTitle:nth-child(2) {
 	top: calc(10px + 22px);
 }
+.Card__Item .RichCell__after {
+	position: absolute;
+	right: 0;
+	top: 50%;
+	transform: translateY(-50%);
+}
 
 
 .Tabs .TabsItem__in {

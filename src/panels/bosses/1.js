@@ -279,7 +279,7 @@ class PANEL extends React.Component {
 					{state.isDesktop ? <CardGrid size="m" style={{display: 'flex', flexWrap: 'nowrap', flexDirection: 'row', alignItems: 'center', gap: 8}}>
 						<Select
 							value={newBossID}
-							searchable
+							searchable={true}
 							onChange={(e) => {newBossID = e.target.value, this.CalcBoss()}}
 							placeholder="Не выбран" 
 							options={this.state.newBossArray.map((data, x) => ({ label: data.name, description: data.description, value: Bosses.indexOf(data), avatar: `${pathImages}${data.icon}` }))}
@@ -301,7 +301,7 @@ class PANEL extends React.Component {
 						<Select
 							style={{width: '50%'}}
 							value={newBossID}
-							searchable
+							searchable={true}
 							onChange={(e) => {newBossID = e.target.value, this.CalcBoss()}}
 							placeholder="Не выбран" 
 							options={this.state.newBossArray.map((data, x) => ({ label: data.name, description: data.description, value: Bosses.indexOf(data), avatar: `${pathImages}${data.icon}` }))}

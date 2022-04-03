@@ -46,7 +46,7 @@ class PANEL extends React.Component {
 		}).replace(/(\d*).(\d*).(\d*)/g, '$3.$2.$1');
 		do {
 			let time = this._isMounted && getTime();
-			let dataRating = this._isMounted && await getData(`https://dobriy-vecher-vlad.github.io/warlord-admin/data/users/${time}.json`);
+			let dataRating = this._isMounted && await getData(`https://dobriy-vecher-vlad.github.io/warlord/data/users/${time}.json`);
 			if (dataRating) rating = {
 				users: dataRating.sort((a, b) => {
 					if (Array.isArray(b[this.props.state.ratingMode]) && Array.isArray(a[this.props.state.ratingMode])) {
