@@ -22,7 +22,7 @@
     "react-scripts": "^5.0.0"
   },
   "dependencies": {
-    "@vkontakte/icons": "^1.147.0",
+    "@vkontakte/icons": "^1.149.0",
     "@vkontakte/vk-bridge": "^2.5.3",
     "@vkontakte/vk-tunnel": "^0.1.0",
     "@vkontakte/vkui": "^4.28.1",
