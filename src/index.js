@@ -293,16 +293,14 @@ const App = withAdaptivity(({ viewWidth }) => {
 		}
 	}
 
-	if (!isDesktop) {
-		bridge.subscribe(({ detail: { type, data }}) => {
-			if (type === 'VKWebAppUpdateConfig') {
-				const schemeAttribute = document.createAttribute('scheme');
-				schemeAttribute.value = data.scheme ? data.scheme : 'client_light';
-				document.body.attributes.setNamedItem(schemeAttribute);
-			}
-		});
-		bridge.send("VKWebAppInit");
-	};
+	bridge.subscribe(({ detail: { type, data }}) => {
+		if (type === 'VKWebAppUpdateConfig') {
+			const schemeAttribute = document.createAttribute('scheme');
+			schemeAttribute.value = data.scheme ? data.scheme : 'client_light';
+			document.body.attributes.setNamedItem(schemeAttribute);
+		}
+	});
+	bridge.send("VKWebAppInit");
 
 	const getParseBosses = async() => {
 		let xml = `<bosses></bosses>`;
