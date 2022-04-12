@@ -293,13 +293,15 @@ const App = withAdaptivity(({ viewWidth }) => {
 		}
 	}
 
-	bridge.subscribe(({ detail: { type, data }}) => {
-		if (type === 'VKWebAppUpdateConfig') {
-			const schemeAttribute = document.createAttribute('scheme');
-			schemeAttribute.value = data.scheme ? data.scheme : 'client_light';
-			document.body.attributes.setNamedItem(schemeAttribute);
-		}
-	});
+	if (!isDesktop) {
+		bridge.subscribe(({ detail: { type, data }}) => {
+			if (type === 'VKWebAppUpdateConfig') {
+				const schemeAttribute = document.createAttribute('scheme');
+				schemeAttribute.value = data.scheme ? data.scheme : 'client_light';
+				document.body.attributes.setNamedItem(schemeAttribute);
+			}
+		});
+	}
 	bridge.send("VKWebAppInit");
 
 	const getParseBosses = async() => {
