@@ -559,12 +559,12 @@ class PANEL extends React.Component {
 								</Card>
 							</CardGrid>
 							<Spacing size={8} />
-							<CardGrid size={state.isDesktop ? "m" : "l"} onChange={(e) => this._isMounted && this.updateSelect(e)}>
+							<CardGrid size="m" onChange={(e) => this._isMounted && this.updateSelect(e)}>
 								<Card className='DescriptionCardWiki Clear'>
-									<Radio name="skipMode" disabled={syncBot.isStart} value="1" description="Тратит 4 энергии">Использовать энергию</Radio>
+									<Radio name="skipMode" disabled={syncBot.isStart} value="1" description="Тратит 4 энергии">Энергия</Radio>
 								</Card>
 								<Card className='DescriptionCardWiki Clear'>
-									<Radio name="skipMode" disabled={syncBot.isStart} value="2" description={`Тратит ${["0", "10", "30", "50", "90", "150", "250", "350", "500", "650"][syncBot.arena.player._al]} золота и 16 кубков`} defaultChecked>Использовать золото</Radio>
+									<Radio name="skipMode" disabled={syncBot.isStart} value="2" description={`Тратит ${["0", "10", "30", "50", "90", "150", "250", "350", "500", "650"][syncBot.arena.player._al]} золота и 16 кубков`} defaultChecked>Золото</Radio>
 								</Card>
 							</CardGrid>
 						</div>
@@ -647,14 +647,14 @@ class PANEL extends React.Component {
 									<Card className='DescriptionCardWiki Clear'>
 										<Skeleton height={state.isDesktop?36:44} width={state.isDesktop ? 268 : "auto"}/>
 									</Card>
+									<Card className='DescriptionCardWiki Clear'>
+										<Skeleton height={state.isDesktop?36:44} width={state.isDesktop ? 268 : "auto"}/>
+									</Card>
 								</React.Fragment>:<React.Fragment>
 									<Card className='DescriptionCardWiki Clear'>
 										<Skeleton height={68} width="auto"/>
 									</Card>
 								</React.Fragment>}
-								<Card className='DescriptionCardWiki Clear'>
-									<Skeleton height={state.isDesktop?36:44} width={state.isDesktop ? 268 : "auto"}/>
-								</Card>
 								<Card className='DescriptionCardWiki Clear'>
 									<Skeleton height={state.isDesktop?36:44} width={state.isDesktop ? 268 : "auto"}/>
 								</Card>

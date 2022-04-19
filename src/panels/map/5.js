@@ -13,6 +13,7 @@ import {
 } from '@vkontakte/vkui';
 
 import dataMap from '../../data/map.json';
+import dataArena from '../../data/arena.json';
 import { Icon12ChevronOutline } from '@vkontakte/icons';
 
 class PANEL extends React.Component {
@@ -52,7 +53,23 @@ class PANEL extends React.Component {
 					{dataMap.adventures.map((data, x) =>
 						<div className="Horizontal__cellsWrap" key={x}>
 							{x!=0&&<Spacing separator size={16} />}
-							<Header aside={<Link id={`modal_${x+1}`} onClick={() => options.OpenModal(`description`, (data.scrolls.modal = x+1, data.scrolls), 6)}>Посмотреть заточки <Icon12ChevronOutline/></Link>}>{data.title}</Header>
+							<Header aside={<Link id={`modal_${x+1}`} onClick={() => options.OpenModal(`description`, (data.scrolls.modal = x+1, 
+								{...data.scrolls, 
+									items: [
+										data.floors.map(data => 
+											data.items.map(item => 
+												({id: item.id, scroll: true})
+											)[0]
+										)
+									][0].concat(dataArena.season.map(season => 
+										season.month.map(month => 
+											month.items.map(item => 
+												({id: item.id, scroll: true})
+											)
+										)
+									).flat(2))
+								}
+							), 6)}>Посмотреть заточки <Icon12ChevronOutline/></Link>}>{data.title}</Header>
 							<CardScroll size="s" className="Horizontal__Cells">
 								{data.floors.map((data, y) => {
 									return <Card key={y} id={`modal_${x+1}${y+1}`} onClick={() => options.OpenModal(`description`, (data.modal = Number((x+1)+""+(y+1)), data), 5)}>

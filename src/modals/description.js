@@ -138,7 +138,7 @@ class MODAL extends React.Component {
 					<DescriptionCell label={`Открытие за энергию`} text={`${data.open[0][0]} за ${data.open[0][1]}`}/>
 					<DescriptionCell label={`Открытие за рубины`} text={`${data.open[1][0]} за ${data.open[1][1]}`}/>
 					<Spacing separator size={16} />
-					{options.getSort(data.items).map((item, x) => {
+					{options?.getSort(data.items)?.map((item, x) => {
 						if ((state.checkItems.item && item.item) || (state.checkItems.collection && item.collection && !item.personal) || (state.checkItems.scroll && item.scroll) || (state.checkItems.personal && item.personal)) {
 							return options.getItemCell(item, x);
 						}
@@ -165,7 +165,7 @@ class MODAL extends React.Component {
 					<Spacing separator size={16} />
 					<Cell href={`${pathImages}${data.icon}`} target="_blank" className="DescriptionCellButton" before={<Icon24ChainOutline />} description="Ссылка" expandable>Изображение похода</Cell>
 					<Spacing separator size={16} />
-					{options.getSort(data.items).map((item, x) => {
+					{options?.getSort(data.items)?.map((item, x) => {
 						if ((state.checkItems.item && item.item) || (state.checkItems.collection && item.collection && !item.personal) || (state.checkItems.scroll && item.scroll) || (state.checkItems.personal && item.personal)) {
 							return options.getItemCell(item, x);
 						}
@@ -193,7 +193,7 @@ class MODAL extends React.Component {
 					})}
 					</CardGrid>
 					<Spacing separator size={16} />
-					{options.getSort(data.items).map((item, x) => {
+					{options?.getSort(data.items)?.map((item, x) => {
 						if ((state.checkItems.item && item.item) || (state.checkItems.collection && item.collection && !item.personal) || (state.checkItems.scroll && item.scroll) || (state.checkItems.personal && item.personal)) {
 							return options.getItemCell(item, x);
 						}
@@ -210,7 +210,7 @@ class MODAL extends React.Component {
 			>
 				<Div>
 					{!state.isDesktop?<Spacing size={8} />:<DescriptionHeader avatar={`${pathImages}${data.icon}`} state={state} options={options} data={data} header={data.title} description="Карта — Приключения"/>}
-					{options.getSort(data.items).map((item, x) => {
+					{options?.getSort(data.items)?.map((item, x) => {
 						if ((state.checkItems.item && item.item) || (state.checkItems.collection && item.collection && !item.personal) || (state.checkItems.scroll && item.scroll) || (state.checkItems.personal && item.personal)) {
 							return options.getItemCell(item, x);
 						}
@@ -226,7 +226,8 @@ class MODAL extends React.Component {
 				header={<ModalHeader state={state} options={options} data={data} header={data.title} description="Карта — Приключения"/>}
 			>
 				<Div>
-					{options.getSort(data.items).map((item, x) => {
+					{options?.getSort(data.items)?.map((item, x) => {
+						if (!item) return;
 						if ((state.checkItems.item && item.item) || (state.checkItems.collection && item.collection && !item.personal) || (state.checkItems.scroll && item.scroll) || (state.checkItems.personal && item.personal)) {
 							return options.getItemCell(item, x);
 						}
@@ -331,7 +332,7 @@ class MODAL extends React.Component {
 						</CardGrid>
 					</React.Fragment>}
 					<Spacing separator size={16} />
-					{options.getSort(data.items).map((item, x) => {
+					{options?.getSort(data.items)?.map((item, x) => {
 						if ((state.checkItems.item && item.item) || (state.checkItems.collection && item.collection && !item.personal) || (state.checkItems.scroll && item.scroll) || (state.checkItems.personal && item.personal)) {
 							return options.getItemCell(item, x);
 						}
@@ -354,7 +355,7 @@ class MODAL extends React.Component {
 			>
 				<Div>
 					{!state.isDesktop?<Spacing size={8} />:<DescriptionHeader avatar={`${pathImages}${data.icon}`} state={state} options={options} data={data} header={data.name} description="Арена — Сезоны"/>}
-					{options.getSort(data.items).map((item, x) => {
+					{options?.getSort(data.items)?.map((item, x) => {
 						if ((state.checkItems.item && item.item) || (state.checkItems.collection && item.collection && !item.personal) || (state.checkItems.scroll && item.scroll) || (state.checkItems.personal && item.personal)) {
 							return options.getItemCell(item, x);
 						}
@@ -391,7 +392,7 @@ class MODAL extends React.Component {
 					<DescriptionCell label={`Время, требуемое на открытие сундука`} text={options.getTime(data.time)}/>
 					<DescriptionCell label={`Стоимость моментального открытия сундука`} text={`${options.numberSpaces(data.skip)} ${options.numberForm(data.skip, ['рубин', 'рубина', 'рубинов'])}`}/>
 					<Spacing separator size={16} />
-					{options.getSort(data.items).map((item, x) => {
+					{options?.getSort(data.items)?.map((item, x) => {
 						if ((state.checkItems.item && item.item) || (state.checkItems.collection && item.collection && !item.personal) || (state.checkItems.scroll && item.scroll) || (state.checkItems.personal && item.personal)) {
 							return options.getItemCell(item, x);
 						}
@@ -459,7 +460,7 @@ class MODAL extends React.Component {
 					<DescriptionCell label={`Время поиска`} text={options.getTime(data.time)}/>
 					<DescriptionCell label={`Визуальных стадий`} text={`${data.stages} ${options.numberForm(data.stages, ['стадия', 'стадии', 'стадий'])}`}/>
 					<Spacing separator size={16} />
-					{options.getSort(data.items).map((item, x) => {
+					{options?.getSort(data.items)?.map((item, x) => {
 						if ((state.checkItems.item && item.item) || (state.checkItems.collection && item.collection && !item.personal) || (state.checkItems.scroll && item.scroll) || (state.checkItems.personal && item.personal)) {
 							return options.getItemCell(item, x);
 						}
@@ -573,7 +574,7 @@ class MODAL extends React.Component {
 					{!state.isDesktop?<Spacing size={8} />:<DescriptionHeader avatar={`${pathImages}${data.icon}`} state={state} options={options} data={data} header={data.title} description="Гильдия — Набеги"/>}
 					<DescriptionCell label={`Описание`} text={data.description}/>
 					<Spacing separator size={16} />
-					{options.getSort(data.items).map((item, x) => {
+					{options?.getSort(data.items)?.map((item, x) => {
 						if ((state.checkItems.item && item.item) || (state.checkItems.collection && item.collection && !item.personal) || (state.checkItems.scroll && item.scroll) || (state.checkItems.personal && item.personal)) {
 							return options.getItemCell(item, x);
 						}
@@ -594,7 +595,7 @@ class MODAL extends React.Component {
 					<DescriptionCell label={`Характеристики`} text={<React.Fragment>{options.numberSpaces(data.hp)} здоровья<br/>{options.numberSpaces(data.dmg)} атаки</React.Fragment>}/>
 					<DescriptionCell label={`Стоимость создания`} text={<React.Fragment>{options.numberSpaces(data.price[0])}<Spinner size="small" className="DescriptionPricePreloadWiki" /><i style={{backgroundImage: `url(${pathImages}currency/1.png)`}}/><br/>{options.numberSpaces(data.price[1])}<Spinner size="small" className="DescriptionPricePreloadWiki" /><i style={{backgroundImage: `url(${pathImages}currency/3.png)`}}/></React.Fragment>}/>
 					<Spacing separator size={16} />
-					{options.getSort(data.items).map((item, x) => {
+					{options?.getSort(data.items)?.map((item, x) => {
 						if ((state.checkItems.item && item.item) || (state.checkItems.collection && item.collection && !item.personal) || (state.checkItems.scroll && item.scroll) || (state.checkItems.personal && item.personal)) {
 							return options.getItemCell(item, x);
 						}
@@ -626,7 +627,7 @@ class MODAL extends React.Component {
 						</CardGrid>
 					</React.Fragment>}
 					<Spacing separator size={16} />
-					{options.getSort(data.items).map((item, x) => {
+					{options?.getSort(data.items)?.map((item, x) => {
 						if ((state.checkItems.item && item.item) || (state.checkItems.collection && item.collection && !item.personal) || (state.checkItems.scroll && item.scroll) || (state.checkItems.personal && item.personal)) {
 							return options.getItemCell(item, x);
 						}

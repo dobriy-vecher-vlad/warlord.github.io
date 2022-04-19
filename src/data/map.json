@@ -466,26 +466,32 @@
 			"items": [{
 				"id": 287,
 				"item": true,
+				"scroll": true,
 				"tooltip": ["Эпический сундук"]
 			}, {
 				"id": 372,
 				"item": true,
+				"scroll": true,
 				"tooltip": ["Эпический сундук"]
 			}, {
 				"id": 296,
 				"collection": true,
+				"scroll": true,
 				"tooltip": ["Бочка"]
 			}, {
 				"id": 314,
 				"collection": true,
+				"scroll": true,
 				"tooltip": ["Железный сундук"]
 			}, {
 				"id": 338,
 				"collection": true,
+				"scroll": true,
 				"tooltip": ["Древний сундук"]
 			}, {
 				"id": 326,
 				"collection": true,
+				"scroll": true,
 				"tooltip": ["Древний сундук"]
 			}],
 			"icon": "map/raid_1.png"
@@ -515,26 +521,32 @@
 			"items": [{
 				"id": 661,
 				"item": true,
+				"scroll": true,
 				"tooltip": ["Эпический сундук"]
 			}, {
 				"id": 382,
 				"item": true,
+				"scroll": true,
 				"tooltip": ["Эпический сундук"]
 			}, {
 				"id": 708,
 				"collection": true,
+				"scroll": true,
 				"tooltip": ["Сапфировый сундук", "часть 1"]
 			}, {
 				"id": 422,
 				"collection": true,
+				"scroll": true,
 				"tooltip": ["Древний сундук"]
 			}, {
 				"id": 337,
 				"collection": true,
+				"scroll": true,
 				"tooltip": ["Железный сундук"]
 			}, {
 				"id": 336,
 				"collection": true,
+				"scroll": true,
 				"tooltip": ["Бочка"]
 			}],
 			"icon": "map/raid_2.png"
@@ -564,31 +576,38 @@
 			"items": [{
 				"id": 693,
 				"item": true,
+				"scroll": true,
 				"tooltip": ["Эпический сундук"]
 			}, {
 				"id": 370,
 				"item": true,
+				"scroll": true,
 				"tooltip": ["Эпический сундук"]
 			}, {
 				"id": 708,
 				"collection": true,
+				"scroll": true,
 				"tooltip": ["Сапфировый сундук", "часть 2 и 3"]
 			}, {
 				"id": 355,
 				"collection": true,
+				"scroll": true,
 				"tooltip": ["Бочка"]
 			}, {
 				"id": 438,
 				"collection": true,
+				"scroll": true,
 				"tooltip": ["Древний сундук"]
 			}, {
 				"id": 392,
 				"collection": true,
+				"scroll": true,
 				"tooltip": ["Железный сундук"]
 			}, {
 				"id": 739,
 				"collection": true,
 				"personal": true,
+				"scroll": true,
 				"tooltip": ["Древний сундук", "часть 1"]
 			}],
 			"icon": "map/raid_3.png"
@@ -618,26 +637,32 @@
 			"items": [{
 				"id": 735,
 				"item": true,
+				"scroll": true,
 				"tooltip": ["Эпический сундук"]
 			}, {
 				"id": 455,
 				"item": true,
+				"scroll": true,
 				"tooltip": ["Эпический сундук"]
 			}, {
 				"id": 708,
 				"collection": true,
+				"scroll": true,
 				"tooltip": ["Сапфировый сундук", "часть 4 и 5"]
 			}, {
 				"id": 437,
 				"collection": true,
+				"scroll": true,
 				"tooltip": ["Бочка"]
 			}, {
 				"id": 489,
 				"collection": true,
+				"scroll": true,
 				"tooltip": ["Древний сундук"]
 			}, {
 				"id": 480,
 				"collection": true,
+				"scroll": true,
 				"tooltip": ["Железный сундук"]
 			}],
 			"icon": "map/raid_4.png"
@@ -672,18 +697,22 @@
 			"items": [{
 				"id": 384,
 				"item": true,
+				"scroll": true,
 				"tooltip": ["Эпический сундук"]
 			}, {
 				"id": 290,
 				"collection": true,
+				"scroll": true,
 				"tooltip": ["Любой сундук"]
 			}, {
 				"id": 294,
 				"collection": true,
+				"scroll": true,
 				"tooltip": ["Сапфировый сундук"]
 			}, {
 				"id": 328,
 				"collection": true,
+				"scroll": true,
 				"tooltip": ["Древний сундук"]
 			}],
 			"icon": "map/raid_5.png"
@@ -713,18 +742,22 @@
 			"items": [{
 				"id": 551,
 				"item": true,
+				"scroll": true,
 				"tooltip": ["Эпический сундук"]
 			}, {
 				"id": 342,
 				"collection": true,
+				"scroll": true,
 				"tooltip": ["Бочка"]
 			}, {
 				"id": 395,
 				"collection": true,
+				"scroll": true,
 				"tooltip": ["Древний сундук"]
 			}, {
 				"id": 345,
 				"collection": true,
+				"scroll": true,
 				"tooltip": ["Сапфировый сундук"]
 			}],
 			"icon": "map/raid_6.png"
@@ -754,23 +787,28 @@
 			"items": [{
 				"id": 553,
 				"item": true,
+				"scroll": true,
 				"tooltip": ["Эпический сундук"]
 			}, {
 				"id": 343,
 				"collection": true,
+				"scroll": true,
 				"tooltip": ["Бочка"]
 			}, {
 				"id": 356,
 				"collection": true,
+				"scroll": true,
 				"tooltip": ["Сапфировый сундук"]
 			}, {
 				"id": 393,
 				"collection": true,
+				"scroll": true,
 				"tooltip": ["Древний сундук"]
 			}, {
 				"id": 739,
 				"collection": true,
 				"personal": true,
+				"scroll": true,
 				"tooltip": ["Древний сундук", "часть 2"]
 			}],
 			"icon": "map/raid_7.png"
@@ -800,18 +838,22 @@
 			"items": [{
 				"id": 729,
 				"item": true,
+				"scroll": true,
 				"tooltip": ["Эпический сундук"]
 			}, {
 				"id": 459,
 				"collection": true,
+				"scroll": true,
 				"tooltip": ["Любой сундук"]
 			}, {
 				"id": 633,
 				"collection": true,
+				"scroll": true,
 				"tooltip": ["Древний сундук"]
 			}, {
 				"id": 473,
 				"collection": true,
+				"scroll": true,
 				"tooltip": ["Сапфировый сундук"]
 			}],
 			"icon": "map/raid_8.png"
@@ -846,18 +888,22 @@
 			"items": [{
 				"id": 656,
 				"item": true,
+				"scroll": true,
 				"tooltip": ["Эпический сундук"]
 			}, {
 				"id": 282,
 				"item": true,
+				"scroll": true,
 				"tooltip": ["Железный сундук"]
 			}, {
 				"id": 302,
 				"collection": true,
+				"scroll": true,
 				"tooltip": ["Сапфировый сундук"]
 			}, {
 				"id": 407,
 				"collection": true,
+				"scroll": true,
 				"tooltip": ["Древний сундук"]
 			}],
 			"icon": "map/raid_9.png"
@@ -887,18 +933,22 @@
 			"items": [{
 				"id": 564,
 				"item": true,
+				"scroll": true,
 				"tooltip": ["Эпический сундук"]
 			}, {
 				"id": 360,
 				"item": true,
+				"scroll": true,
 				"tooltip": ["Сапфировый сундук"]
 			}, {
 				"id": 318,
 				"collection": true,
+				"scroll": true,
 				"tooltip": ["Железный сундук"]
 			}, {
 				"id": 466,
 				"collection": true,
+				"scroll": true,
 				"tooltip": ["Древний сундук"]
 			}],
 			"icon": "map/raid_10.png"
@@ -928,23 +978,28 @@
 			"items": [{
 				"id": 718,
 				"item": true,
+				"scroll": true,
 				"tooltip": ["Эпический сундук"]
 			}, {
 				"id": 448,
 				"item": true,
+				"scroll": true,
 				"tooltip": ["Железный сундук"]
 			}, {
 				"id": 433,
 				"collection": true,
+				"scroll": true,
 				"tooltip": ["Сапфировый сундук"]
 			}, {
 				"id": 504,
 				"collection": true,
+				"scroll": true,
 				"tooltip": ["Древний сундук"]
 			}, {
 				"id": 739,
 				"collection": true,
 				"personal": true,
+				"scroll": true,
 				"tooltip": ["Древний сундук", "часть 3"]
 			}],
 			"icon": "map/raid_11.png"
@@ -974,23 +1029,28 @@
 			"items": [{
 				"id": 736,
 				"item": true,
+				"scroll": true,
 				"tooltip": ["Эпический сундук"]
 			}, {
 				"id": 484,
 				"item": true,
+				"scroll": true,
 				"tooltip": ["Сапфировый сундук"]
 			}, {
 				"id": 449,
 				"collection": true,
+				"scroll": true,
 				"tooltip": ["Железный сундук"]
 			}, {
 				"id": 513,
 				"collection": true,
+				"scroll": true,
 				"tooltip": ["Древний сундук"]
 			}, {
 				"id": 739,
 				"collection": true,
 				"personal": true,
+				"scroll": true,
 				"tooltip": ["Древний сундук", "часть 4"]
 			}],
 			"icon": "map/raid_12.png"

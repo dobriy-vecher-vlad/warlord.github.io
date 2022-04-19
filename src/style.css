@@ -867,9 +867,15 @@ div.Scroll::-webkit-scrollbar-track {
     margin-top: 8px;
 }
 
+* {
+	/* overflow: unset!important; */
+}
 
-.Avatar {
-	background: transparent;
+.Avatar:not(.InitialsAvatar) {
+	background-color: transparent;
+}
+.InitialsAvatar__text {
+	font-weight: 500;
 }
 
 .Item.Avatar--type-app.Avatar {
@@ -2607,6 +2613,25 @@ input::-webkit-inner-spin-button {
 		background: var(--separator_common);
 		/* transform: scaleY(.5); */
 	}
+
+	.HeaderWithTabs .PanelHeader__left {
+		min-width: 52px;
+		width: 52px;
+	}
+	.HeaderWithTabs .PanelHeader__separator {
+		display: none;
+	}
+	.HorizontalRatingsGroup {
+		display: grid;
+		gap: 8px;
+		grid-template-columns: repeat(1, 100%);
+	}
+	.HorizontalRatingsGroup:not(.HorizontalRatingsGroup--grid) > * {
+		grid-column-start: unset!important;
+	}
+	.HorizontalRatingsGroup--grid {
+		grid-template-columns: repeat(2, calc((100% - 8px) / 2));
+	}
 }
 @media screen and (orientation: portrait) {
 	.GradientBannerWiki {
@@ -2958,6 +2983,7 @@ input::-webkit-inner-spin-button {
 
 	.DescriptionCardWiki.forSlider {
 		padding: 0 12px;
+		overflow: visible;
 	}
 	.DescriptionCardWiki.forSlider .Card__in {
 		height: auto;
@@ -3012,5 +3038,36 @@ input::-webkit-inner-spin-button {
 	}
 	.HorizontalRating + .HorizontalRating {
 		margin-top: 21px;
+	}
+
+	.ModalPageHeader--content .PanelHeader__in {
+		min-height: var(--panelheader_height_ios);
+		height: fit-content;
+	}
+	.ModalPageHeader--content .PanelHeader__left {
+		padding: 12px 0 12px 12px;
+	}
+	.ModalPageHeader--content .RichCell .Avatar {
+		margin: 0;
+		border-radius: 10px!important;
+	}
+	.ModalPageHeader--content .RichCell .RichCell__in {
+		margin-left: 12px;
+	}
+
+	.HorizontalRating .Header {
+		padding: 0px 12px;
+	}
+	.TableCell {
+		padding: 0 12px;
+	}
+
+	.HorizontalRatingsGroup > .Group:not(:last-child):after {
+		content: "";
+		display: block;
+		height: 1px;
+		background-color: var(--separator_common);
+		-webkit-transform-origin: center top;
+		transform-origin: center top;
 	}
 }

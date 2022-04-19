@@ -6,10 +6,17 @@ import {
 	ModalPage
 } from '@vkontakte/vkui';
 import {
-	Icon24ChainOutline
+	Icon24ChainOutline, Icon24StickerOutline
 } from '@vkontakte/icons';
 
 import Items from '../data/items.json';
+import Bosses from '../data/bosses.json';
+
+import dataMap from '../data/map.json';
+import dataBosses from '../data/boss.json';
+import dataArena from '../data/arena.json';
+import dataCharacter from '../data/character.json';
+import dataGuild from '../data/guild.json';
 
 class MODAL extends React.Component {
 	constructor(props) {
@@ -26,6 +33,56 @@ class MODAL extends React.Component {
 		const { state, options, data } = this.props;
 		const item = Items[data.id];
 		const pathImages = 'https://dobriy-vecher-vlad.github.io/warlord-helper/media/images/';
+		let scroll = [];
+		dataMap.adventures.find(adventure => {
+			if (adventure.floors.find(floor => floor.items.find(item => item.id == data.id))) {
+				let from = `${scroll.length ? 'приключение' : 'Приключение'} ${adventure.title}`;
+				if (!scroll.includes(from)) scroll.push(from);
+			}
+		});
+		dataMap.raids.find(raid => {
+			if (raid.levels.find(level => level.items.find(item => item.id == data.id && item.scroll))) {
+				let from = `${scroll.length ? 'рейд' : 'Рейд'} ${raid.title}`;
+				if (!scroll.includes(from)) scroll.push(from);
+			}
+		});
+		dataArena.season.find(season => season.month.find((month) => {
+			if (month.items.find(item => item.id == data.id)) {
+				let from = `${scroll.length ? 'любое' : 'Любое'} приключение`;
+				if (!scroll.includes(from)) scroll.push(from);
+			}
+		}));
+		dataBosses.bosses.find(bosses => bosses.mobs.find((boss) => {
+			if (boss.items.find(item => item.id == data.id && item.scroll)) {
+				let from = `${scroll.length ? 'босс' : 'Босс'} ${Bosses.find(Boss => Boss.id == boss.id)?.name}`;
+				if (!scroll.includes(from)) scroll.push(from);
+			}
+		}));
+		dataArena.chest.find(chest => {
+			if (chest.items.find(item => item.id == data.id && item.scroll)) {
+				let from = chest.title;
+				if (!scroll.includes(from)) scroll.push(from);
+			}
+		});
+		dataCharacter.pets.find(pet => {
+			if (pet.items.find(item => item.id == data.id && item.scroll)) {
+				let from = `${scroll.length ? 'питомец' : 'Питомец'} ${pet.title}`;
+				if (!scroll.includes(from)) scroll.push(from);
+			}
+		});
+		dataGuild.items.find(reward => {
+			if (reward.title == item.title) {
+				let from = `${scroll.length ? 'кузница' : 'Кузница'} гильдии`;
+				if (!scroll.includes(from)) scroll.push(from);
+			}
+		});
+		dataGuild.bosses.find(boss => {
+			if (boss.items.find(item => item.id == data.id && item.scroll)) {
+				let from = `${scroll.length ? 'босс' : 'Босс'} ${boss.title}`;
+				if (!scroll.includes(from)) scroll.push(from);
+			}
+		});
+		if (item.fragments.length) scroll.push(scroll.length ? 'коллекция' : 'Коллекция');
 		return (
 			<ModalPage id={this.props.id}>
 				<Div style={{padding: state.isDesktop ? 12 : ''}}>
@@ -35,6 +92,8 @@ class MODAL extends React.Component {
 					{state.checkItems.null && 
 						<Cell className="DescriptionWiki" style={{textAlign: 'center'}} description="Нет предметов"></Cell>
 					}
+					<Spacing separator size={16} />
+					<Cell className="DescriptionCellButton" before={<Icon24StickerOutline />} description="Получение заточки">{scroll.length ? scroll.join(', ') : 'Нет информации'}</Cell>
 					<Spacing separator size={16} />
 					<Cell href={`${pathImages}items/${item.id}.png`} target="_blank" className="DescriptionCellButton" before={<Icon24ChainOutline />} description="Ссылка" expandable>Изображение иконки</Cell>
 					<Cell href={`${pathImages}items/${item.id}b.png`} target="_blank" className="DescriptionCellButton" before={<Icon24ChainOutline />} description="Ссылка" expandable>Изображение предмета</Cell>

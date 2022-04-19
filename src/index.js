@@ -134,7 +134,7 @@ const islocalStorage = (() => {
 })();
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
-const wikiVersion = '1.6.0';
+const wikiVersion = '1.6.1';
 const pathImages = 'https://dobriy-vecher-vlad.github.io/warlord-helper/media/images/';
 
 
@@ -159,8 +159,7 @@ import PANEL_profile__5 from './panels/profile/5';
 import PANEL_profile__6 from './panels/profile/6';
 import PANEL_profile__7 from './panels/profile/7';
 
-import PANEL_rating from './panels/rating/rating';
-import PANEL_rating__1 from './panels/rating/1';
+import VIEW_rating from './panels/rating/rating';
 
 import PANEL_map__1 from './panels/map/1';
 import PANEL_map__2 from './panels/map/2';
@@ -295,10 +294,13 @@ const App = withAdaptivity(({ viewWidth }) => {
 
 	if (!isDesktop) {
 		bridge.subscribe(({ detail: { type, data }}) => {
-			if (type === 'VKWebAppUpdateConfig') {
-				const schemeAttribute = document.createAttribute('scheme');
-				schemeAttribute.value = data.scheme ? data.scheme : 'client_light';
-				document.body.attributes.setNamedItem(schemeAttribute);
+			switch (type) {
+				case 'VKWebAppUpdateConfig':
+					const schemeAttribute = document.createAttribute('scheme');
+					schemeAttribute.value = data.scheme ? data.scheme : 'client_light';
+					document.body.attributes.setNamedItem(schemeAttribute);
+					break;
+				default:
 			}
 		});
 	}
@@ -358,8 +360,6 @@ const App = withAdaptivity(({ viewWidth }) => {
 				storeProfiles: [],
 				storeProfilesFull: [],
 				storeProfilesIndex: 0,
-
-				ratingMode: 'lvl',
 
 				checkItems: {null: true, item: true, scroll: true, collection: true, personal: true, stock: true, yesStock: true, noStock: true},
 
@@ -601,27 +601,31 @@ const App = withAdaptivity(({ viewWidth }) => {
 			return `${String(hours).length === 1 ? `0${hours}` : hours}:${String(minutes).length === 1 ? `0${minutes}` : minutes}:${String(seconds).length === 1 ? `0${seconds}` : seconds}`;
 		};
 		getSort = (array) => {
-			const { activePanel, activeStory, checkItems } = this.state;
-			isDev&&console.warn('getSort', activeStory, activePanel);
-			return array.sort(function(a, b) {
-				return Items[a.id].type < Items[b.id].type ? -1 : 1;
-			}).sort(function(a, b) {
-				let itemA = (checkItems.item && a.item) && (checkItems.collection && a.collection) && (checkItems.scroll && a.scroll) ? 1 :
-							(checkItems.item && a.item) && (checkItems.collection && a.collection) ? 2 :
-							(checkItems.item && a.item) && (checkItems.scroll && a.scroll) ? 3 :
-							(checkItems.item && a.item) ? 4 :
-							(checkItems.collection && a.collection) && (checkItems.scroll && a.scroll) ? 5 :
-							(checkItems.collection && a.collection) ? 6 :
-							(checkItems.scroll && a.scroll) ? 7 : 8;
-				let itemB = (checkItems.item && b.item) && (checkItems.collection && b.collection) && (checkItems.scroll && b.scroll) ? 1 :
-							(checkItems.item && b.item) && (checkItems.collection && b.collection) ? 2 :
-							(checkItems.item && b.item) && (checkItems.scroll && b.scroll) ? 3 :
-							(checkItems.item && b.item) ? 4 :
-							(checkItems.collection && b.collection) && (checkItems.scroll && b.scroll) ? 5 :
-							(checkItems.collection && b.collection) ? 6 :
-							(checkItems.scroll && b.scroll) ? 7 : 8;
-				return itemA < itemB ? -1 : 1;
-			});
+			try {
+				const { activePanel, activeStory, checkItems } = this.state;
+				isDev&&console.warn('getSort', activeStory, activePanel);
+				return array.sort(function(a, b) {
+					return Items[a.id].type < Items[b.id].type ? -1 : 1;
+				}).sort(function(a, b) {
+					let itemA = (checkItems.item && a.item) && (checkItems.collection && a.collection) && (checkItems.scroll && a.scroll) ? 1 :
+								(checkItems.item && a.item) && (checkItems.collection && a.collection) ? 2 :
+								(checkItems.item && a.item) && (checkItems.scroll && a.scroll) ? 3 :
+								(checkItems.item && a.item) ? 4 :
+								(checkItems.collection && a.collection) && (checkItems.scroll && a.scroll) ? 5 :
+								(checkItems.collection && a.collection) ? 6 :
+								(checkItems.scroll && a.scroll) ? 7 : 8;
+					let itemB = (checkItems.item && b.item) && (checkItems.collection && b.collection) && (checkItems.scroll && b.scroll) ? 1 :
+								(checkItems.item && b.item) && (checkItems.collection && b.collection) ? 2 :
+								(checkItems.item && b.item) && (checkItems.scroll && b.scroll) ? 3 :
+								(checkItems.item && b.item) ? 4 :
+								(checkItems.collection && b.collection) && (checkItems.scroll && b.scroll) ? 5 :
+								(checkItems.collection && b.collection) ? 6 :
+								(checkItems.scroll && b.scroll) ? 7 : 8;
+					return itemA < itemB ? -1 : 1;
+				});
+			} catch (error) {
+				
+			}
 		};
 		getRichCellDescription = (text = "Полезный текст", label = "Полезная информация", icon = <Icon28PinOutline style={{color: 'var(--icon_secondary)', paddingRight: '18px'}}/>) => {
 			return (<RichCell
@@ -800,7 +804,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 				}
 			}
 			if (!close || isDonut) {
-				this.setState({ activePanel: name });
+				return this.setState({ activePanel: name });
 			}
 		};
 		isCheckItems = (e, id) => {
@@ -1425,13 +1429,15 @@ const App = withAdaptivity(({ viewWidth }) => {
 						if (key === 'panel' && typeof hashParams.view != 'undefined') {
 							setActivePanel(value);
 						}
-						if (key === 'modal' && typeof hashParams.view != 'undefined' && typeof hashParams.panel != 'undefined') {
-							try {
-								document.querySelector(`#modal_${value}`).click();
-							} catch (error) {
-								
+						setTimeout(() => {
+							if (key === 'modal' && typeof hashParams.view != 'undefined' && typeof hashParams.panel != 'undefined') {
+								try {
+									document.querySelector(`#modal_${value}`).click();
+								} catch (error) {
+									
+								}
 							}
-						}
+						}, 0);
 					});
 					if (Object.keys(hashParams).indexOf('promo') != -1) {
 						let promoKey = Object.values(hashParams)[Object.keys(hashParams).indexOf('promo')];
@@ -1613,7 +1619,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 							</Panel>
 						</SplitCol>
 					)}
-					<SplitCol animate={!isDesktop} spaced={isDesktop} width={isDesktop && activeStory ? '560px' : '100%'} maxWidth={isDesktop && activeStory ? '560px' : '100%'}>
+					<SplitCol animate={!isDesktop} animate={false} spaced={isDesktop} width={isDesktop && activeStory ? '560px' : '100%'} maxWidth={isDesktop && activeStory ? '560px' : '100%'}>
 						<Epic activeStory={activeStory} tabbar={!isDesktop && activeStory &&
 							<Tabbar>
 								<TabbarItem
@@ -1682,7 +1688,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 													<Card data-story="character" onClick={onStoryChange}><HorizontalCell size='l' header="Персонаж"><Icon28IncognitoOutline style={{['--fill']: 'var(--systemGreen)' }}/></HorizontalCell></Card>
 													<Card data-story="guild" onClick={onStoryChange}><HorizontalCell size='l' header="Гильдия"><Icon28Users3Outline style={{['--fill']: 'var(--systemYellow)' }}/></HorizontalCell></Card>
 													<Card data-story="other" onClick={onStoryChange}><HorizontalCell size='l' header="Разное"><Icon28GridSquareOutline style={{['--fill']: 'var(--systemPurple)' }}/></HorizontalCell></Card>
-													<Card data-story="rating" onClick={onStoryChange}><HorizontalCell size='l' header="Рейтинг"><Icon28UserCardOutline style={{['--fill']: 'var(--systemIndigo)' }}/></HorizontalCell></Card>
+													<Card data-story="rating" onClick={onStoryChange}><HorizontalCell size='l' header="Рейтинг профилей"><Icon28UserCardOutline style={{['--fill']: 'var(--systemIndigo)' }}/></HorizontalCell></Card>
 													<Card><HorizontalCell disabled size='l' header=" "><Icon28GridSquareOutline style={{['--fill']: '#505050' }}/></HorizontalCell></Card>
 												</CardGrid>
 												<Spacing size={16} separator/>
@@ -1835,12 +1841,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 
 
 
-
-							<View id="rating" activePanel={!activePanel ? 'rating' : activePanel}>
-								<PANEL_rating id='rating' parent='rating' state={this.state} options={this} setState={this.transmittedSetState} />
-								<PANEL_rating__1 id='1' parent='rating' state={this.state} options={this} />
-							</View>
-
+							<VIEW_rating id='rating' parent='rating' state={this.state} options={this} setState={this.transmittedSetState} game={syncUserGame} />
 
 
 
