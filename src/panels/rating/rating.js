@@ -279,7 +279,7 @@ class PANEL extends React.Component {
 							tag: guild.tag
 						}));
 						ratingGuildsData[7].items = dataRating.sort((a, b) => {
-							return b.users.filter(user => user.date[1] < 604800).length - a.users.filter(user => user.date[1] < 604800).length
+							return Math.ceil(100 / (b.users.length / b.users.filter(user => user.date[1] < 86400*7).length)) - Math.ceil(100 / (a.users.length / a.users.filter(user => user.date[1] < 86400*7).length))
 						}).map(guild => ({
 							id: guild.id,
 							name: guild.name,

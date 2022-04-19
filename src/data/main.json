@@ -1,5 +1,10 @@
 {
 	"news": [{
+		"link": "https://vk.com/wall-138604865_4002",
+		"title": "Рейтинг",
+		"description": "19 апреля 2022",
+		"icon": "main/news_15.png"
+	}, {
 		"link": "https://vk.com/wall-138604865_3663",
 		"title": "Рейтинг",
 		"description": "06 февраля 2022",
