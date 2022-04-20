@@ -76,7 +76,7 @@ class PANEL extends React.Component {
 							{this.state.rating.slice(ratingPage*count, (ratingPage+1)*count).map((user, x) => <TableCell
 								key={x}
 								count={options.numberSpaces(ratingPage*count+x+1, ' ')}
-								href={`https://vk.com/id${user.id}`}
+								href={`https://vk.com/id${user.leader?user.leader:user.id}`}
 								avatar={user.avatar?<Avatar src={`${pathImages}bot/arena/avatar_${user.avatar}.png`} size={32}/>:<InitialsAvatar gradientColor={this.calcInitialsAvatarColor(user.id)} size={32}>{user.tag}</InitialsAvatar>}
 								style={grid}
 								rows={[{
@@ -92,7 +92,7 @@ class PANEL extends React.Component {
 								{[this.state.rating.find(user => user.id == ratingTab.id)].map((user, x) => <TableCell
 									key={x}
 									count={options.numberSpaces(this.state.rating.findIndex(user => user.id == ratingTab.id)+1, ' ')}
-									href={`https://vk.com/id${user.id}`}
+									href={`https://vk.com/id${user.leader?user.leader:user.id}`}
 									style={grid}
 									avatar={user.avatar?<Avatar src={`${pathImages}bot/arena/avatar_${user.avatar}.png`} size={32}/>:<InitialsAvatar gradientColor={this.calcInitialsAvatarColor(user.id)} size={32}>{user.tag}</InitialsAvatar>}
 									rows={[{

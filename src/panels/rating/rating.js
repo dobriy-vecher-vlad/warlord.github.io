@@ -201,7 +201,6 @@ class PANEL extends React.Component {
 				}
 				count++;
 			} while (rating == null && error < 10 && this._isMounted);
-			console.warn(ratingProfilesTime, rating);
 		}
 		if (this.state.tab == 2) {
 			do {
@@ -320,7 +319,6 @@ class PANEL extends React.Component {
 				}
 				count++;
 			} while (rating == null && error < 10 && this._isMounted);
-			console.warn(ratingGuildsTime, rating);
 		}
 		this._isMounted && this.setState({rating: error == 10 ? false : rating});
 	};
@@ -344,7 +342,7 @@ class PANEL extends React.Component {
 		return (
 			<View id="rating" activePanel={!state.activePanel ? 'rating' : state.activePanel}>
 				<Panel id={this.props.id}>
-					{!state.isDesktop && <PanelHeader right={!state.isEmbedded&&options.getCopy(parent)} left={<PanelHeaderBack onClick={() => setState({ activeStory: 'home', activePanel: 'home' })}/>}>
+					{!state.isDesktop && <PanelHeader className='HeaderWithTabs' right={!state.isEmbedded&&options.getCopy(parent)} left={<PanelHeaderBack onClick={() => setState({ activeStory: 'home', activePanel: 'home' })}/>}>
 						<Tabs>
 							<TabsItem onClick={() => this.setState({ rating: null, tab: 1 }, () => this.loadRating())} selected={this.state.tab == 1}>Профили</TabsItem>
 							<TabsItem onClick={() => this.setState({ rating: null, tab: 2 }, () => this.loadRating())} selected={this.state.tab == 2}>Гильдии</TabsItem>
