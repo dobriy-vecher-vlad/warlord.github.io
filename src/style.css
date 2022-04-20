@@ -3071,12 +3071,12 @@ input::-webkit-inner-spin-button {
 		transform-origin: center top;
 	}
 	@media (min-resolution: 2dppx) {
-		.HorizontalRatingsGroup > .Group:not(:last-child):afte {
+		.HorizontalRatingsGroup > .Group:not(:last-child):after {
 			transform: scaleY(.5);
 		}
 	}
 	@media (min-resolution: 3dppx) {
-		.HorizontalRatingsGroup > .Group:not(:last-child):afte {
+		.HorizontalRatingsGroup > .Group:not(:last-child):after {
 			transform: scaleY(.33);
 		}
 	}
