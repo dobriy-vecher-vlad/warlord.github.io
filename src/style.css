@@ -2675,13 +2675,14 @@ input::-webkit-inner-spin-button {
 	.HorizontalRatingsGroup {
 		display: grid;
 		gap: 8px;
-		grid-template-columns: repeat(1, 100%);
-	}
-	.HorizontalRatingsGroup:not(.HorizontalRatingsGroup--grid) > * {
-		grid-column-start: unset!important;
-	}
-	.HorizontalRatingsGroup--grid {
 		grid-template-columns: repeat(2, calc((100% - 8px) / 2));
+	}
+	.Group:last-of-type>.Group__separator {
+		display: none!important;
+	}
+
+	body {
+		height: fit-content!important;
 	}
 }
 @media screen and (orientation: portrait) {

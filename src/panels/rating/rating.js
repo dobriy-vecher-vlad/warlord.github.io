@@ -14,8 +14,12 @@ import {
 	TabsItem,
 	InitialsAvatar,
 	View,
+	Div,
+	Text,
+	Button,
 } from '@vkontakte/vkui';
 
+import { ReactComponent as SVG_sadFace } from '../../modals/sadFace.svg';
 import Skeleton from '../../components/skeleton';
 import TableCell from '../../components/tableCell';
 import { Icon12ChevronOutline } from '@vkontakte/icons';
@@ -97,7 +101,8 @@ class PANEL extends React.Component {
 			mainUserID: Number(this?.props?.game?._vkId) || null,
 			mainGuildID: Number(this?.props?.game?._clan_id) || null,
 			tab: tab,
-			server: this.props.server || 1
+			server: this.props.server || 1,
+			error: false
 		};
 		this._isMounted = false;
 	};
@@ -121,7 +126,6 @@ class PANEL extends React.Component {
 		let rating = null;
 		let count = 0;
 		let error = 0;
-		console.warn(this.state.server);
 		let getTime = (native = false) => {
 			let date = new Date(+new Date - count * 86400000).toLocaleString("ru", {
 				timezone: 'UTC',
@@ -136,7 +140,7 @@ class PANEL extends React.Component {
 				let time = ratingProfilesTime || this._isMounted && getTime();
 				let dataRating;
 				if (!ratingProfilesTime) {
-					dataRating = this._isMounted && await getData(`https://dobriy-vecher-vlad.github.io/warlord/data/users/${time}.json`);
+					dataRating = this._isMounted && await getData(`https://dobriy-vecher-vlad.github.io/warlord/data/users/${['ermun', 'antares'][this.state.server-1]}/${time}.json`);
 					if (dataRating) {
 						ratingProfilesData[0].items = dataRating.sort((a, b) => {
 							return b.exp - a.exp
@@ -208,7 +212,7 @@ class PANEL extends React.Component {
 				let milliseconds = getTime(true);
 				let dataRating;
 				if (!ratingGuildsTime) {
-					dataRating = this._isMounted && await getData(`https://dobriy-vecher-vlad.github.io/warlord/data/guilds/${time}.json`);
+					dataRating = this._isMounted && await getData(`https://dobriy-vecher-vlad.github.io/warlord/data/guilds/${['ermun', 'antares'][this.state.server-1]}/${time}.json`);
 					if (dataRating) {
 						for (let guild of dataRating) {
 							guild.leader = guild?.users?.find(user => user.id == guild.leader)?.vkId || guild.leader;
@@ -320,7 +324,7 @@ class PANEL extends React.Component {
 				count++;
 			} while (rating == null && error < 10 && this._isMounted);
 		}
-		this._isMounted && this.setState({rating: error == 10 ? false : rating});
+		this._isMounted && this.setState({rating: error == 10 ? false : rating, error: error == 10});
 	};
 	async componentDidMount() {
 		console.log('[PANEL] >', this.props.id);
@@ -360,167 +364,176 @@ class PANEL extends React.Component {
 							</Tabs>
 						</PanelHeader>
 					</Group>}
-					{this.state.tab == 1 && <>
-						<div className={`HorizontalRatingsGroup`}>
-							{ratingProfilesData.map((rating, x) => <Group separator="hide" key={x} style={{gridColumnStart: x == 0 ? 'span 2' : ''}}>
-								<div className="HorizontalRating">
-									{rating?.items?.length?<React.Fragment>
-										<Header subtitle={rating.subname} title={rating.name} mode="primary" aside={<Link onClick={() => this.setState({ currentRating: {...rating, tab: 1, id: this.state.mainUserID} }, () => options.setActivePanel('1'))}>Список <Icon12ChevronOutline /></Link>}>{rating.name}</Header>
-										<div>
-											{rating?.items?.slice(0, 3).map((user, x) => <TableCell
-												key={x}
-												count={options.numberSpaces(x+1, ' ')}
-												href={`https://vk.com/id${user.id}`}
-												style={grid}
-												avatar={<Avatar src={`${pathImages}bot/arena/avatar_${user.avatar}.png`} size={32}/>}
-												rows={[{
-													title: user.name?user.name:`Player\n${user.id}`
-												}, {
-													title: Number.isInteger(user.title) ? options.numberSpaces(user.title, ' ') : user.title
-												}]}
-											/>)}
-											<Spacing size={16} separator />
-											{[this.state.mainUserID&&rating?.items?.find(user => user.id == this.state.mainUserID)?rating?.items?.find(user => user.id == this.state.mainUserID):rating?.items[rating?.items?.length-1]].map((user, x) => <TableCell
-												key={x}
-												count={options.numberSpaces(rating?.items?.indexOf(user)+1, ' ')}
-												href={`https://vk.com/id${user.id}`}
-												style={grid}
-												avatar={<Avatar src={`${pathImages}bot/arena/avatar_${user.avatar}.png`} size={32}/>}
-												rows={[{
-													title: user.name?user.name:`Player\n${user.id}`
-												}, {
-													title: Number.isInteger(user.title) ? options.numberSpaces(user.title, ' ') : user.title
-												}]}
-											/>)}
-										</div>
-									</React.Fragment>:<React.Fragment>
-										<Header subtitle={<Skeleton height={14} width={125} marginTop={2}/>} mode="primary" aside={<Skeleton height={20} width={50}/>}><Skeleton height={20} width={100} marginBottom={2}/></Header>
-										<div>
-											{new Array(3).fill(null).map((user, x) => <div key={x} className="TableCell">
-												<div className="TableCell__content" style={grid}>
-													<Skeleton height={16}/>
-													<Skeleton height={32} borderRadius="50%"/>
-													<Skeleton height={16}/>
-													<Skeleton height={16}/>
-												</div>
-											</div>)}
-											<Spacing size={16} separator />
-											<div className="TableCell">
-												<div className="TableCell__content" style={grid}>
-													<Skeleton height={16}/>
-													<Skeleton height={32} borderRadius="50%"/>
-													<Skeleton height={16}/>
-													<Skeleton height={16}/>
+					{!this.state.error?<>
+						{this.state.tab == 1 && <>
+							<div className={`HorizontalRatingsGroup`}>
+								{ratingProfilesData.map((rating, x) => <Group separator="hide" key={x} style={{gridColumnStart: x == 0 ? 'span 2' : ''}}>
+									<div className="HorizontalRating">
+										{rating?.items?.length?<React.Fragment>
+											<Header subtitle={rating.subname} title={rating.name} mode="primary" aside={<Link onClick={() => this.setState({ currentRating: {...rating, tab: 1, id: this.state.mainUserID} }, () => options.setActivePanel('1'))}>Список <Icon12ChevronOutline /></Link>}>{rating.name}</Header>
+											<div>
+												{rating?.items?.slice(0, 3).map((user, x) => <TableCell
+													key={x}
+													count={options.numberSpaces(x+1, ' ')}
+													href={`https://vk.com/id${user.id}`}
+													style={grid}
+													avatar={<Avatar src={`${pathImages}bot/arena/avatar_${user.avatar}.png`} size={32}/>}
+													rows={[{
+														title: user.name?user.name:`Player\n${user.id}`
+													}, {
+														title: Number.isInteger(user.title) ? options.numberSpaces(user.title, ' ') : user.title
+													}]}
+												/>)}
+												<Spacing size={16} separator />
+												{[this.state.mainUserID&&rating?.items?.find(user => user.id == this.state.mainUserID)?rating?.items?.find(user => user.id == this.state.mainUserID):rating?.items[rating?.items?.length-1]].map((user, x) => <TableCell
+													key={x}
+													count={options.numberSpaces(rating?.items?.indexOf(user)+1, ' ')}
+													href={`https://vk.com/id${user.id}`}
+													style={grid}
+													avatar={<Avatar src={`${pathImages}bot/arena/avatar_${user.avatar}.png`} size={32}/>}
+													rows={[{
+														title: user.name?user.name:`Player\n${user.id}`
+													}, {
+														title: Number.isInteger(user.title) ? options.numberSpaces(user.title, ' ') : user.title
+													}]}
+												/>)}
+											</div>
+										</React.Fragment>:<React.Fragment>
+											<Header subtitle={<Skeleton height={14} width={125} marginTop={2}/>} mode="primary" aside={<Skeleton height={20} width={50}/>}><Skeleton height={20} width={100} marginBottom={2}/></Header>
+											<div>
+												{new Array(3).fill(null).map((user, x) => <div key={x} className="TableCell">
+													<div className="TableCell__content" style={grid}>
+														<Skeleton height={16}/>
+														<Skeleton height={32} borderRadius="50%"/>
+														<Skeleton height={16}/>
+														<Skeleton height={16}/>
+													</div>
+												</div>)}
+												<Spacing size={16} separator />
+												<div className="TableCell">
+													<div className="TableCell__content" style={grid}>
+														<Skeleton height={16}/>
+														<Skeleton height={32} borderRadius="50%"/>
+														<Skeleton height={16}/>
+														<Skeleton height={16}/>
+													</div>
 												</div>
 											</div>
-										</div>
-									</React.Fragment>}
-								</div>
-							</Group>)}
-						</div>
-						<Spacing size={16} />
-						<Group>
-							{state.isDesktop&&
-								this.state?.rating?.items?<Input
-									type="text"
-									name="id"
-									placeholder="Введите номер профиля"
-									align="center"
-									defaultValue={this.state.mainUserID}
-									onChange={e => {
-										let id = Number(e.target.value);
-										if (id != 0 && Number.isInteger(id) && this.state.rating.items.find(user => user.vkId == id || user.id == id)) {
-											this.setState({ mainUserID: id})
-										} else if (this.state.mainUserID!=undefined) {
-											this.setState({ mainUserID: undefined});
-										}
-									}}
-								/>:<Skeleton height={36}/>}
-							<Spacing size={8} />
-							{this.state?.rating?.items?<Footer style={{margin: 0}}>{this.state.server == 1 ? 'Эрмун' : 'Антарес'}, обновлено {this.state.rating.time.replace(/(\d*).(\d*).(\d*)/g, '$3.$2.$1')} в 12:00, {options.numberSpaces(this.state.rating.items.length, ' ')} игроков</Footer>:<Footer style={{margin: 0}}><Skeleton height={16} width={'35%'} margin={'auto'}/></Footer>}
-						</Group>
-					</>}
-					{this.state.tab == 2 && <>
-						<div className={`HorizontalRatingsGroup`}>
-							{ratingGuildsData.map((rating, x) => <Group separator="hide" key={x}>
-								<div className="HorizontalRating">
-									{rating?.items?.length?<React.Fragment>
-										<Header subtitle={rating.subname} title={rating.name} mode="primary" aside={<Link onClick={() => this.setState({ currentRating: {...rating, tab: 2, id: this.state.mainGuildID} }, () => options.setActivePanel('1'))}>Список <Icon12ChevronOutline /></Link>}>{rating.name}</Header>
-										<div>
-											{rating?.items?.slice(0, 3).map((guild, x) => <TableCell
-												key={x}
-												count={options.numberSpaces(x+1, ' ')}
-												href={`https://vk.com/id${guild.leader}`}
-												style={grid}
-												avatar={<InitialsAvatar gradientColor={this.calcInitialsAvatarColor(guild.id)} size={32}>{guild.tag}</InitialsAvatar>}
-												rows={[{
-													title: guild.name?guild.name:`Guild\n${guild.id}`
-												}, {
-													title: Number.isInteger(guild.title) ? options.numberSpaces(guild.title, ' ') : guild.title
-												}]}
-											/>)}
-											<Spacing size={16} separator />
-											{[this.state.mainGuildID&&rating?.items?.find(guild => guild.id == this.state.mainGuildID)?rating?.items?.find(guild => guild.id == this.state.mainGuildID):rating?.items[rating?.items?.length-1]].map((guild, x) => <TableCell
-												key={x}
-												count={options.numberSpaces(rating?.items?.indexOf(guild)+1, ' ')}
-												href={`https://vk.com/id${guild.leader}`}
-												style={grid}
-												avatar={<InitialsAvatar gradientColor={this.calcInitialsAvatarColor(guild.id)} size={32}>{guild.tag}</InitialsAvatar>}
-												rows={[{
-													title: guild.name?guild.name:`Guild\n${guild.id}`
-												}, {
-													title: Number.isInteger(guild.title) ? options.numberSpaces(guild.title, ' ') : guild.title
-												}]}
-											/>)}
-										</div>
-									</React.Fragment>:<React.Fragment>
-										<Header subtitle={<Skeleton height={14} width={125} marginTop={2}/>} mode="primary" aside={<Skeleton height={20} width={50}/>}><Skeleton height={20} width={100} marginBottom={2}/></Header>
-										<div>
-											{new Array(3).fill(null).map((guild, x) => <div key={x} className="TableCell">
-												<div className="TableCell__content" style={grid}>
-													<Skeleton height={16}/>
-													<Skeleton height={32} borderRadius="50%"/>
-													<Skeleton height={16}/>
-													<Skeleton height={16}/>
-												</div>
-											</div>)}
-											<Spacing size={16} separator />
-											<div className="TableCell">
-												<div className="TableCell__content" style={grid}>
-													<Skeleton height={16}/>
-													<Skeleton height={32} borderRadius="50%"/>
-													<Skeleton height={16}/>
-													<Skeleton height={16}/>
+										</React.Fragment>}
+									</div>
+								</Group>)}
+							</div>
+							<Spacing size={16} />
+							<Group>
+								{state.isDesktop&&
+									this.state?.rating?.items?<Input
+										type="text"
+										name="id"
+										placeholder="Введите номер профиля"
+										align="center"
+										defaultValue={this.state.mainUserID}
+										onChange={e => {
+											let id = Number(e.target.value);
+											if (id != 0 && Number.isInteger(id) && this.state.rating.items.find(user => user.vkId == id || user.id == id)) {
+												this.setState({ mainUserID: id})
+											} else if (this.state.mainUserID!=undefined) {
+												this.setState({ mainUserID: undefined});
+											}
+										}}
+									/>:<Skeleton height={36}/>}
+								<Spacing size={8} />
+								{this.state?.rating?.items?<Footer style={{margin: 0}}>{this.state.server == 1 ? 'Эрмун' : 'Антарес'}, обновлено {this.state.rating.time.replace(/(\d*).(\d*).(\d*)/g, '$3.$2.$1')} в 12:00, {options.numberSpaces(this.state.rating.items.length, ' ')} игроков</Footer>:<Footer style={{margin: 0}}><Skeleton height={16} width={'35%'} margin={'auto'}/></Footer>}
+							</Group>
+						</>}
+						{this.state.tab == 2 && <>
+							<div className={`HorizontalRatingsGroup`}>
+								{ratingGuildsData.map((rating, x) => <Group separator="hide" key={x}>
+									<div className="HorizontalRating">
+										{rating?.items?.length?<React.Fragment>
+											<Header subtitle={rating.subname} title={rating.name} mode="primary" aside={<Link onClick={() => this.setState({ currentRating: {...rating, tab: 2, id: this.state.mainGuildID} }, () => options.setActivePanel('1'))}>Список <Icon12ChevronOutline /></Link>}>{rating.name}</Header>
+											<div>
+												{rating?.items?.slice(0, 3).map((guild, x) => <TableCell
+													key={x}
+													count={options.numberSpaces(x+1, ' ')}
+													href={`https://vk.com/id${guild.leader}`}
+													style={grid}
+													avatar={<InitialsAvatar gradientColor={this.calcInitialsAvatarColor(guild.id)} size={32}>{guild.tag}</InitialsAvatar>}
+													rows={[{
+														title: guild.name?guild.name:`Guild\n${guild.id}`
+													}, {
+														title: Number.isInteger(guild.title) ? options.numberSpaces(guild.title, ' ') : guild.title
+													}]}
+												/>)}
+												<Spacing size={16} separator />
+												{[this.state.mainGuildID&&rating?.items?.find(guild => guild.id == this.state.mainGuildID)?rating?.items?.find(guild => guild.id == this.state.mainGuildID):rating?.items[rating?.items?.length-1]].map((guild, x) => <TableCell
+													key={x}
+													count={options.numberSpaces(rating?.items?.indexOf(guild)+1, ' ')}
+													href={`https://vk.com/id${guild.leader}`}
+													style={grid}
+													avatar={<InitialsAvatar gradientColor={this.calcInitialsAvatarColor(guild.id)} size={32}>{guild.tag}</InitialsAvatar>}
+													rows={[{
+														title: guild.name?guild.name:`Guild\n${guild.id}`
+													}, {
+														title: Number.isInteger(guild.title) ? options.numberSpaces(guild.title, ' ') : guild.title
+													}]}
+												/>)}
+											</div>
+										</React.Fragment>:<React.Fragment>
+											<Header subtitle={<Skeleton height={14} width={125} marginTop={2}/>} mode="primary" aside={<Skeleton height={20} width={50}/>}><Skeleton height={20} width={100} marginBottom={2}/></Header>
+											<div>
+												{new Array(3).fill(null).map((guild, x) => <div key={x} className="TableCell">
+													<div className="TableCell__content" style={grid}>
+														<Skeleton height={16}/>
+														<Skeleton height={32} borderRadius="50%"/>
+														<Skeleton height={16}/>
+														<Skeleton height={16}/>
+													</div>
+												</div>)}
+												<Spacing size={16} separator />
+												<div className="TableCell">
+													<div className="TableCell__content" style={grid}>
+														<Skeleton height={16}/>
+														<Skeleton height={32} borderRadius="50%"/>
+														<Skeleton height={16}/>
+														<Skeleton height={16}/>
+													</div>
 												</div>
 											</div>
-										</div>
-									</React.Fragment>}
-								</div>
-							</Group>)}
-						</div>
-						{state.isDesktop&&<Spacing size={16} />}
-						<Group>
-							{state.isDesktop&&
-								(this.state?.rating?.items?<Input
-									type="text"
-									name="id"
-									placeholder="Введите номер гильдии"
-									align="center"
-									defaultValue={this.state.mainGuildID}
-									onChange={e => {
-										let id = Number(e.target.value);
-										if (id != 0 && Number.isInteger(id) && this.state.rating.items.find(guild => guild.id == id)) {
-											this.setState({ mainGuildID: id})
-										} else if (this.state.mainGuildID!=undefined) {
-											this.setState({ mainGuildID: undefined});
-										}
-									}}
-								/>:<Skeleton height={36}/>)}
-							{state.isDesktop&&<Spacing size={8} />}
-							{this.state?.rating?.items?<Footer style={{margin: 0}}>{this.state.server == 1 ? 'Эрмун' : 'Антарес'}, обновлено {this.state.rating.time.replace(/(\d*).(\d*).(\d*)/g, '$3.$2.$1')} в 12:00, {options.numberSpaces(this.state.rating.items.length, ' ')} гильдий</Footer>:<Footer style={{margin: 0}}><Skeleton height={16} width={'35%'} margin={'auto'}/></Footer>}
-							{!state.isDesktop&&<Spacing size={8} />}
-						</Group>
-					</>}
+										</React.Fragment>}
+									</div>
+								</Group>)}
+							</div>
+							{state.isDesktop&&<Spacing size={16} />}
+							<Group>
+								{state.isDesktop&&
+									(this.state?.rating?.items?<Input
+										type="text"
+										name="id"
+										placeholder="Введите номер гильдии"
+										align="center"
+										defaultValue={this.state.mainGuildID}
+										onChange={e => {
+											let id = Number(e.target.value);
+											if (id != 0 && Number.isInteger(id) && this.state.rating.items.find(guild => guild.id == id)) {
+												this.setState({ mainGuildID: id})
+											} else if (this.state.mainGuildID!=undefined) {
+												this.setState({ mainGuildID: undefined});
+											}
+										}}
+									/>:<Skeleton height={36}/>)}
+								{state.isDesktop&&<Spacing size={8} />}
+								{this.state?.rating?.items?<Footer style={{margin: 0}}>{this.state.server == 1 ? 'Эрмун' : 'Антарес'}, обновлено {this.state.rating.time.replace(/(\d*).(\d*).(\d*)/g, '$3.$2.$1')} в 12:00, {options.numberSpaces(this.state.rating.items.length, ' ')} гильдий</Footer>:<Footer style={{margin: 0}}><Skeleton height={16} width={'35%'} margin={'auto'}/></Footer>}
+								{!state.isDesktop&&<Spacing size={8} />}
+							</Group>
+						</>}
+					</>:<Group>
+						<Div style={{textAlign: 'center', padding: 0, minHeight: 438, display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
+							<SVG_sadFace style={{height: 150, width: 150}}/>
+							<Text style={{fontSize: '24px', lineHeight: '1.25', fontWeight: 600, color: 'var(--text_primary)', width: '50%', marginBottom: 12}}>Произошла ошибка</Text>
+							<Text style={{fontSize: '17px', lineHeight: '1.25', fontWeight: 500, color: 'var(--text_primary)', width: '50%', marginBottom: 12}}>Превышено количество попыток</Text>
+							<Button mode="tertiary" size="l" onClick={() => this.setState({ rating: null, error: false }, () => this.loadRating())}><span style={{color: 'var(--dynamic_blue)'}}>Обновить</span></Button>
+						</Div>
+					</Group>}
 					{this.state.snackbar}
 				</Panel>
 				<PANEL_rating__1 id='1' parent='rating' state={this.props.state} currentRating={this.state.currentRating} options={this.props.options} />
