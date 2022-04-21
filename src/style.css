@@ -119,6 +119,12 @@ div.Scroll {
 .vkuiHorizontalScroll {
 	overflow: visible;
 }
+.Gradient {
+	overflow: hidden;
+}
+.Gradient .HorizontalScroll {
+	overflow: hidden;
+}
 .CardWithAvatar .SimpleCell__description {
 	margin-top: 3px;
 	text-overflow: ellipsis;
@@ -1372,31 +1378,60 @@ div.Scroll::-webkit-scrollbar-track {
 
 
 .beautifulCard {
-	background: transparent;
+	background: var(--background_content);
 	border-radius: 16px;
 	pointer-events: none;
 	-webkit-transform: translate3d(0, 0, 0);
+	width: calc(100% / 3 - 8px * 2)!important;
+}
+.beautifulCard::before {
+	display: none;
 }
 .beautifulCard .Card__in {
 	padding: 16px;
 }
 .beautifulCard .InfoRow {
 	font-weight: 500;
+	display: flex;
+    flex-direction: column-reverse;
+}
+.beautifulCard .InfoRow__header {
+	margin: 0;
+	margin-top: 2px;
 }
 .beautifulCard .Card__in > .Icon {
 	position: absolute;
-	right: -5px;
-	bottom: -5px;
-	background: var(--input_border);
+	right: -10px;
+	bottom: -10px;
+	background: transparent;
 	border-radius: 50%;
-	padding: 10px;
-	opacity: 0.5;
+	padding: 12px;
 	color: var(--text_secondary);
+	overflow: hidden;
+	-webkit-transform: translate3d(0, 0, 0);
+	--fill: var(--accent);
+	color: var(--fill);
+}
+.beautifulCard .Card__in > .Icon::before {
+	content: '';
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	position: absolute;
+	display: block;
+	background-color: var(--fill);
+	opacity: 0.075;
+	z-index: 1;
+}
+.beautifulCard .Card__in > .Icon > svg {
+	position: relative;
+	z-index: 2;
 }
 .beautifulCard .Card__in > .Icon,
 .beautifulCard .Card__in > .Icon > svg {
-	width: 36px!important;
-	height: 36px!important;
+	width: calc(52px - 12px * 2)!important;
+	height: calc(52px - 12px * 2)!important;
 }
 
 
@@ -2289,6 +2324,17 @@ input::-webkit-inner-spin-button {
 	margin-top: -40px;
 }
 
+.CardScroll--withSpaces {
+	margin-left: -8px;
+	margin-right: -8px;
+}
+.CardScroll--withSpaces:first-child {
+	padding-top: var(--vkui--size_cardgrid_padding_vertical--regular);
+}
+.CardScroll--withSpaces:last-child {
+	padding-bottom: var(--vkui--size_cardgrid_padding_vertical--regular);
+}
+
 
 @media screen and (orientation: landscape) {
 	.ModalPage:not(.ModalPage--classic) .ModalPageHeader:after {
@@ -2614,12 +2660,17 @@ input::-webkit-inner-spin-button {
 		/* transform: scaleY(.5); */
 	}
 
-	.HeaderWithTabs .PanelHeader__left {
-		min-width: 52px;
-		width: 52px;
+	
+	.HeaderWithTabs .PanelHeader__left,
+	.HeaderWithTabs .PanelHeader__right {
+		min-width: 52px!important;
+		width: 52px!important;
 	}
 	.HeaderWithTabs .PanelHeader__separator {
 		display: none;
+	}
+	.HeaderWithTabs .PanelHeader__content {
+		padding: 0!important;
 	}
 	.HorizontalRatingsGroup {
 		display: grid;
@@ -2888,17 +2939,6 @@ input::-webkit-inner-spin-button {
 	.ModalPageHeader--content {
 		padding-bottom: 0;
 	}
-	.beautifulCard .Card__in {
-		padding: 12px;
-	}
-	.beautifulCard .Card__in > .Icon {
-		opacity: 0.35;
-	}
-	.beautifulCard .Card__in > .Icon,
-	.beautifulCard .Card__in > .Icon > svg {
-		width: 30px!important;
-		height: 30px!important;
-	}
 
 	.ModalPage__content-in > .Div {
 		padding: 0;
@@ -3085,6 +3125,9 @@ input::-webkit-inner-spin-button {
 	.HeaderWithTabs .PanelHeader__right {
 		min-width: 52px!important;
 		width: 52px!important;
+	}
+	.HeaderWithTabs .PanelHeader__content {
+		padding: 0!important;
 	}
 	.HeaderWithTabs .PanelHeader__left {
 		margin-right: 24px;

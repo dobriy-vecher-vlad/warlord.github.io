@@ -12,14 +12,13 @@ import {
 	Input,
 	Tabs,
 	TabsItem,
-	PanelHeaderButton,
 	InitialsAvatar,
 	View,
 } from '@vkontakte/vkui';
 
 import Skeleton from '../../components/skeleton';
 import TableCell from '../../components/tableCell';
-import { Icon12ChevronOutline, Icon28GridLayoutOutline } from '@vkontakte/icons';
+import { Icon12ChevronOutline } from '@vkontakte/icons';
 import PANEL_rating__1 from '../../panels/rating/1';
 
 let ratingProfilesTime = null;
@@ -98,7 +97,7 @@ class PANEL extends React.Component {
 			mainUserID: Number(this?.props?.game?._vkId) || null,
 			mainGuildID: Number(this?.props?.game?._clan_id) || null,
 			tab: tab,
-			viewgrid: true 
+			server: this.props.server || 1
 		};
 		this._isMounted = false;
 	};
@@ -122,6 +121,7 @@ class PANEL extends React.Component {
 		let rating = null;
 		let count = 0;
 		let error = 0;
+		console.warn(this.state.server);
 		let getTime = (native = false) => {
 			let date = new Date(+new Date - count * 86400000).toLocaleString("ru", {
 				timezone: 'UTC',
@@ -328,6 +328,10 @@ class PANEL extends React.Component {
 		this._isMounted && await this.loadRating();
 	};
 	async componentWillUnmount () {
+		if (this._isMounted) for (let rating of ratingProfilesData) rating.items = [];
+		if (this._isMounted) ratingProfilesTime = null;
+		if (this._isMounted) for (let rating of ratingGuildsData) rating.items = [];
+		if (this._isMounted) ratingGuildsTime = null;
 		this._isMounted = false;
 	};
 	async shouldComponentUpdate(nextProps, nextState) {
@@ -349,7 +353,7 @@ class PANEL extends React.Component {
 						</Tabs>
 					</PanelHeader>}
 					{state.isDesktop && <Group>
-						<PanelHeader className='HeaderFix HeaderWithTabs' fixed={false} separator={true} right={options.getCopy(parent)} left={<PanelHeaderButton aria-label="copy" onClick={() => this.setState({viewgrid: !this.state.viewgrid})}><Icon28GridLayoutOutline/></PanelHeaderButton>}>
+						<PanelHeader className='HeaderFix HeaderWithTabs' fixed={false} separator={true} right={options.getCopy(parent)}>
 							<Tabs>
 								<TabsItem onClick={() => this.setState({ rating: null, tab: 1 }, () => this.loadRating())} selected={this.state.tab == 1}>Профили</TabsItem>
 								<TabsItem onClick={() => this.setState({ rating: null, tab: 2 }, () => this.loadRating())} selected={this.state.tab == 2}>Гильдии</TabsItem>
@@ -357,13 +361,13 @@ class PANEL extends React.Component {
 						</PanelHeader>
 					</Group>}
 					{this.state.tab == 1 && <>
-						<div className={`HorizontalRatingsGroup ${this.state.viewgrid&&'HorizontalRatingsGroup--grid'}`}>
+						<div className={`HorizontalRatingsGroup`}>
 							{ratingProfilesData.map((rating, x) => <Group separator="hide" key={x} style={{gridColumnStart: x == 0 ? 'span 2' : ''}}>
 								<div className="HorizontalRating">
 									{rating?.items?.length?<React.Fragment>
 										<Header subtitle={rating.subname} title={rating.name} mode="primary" aside={<Link onClick={() => this.setState({ currentRating: {...rating, tab: 1, id: this.state.mainUserID} }, () => options.setActivePanel('1'))}>Список <Icon12ChevronOutline /></Link>}>{rating.name}</Header>
 										<div>
-											{rating?.items?.slice(0, this.state.viewgrid ? 3 : 10).map((user, x) => <TableCell
+											{rating?.items?.slice(0, 3).map((user, x) => <TableCell
 												key={x}
 												count={options.numberSpaces(x+1, ' ')}
 												href={`https://vk.com/id${user.id}`}
@@ -392,7 +396,7 @@ class PANEL extends React.Component {
 									</React.Fragment>:<React.Fragment>
 										<Header subtitle={<Skeleton height={14} width={125} marginTop={2}/>} mode="primary" aside={<Skeleton height={20} width={50}/>}><Skeleton height={20} width={100} marginBottom={2}/></Header>
 										<div>
-											{new Array(this.state.viewgrid ? 3 : 10).fill(null).map((user, x) => <div key={x} className="TableCell">
+											{new Array(3).fill(null).map((user, x) => <div key={x} className="TableCell">
 												<div className="TableCell__content" style={grid}>
 													<Skeleton height={16}/>
 													<Skeleton height={32} borderRadius="50%"/>
@@ -433,17 +437,17 @@ class PANEL extends React.Component {
 									}}
 								/>:<Skeleton height={36}/>}
 							<Spacing size={8} />
-							{this.state?.rating?.items?<Footer style={{margin: 0}}>Эрмун, обновлено {this.state.rating.time.replace(/(\d*).(\d*).(\d*)/g, '$3.$2.$1')} в 12:00, {options.numberSpaces(this.state.rating.items.length, ' ')} игроков</Footer>:<Footer style={{margin: 0}}><Skeleton height={16} width={'35%'} margin={'auto'}/></Footer>}
+							{this.state?.rating?.items?<Footer style={{margin: 0}}>{this.state.server == 1 ? 'Эрмун' : 'Антарес'}, обновлено {this.state.rating.time.replace(/(\d*).(\d*).(\d*)/g, '$3.$2.$1')} в 12:00, {options.numberSpaces(this.state.rating.items.length, ' ')} игроков</Footer>:<Footer style={{margin: 0}}><Skeleton height={16} width={'35%'} margin={'auto'}/></Footer>}
 						</Group>
 					</>}
 					{this.state.tab == 2 && <>
-						<div className={`HorizontalRatingsGroup ${this.state.viewgrid&&'HorizontalRatingsGroup--grid'}`}>
+						<div className={`HorizontalRatingsGroup`}>
 							{ratingGuildsData.map((rating, x) => <Group separator="hide" key={x}>
 								<div className="HorizontalRating">
 									{rating?.items?.length?<React.Fragment>
 										<Header subtitle={rating.subname} title={rating.name} mode="primary" aside={<Link onClick={() => this.setState({ currentRating: {...rating, tab: 2, id: this.state.mainGuildID} }, () => options.setActivePanel('1'))}>Список <Icon12ChevronOutline /></Link>}>{rating.name}</Header>
 										<div>
-											{rating?.items?.slice(0, this.state.viewgrid ? 3 : 10).map((guild, x) => <TableCell
+											{rating?.items?.slice(0, 3).map((guild, x) => <TableCell
 												key={x}
 												count={options.numberSpaces(x+1, ' ')}
 												href={`https://vk.com/id${guild.leader}`}
@@ -472,7 +476,7 @@ class PANEL extends React.Component {
 									</React.Fragment>:<React.Fragment>
 										<Header subtitle={<Skeleton height={14} width={125} marginTop={2}/>} mode="primary" aside={<Skeleton height={20} width={50}/>}><Skeleton height={20} width={100} marginBottom={2}/></Header>
 										<div>
-											{new Array(this.state.viewgrid ? 3 : 10).fill(null).map((guild, x) => <div key={x} className="TableCell">
+											{new Array(3).fill(null).map((guild, x) => <div key={x} className="TableCell">
 												<div className="TableCell__content" style={grid}>
 													<Skeleton height={16}/>
 													<Skeleton height={32} borderRadius="50%"/>
@@ -513,7 +517,7 @@ class PANEL extends React.Component {
 									}}
 								/>:<Skeleton height={36}/>)}
 							{state.isDesktop&&<Spacing size={8} />}
-							{this.state?.rating?.items?<Footer style={{margin: 0}}>Эрмун, обновлено {this.state.rating.time.replace(/(\d*).(\d*).(\d*)/g, '$3.$2.$1')} в 12:00, {options.numberSpaces(this.state.rating.items.length, ' ')} гильдий</Footer>:<Footer style={{margin: 0}}><Skeleton height={16} width={'35%'} margin={'auto'}/></Footer>}
+							{this.state?.rating?.items?<Footer style={{margin: 0}}>{this.state.server == 1 ? 'Эрмун' : 'Антарес'}, обновлено {this.state.rating.time.replace(/(\d*).(\d*).(\d*)/g, '$3.$2.$1')} в 12:00, {options.numberSpaces(this.state.rating.items.length, ' ')} гильдий</Footer>:<Footer style={{margin: 0}}><Skeleton height={16} width={'35%'} margin={'auto'}/></Footer>}
 							{!state.isDesktop&&<Spacing size={8} />}
 						</Group>
 					</>}

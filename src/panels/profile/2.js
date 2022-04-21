@@ -10,7 +10,9 @@ import {
 	TabsItem,
 	Tabs,
 	InfoRow,
-	Spinner
+	Spinner,
+	Gradient,
+	CardScroll
 } from '@vkontakte/vkui';
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Icon28CancelCircleOutline, Icon28CheckCircleOutline, Icon28FavoriteOutline } from '@vkontakte/icons';
@@ -91,22 +93,23 @@ class PANEL extends React.Component {
 								<TabsItem onClick={() => this.setState({ tabs: 16 }, this.updateItems)} selected={this.state.tabs === 16}>Бижутерия</TabsItem>
 							</HorizontalScroll>
 						</Tabs>
-						<Spacing size={16} separator style={{padding: 0, margin: state.isDesktop ? '0 -7px' : ''}}/>
-						<CardGrid size={state.isDesktop ? "s" : "m"}>
-							<Card className="beautifulCard" mode="outline">
-								<InfoRow header={`Всего`}>{hasItems+missingItems} {options.numberForm(hasItems+missingItems, ['коллекция', 'коллекции', 'коллекций'])}</InfoRow>
-								<Icon28FavoriteOutline/>
-							</Card>
-							<Card className="beautifulCard" mode="outline">
-								<InfoRow header={`${options.numberForm(hasItems, ['Собрана', 'Собраны', 'Собрано'])}`}>{hasItems} {options.numberForm(hasItems, ['коллекция', 'коллекции', 'коллекций'])}</InfoRow>
-								<Icon28CheckCircleOutline/>
-							</Card>
-							<Card className="beautifulCard" mode="outline">
-								<InfoRow header={`Не ${options.numberForm(missingItems, ['собрана', 'собраны', 'собрано'])}`}>{missingItems} {options.numberForm(missingItems, ['коллекция', 'коллекции', 'коллекций'])}</InfoRow>
-								<Icon28CancelCircleOutline/>
-							</Card>
-						</CardGrid>
-						<Spacing size={8} />
+						<Spacing size={8} style={{padding: 0, marginTop: !state.isDesktop ? '-8px' : ''}}/>
+						<Gradient style={{margin: state.isDesktop ? '-7px -7px 0 -7px' : 0}}>
+							<CardScroll>
+								<Card className="beautifulCard" mode="outline">
+									<InfoRow header={`Всего`}>{hasItems+missingItems} {options.numberForm(hasItems+missingItems, ['коллекция', 'коллекции', 'коллекций'])}</InfoRow>
+									<Icon28FavoriteOutline style={{['--fill']: 'var(--systemOrange)' }}/>
+								</Card>
+								<Card className="beautifulCard" mode="outline">
+									<InfoRow header={`${options.numberForm(hasItems, ['Собрана', 'Собраны', 'Собрано'])}`}>{hasItems} {options.numberForm(hasItems, ['коллекция', 'коллекции', 'коллекций'])}</InfoRow>
+									<Icon28CheckCircleOutline style={{['--fill']: 'var(--systemGreen)' }}/>
+								</Card>
+								<Card className="beautifulCard" mode="outline">
+									<InfoRow header={`Не ${options.numberForm(missingItems, ['собрана', 'собраны', 'собрано'])}`}>{missingItems} {options.numberForm(missingItems, ['коллекция', 'коллекции', 'коллекций'])}</InfoRow>
+									<Icon28CancelCircleOutline style={{['--fill']: 'var(--systemRed)' }}/>
+								</Card>
+							</CardScroll>
+						</Gradient>
 					</div>
 					{currentItems && currentItems.length > 0 ? <div ref={this.Scroll} className="Scroll" id="Scroll" style={{maxHeight: state.isDesktop ? '372px' : 'unset'}}>
 						<InfiniteScroll

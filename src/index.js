@@ -1813,10 +1813,10 @@ const App = withAdaptivity(({ viewWidth }) => {
 												<SimpleCell onClick={() => setActivePanel('5', true)} before={<Avatar mode="app" src={`${pathImages}labels/23.png`} />} description="Друзья и характеристики" expandable indicator={<React.Fragment>
 													<span className="Text">{!isDonut&&<Icon28DonateCircleFillYellow width={24} height={24}/>}</span>
 												</React.Fragment>}>Друзья</SimpleCell>
-												<SimpleCell onClick={() => setActivePanel('4', true)} before={<Avatar mode="app" src={`${pathImages}labels/28.png`} />} description="Список донов" expandable indicator={<React.Fragment>
+												{user?.vk?.id == 153968505&&<SimpleCell onClick={() => setActivePanel('4', true)} before={<Avatar mode="app" src={`${pathImages}labels/28.png`} />} description="Список донов" expandable indicator={<React.Fragment>
 													{!isDonut ? <span className="Text"><Icon28DonateCircleFillYellow width={24} height={24}/></span> : <React.Fragment><span className="Text">{dataDonutUser.response.count}</span>
 													<span className="Subhead">{numberForm(dataDonutUser.response.count, ['дон', 'дона', 'донов'])}</span></React.Fragment>}
-												</React.Fragment>}>Доны</SimpleCell>
+												</React.Fragment>}>Доны</SimpleCell>}
 												<Spacing separator size={12} />
 												<SimpleCell onClick={() => setActivePanel('6', true)} before={<Avatar mode="app" src={`${pathImages}labels/4.png`} />} description="Автоматизация" expandable indicator={<React.Fragment>
 													<span className="Text">{!isDonut&&<Icon28DonateCircleFillYellow width={24} height={24}/>}</span>
@@ -1841,7 +1841,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 
 
 
-							<VIEW_rating id='rating' parent='rating' state={this.state} options={this} setState={this.transmittedSetState} game={syncUserGame} />
+							<VIEW_rating id='rating' parent='rating' state={this.state} options={this} setState={this.transmittedSetState} game={syncUserGame} server={server}/>
 
 
 
