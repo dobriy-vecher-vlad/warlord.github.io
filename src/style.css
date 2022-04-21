@@ -1399,6 +1399,12 @@ div.Scroll::-webkit-scrollbar-track {
 	margin: 0;
 	margin-top: 2px;
 }
+.beautifulCard .InfoRow > span {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	-webkit-transform: translate3d(0, 0, 0);
+}
 .beautifulCard .Card__in > .Icon {
 	position: absolute;
 	right: -10px;

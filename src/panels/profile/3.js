@@ -109,27 +109,27 @@ class PANEL extends React.Component {
 						<Gradient style={{margin: state.isDesktop ? '-7px -7px 0 -7px' : 0}}>
 							<CardScroll>
 								<Card className="beautifulCard" mode="outline">
-									<InfoRow header={`${options.numberForm(stats[0], ['Куплена', 'Куплены', 'Куплено'])}`}>{options.numberSpaces(stats[0])} {options.numberForm(stats[0], ['вещь', 'вещи', 'вещей'])}</InfoRow>
+									<InfoRow header={`${options.numberForm(stats[0], ['куплена', 'куплены', 'куплено'])}`}><span>{options.numberSpaces(stats[0])} {options.numberForm(stats[0], ['вещь', 'вещи', 'вещей'])}</span></InfoRow>
 									<Icon28CoinsOutline style={{['--fill']: 'var(--systemOrange)' }}/>
 								</Card>
 								<Card className="beautifulCard" mode="outline">
-									<InfoRow header={`${options.numberForm(stats[1], ['Вставлен', 'Вставлено', 'Вставлено'])}`}>{options.numberSpaces(stats[1])} {options.numberForm(stats[1], ['камень', 'камня', 'камней'])}</InfoRow>
+									<InfoRow header={`${options.numberForm(stats[1], ['вставлен', 'вставлено', 'вставлено'])}`}><span>{options.numberSpaces(stats[1])} {options.numberForm(stats[1], ['камень', 'камня', 'камней'])}</span></InfoRow>
 									<Icon28DiamondOutline style={{['--fill']: 'var(--systemRed)' }}/>
 								</Card>
 								<Card className="beautifulCard" mode="outline">
-									<InfoRow header={`${options.numberForm(stats[2], ['Улучшен', 'Улучшено', 'Улучшено'])}`}>{options.numberSpaces(stats[2])} {options.numberForm(stats[2], ['уровень', 'уровня', 'уровней'])}</InfoRow>
+									<InfoRow header={`${options.numberForm(stats[2], ['улучшен', 'улучшено', 'улучшено'])}`}><span>{options.numberSpaces(stats[2])} {options.numberForm(stats[2], ['уровень', 'уровня', 'уровней'])}</span></InfoRow>
 									<Icon28StatisticsOutline style={{['--fill']: 'var(--systemBlue)' }}/>
 								</Card>
 								<Card className="beautifulCard" mode="outline">
-									<InfoRow header={`Бонус от камней`}>{options.numberSpaces(stats[3])} {options.numberForm(stats[3], ['урон', 'урона', 'урона'])}</InfoRow>
+									<InfoRow header={`бонус от камней`}><span>{options.numberSpaces(stats[3])} {options.numberForm(stats[3], ['урон', 'урона', 'урона'])}</span></InfoRow>
 									<Icon28GiftOutline style={{['--fill']: 'var(--systemGreen)' }}/>
 								</Card>
 								<Card className="beautifulCard" mode="outline">
-									<InfoRow header={`Бонус от камней`}>{options.numberSpaces(stats[4]*15)} {options.numberForm(stats[4]*15, ['здоровье', 'здоровья', 'здоровья'])}</InfoRow>
+									<InfoRow header={`бонус от камней`}><span>{options.numberSpaces(stats[4]*15)} {options.numberForm(stats[4]*15, ['здоровье', 'здоровья', 'здоровья'])}</span></InfoRow>
 									<Icon28GiftOutline style={{['--fill']: 'var(--systemGreen)' }}/>
 								</Card>
 								<Card className="beautifulCard" mode="outline">
-									<InfoRow header={`Бонус от камней`}>{options.numberSpaces(stats[5])} {options.numberForm(stats[5], ['энергия', 'энергии', 'энергии'])}</InfoRow>
+									<InfoRow header={`бонус от камней`}><span>{options.numberSpaces(stats[5])} {options.numberForm(stats[5], ['энергия', 'энергии', 'энергии'])}</span></InfoRow>
 									<Icon28GiftOutline style={{['--fill']: 'var(--systemGreen)' }}/>
 								</Card>
 							</CardScroll>

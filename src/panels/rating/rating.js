@@ -423,10 +423,10 @@ class PANEL extends React.Component {
 									</div>
 								</Group>)}
 							</div>
-							<Spacing size={16} />
+							{state.isDesktop&&<Spacing size={16} />}
 							<Group>
 								{state.isDesktop&&
-									this.state?.rating?.items?<Input
+									(this.state?.rating?.items?<Input
 										type="text"
 										name="id"
 										placeholder="Введите номер профиля"
@@ -440,9 +440,10 @@ class PANEL extends React.Component {
 												this.setState({ mainUserID: undefined});
 											}
 										}}
-									/>:<Skeleton height={36}/>}
-								<Spacing size={8} />
+									/>:<Skeleton height={36}/>)}
+								{state.isDesktop&&<Spacing size={8} />}
 								{this.state?.rating?.items?<Footer style={{margin: 0}}>{this.state.server == 1 ? 'Эрмун' : 'Антарес'}, обновлено {this.state.rating.time.replace(/(\d*).(\d*).(\d*)/g, '$3.$2.$1')} в 12:00, {options.numberSpaces(this.state.rating.items.length, ' ')} игроков</Footer>:<Footer style={{margin: 0}}><Skeleton height={16} width={'35%'} margin={'auto'}/></Footer>}
+								{!state.isDesktop&&<Spacing size={8} />}
 							</Group>
 						</>}
 						{this.state.tab == 2 && <>

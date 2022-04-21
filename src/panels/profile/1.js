@@ -96,15 +96,15 @@ class PANEL extends React.Component {
 						<Gradient style={{margin: state.isDesktop ? '-7px -7px 0 -7px' : 0}}>
 							<CardScroll>
 								<Card className="beautifulCard" mode="outline">
-									<InfoRow header={`всего`}>{hasItems+missingItems} {options.numberForm(hasItems+missingItems, ['вещь', 'вещи', 'вещей'])}</InfoRow>
+									<InfoRow header={`всего`}><span>{hasItems+missingItems} {options.numberForm(hasItems+missingItems, ['вещь', 'вещи', 'вещей'])}</span></InfoRow>
 									<Icon28FavoriteOutline style={{['--fill']: 'var(--systemOrange)' }}/>
 								</Card>
 								<Card className="beautifulCard" mode="outline">
-									<InfoRow header={`${options.numberForm(hasItems, ['куплена', 'куплены', 'куплено'])}`}>{hasItems} {options.numberForm(hasItems, ['вещь', 'вещи', 'вещей'])}</InfoRow>
+									<InfoRow header={`${options.numberForm(hasItems, ['куплена', 'куплены', 'куплено'])}`}><span>{hasItems} {options.numberForm(hasItems, ['вещь', 'вещи', 'вещей'])}</span></InfoRow>
 									<Icon28CheckCircleOutline style={{['--fill']: 'var(--systemGreen)' }}/>
 								</Card>
 								<Card className="beautifulCard" mode="outline">
-									<InfoRow header={`не ${options.numberForm(missingItems, ['куплена', 'куплены', 'куплено'])}`}>{missingItems} {options.numberForm(missingItems, ['вещь', 'вещи', 'вещей'])}</InfoRow>
+									<InfoRow header={`не ${options.numberForm(missingItems, ['куплена', 'куплены', 'куплено'])}`}><span>{missingItems} {options.numberForm(missingItems, ['вещь', 'вещи', 'вещей'])}</span></InfoRow>
 									<Icon28CancelCircleOutline style={{['--fill']: 'var(--systemRed)' }}/>
 								</Card>
 							</CardScroll>
