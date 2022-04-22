@@ -60,7 +60,6 @@ import {
 	Icon24StickerOutline,
 	Icon24TshirtOutline,
 	Icon24CheckCircleOutline,
-	Icon56DonateOutline,
 	Icon28CancelCircleOutline,
 	Icon28CheckCircleOutline,
 	Icon28SunOutline,
@@ -158,6 +157,8 @@ import PANEL_profile__4 from './panels/profile/4';
 import PANEL_profile__5 from './panels/profile/5';
 import PANEL_profile__6 from './panels/profile/6';
 import PANEL_profile__7 from './panels/profile/7';
+// import PANEL_profile__8 from './panels/profile/8';
+// import PANEL_profile__9 from './panels/profile/9';
 
 import VIEW_rating from './panels/rating/rating';
 
@@ -773,6 +774,18 @@ const App = withAdaptivity(({ viewWidth }) => {
 					return this.OpenModal('donut');
 				}
 			}
+			if (name == '8' && activeStory == 'profile') {
+				if (!isDonut) {
+					// this.OpenModal('donut');
+					return this.OpenModal('donut');
+				}
+			}
+			if (name == '9' && activeStory == 'profile') {
+				if (!isDonut) {
+					// this.OpenModal('donut');
+					return this.OpenModal('donut');
+				}
+			}
 			if (name == '1' && activeStory == 'bosses') {
 				if (!isDonut) {
 					// this.OpenModal('donut');
@@ -1333,6 +1346,22 @@ const App = withAdaptivity(({ viewWidth }) => {
 					syncUser = dataVK;
 					this.setState({ user: {vk: dataVK, game: null} });
 				}
+				if (!this.state.storeProfilesFull[0].first_name) {
+					let allDataVK = await getBridge('VKWebAppCallAPIMethod', {"method": "users.get", "params": {"user_ids": this.state.storeProfilesFull.map(profile => profile.id).join(','), "fields": "photo_100,photo_200,photo_max_orig", "v": '5.130', "access_token": "9942dca8c434ee910f1745a2989105b6b66d712e4f6d96b474278ca18ea7e6d7a8db5f4e569b16c6d1d20"}});
+					for (let storeProfileData of allDataVK?.response) {
+						let storeProfile = this.state.storeProfilesFull.findIndex(profile => profile.id == storeProfileData.id);
+						if (storeProfile != -1) {
+							this.state.storeProfilesFull[storeProfile] = {
+								...this.state.storeProfilesFull[storeProfile],
+								first_name: storeProfileData.first_name,
+								last_name: storeProfileData.last_name,
+								photo_100: storeProfileData.photo_100,
+								photo_200: storeProfileData.photo_200,
+								photo_max_orig: storeProfileData.photo_max_orig
+							}
+						};
+					}
+				}
 				this.state.storeProfilesFull[this.state.storeProfilesIndex] = {
 					...this.state.storeProfiles[this.state.storeProfilesIndex],
 					first_name: dataVK.first_name,
@@ -1485,12 +1514,6 @@ const App = withAdaptivity(({ viewWidth }) => {
 						<Cell mode="selectable" checked={this.state.checkItems.stock} after={<Icon24CheckCircleOutline style={{color: this.state.checkItems.stock ? 'var(--dynamic_green)' : 'var(--icon_secondary)'}}/>} description="Отображение в списке" onChange={(e) => this.isCheckItems(e, 'stock')}>Наличие предмета</Cell>
 					</Card>}
 				</CardGrid>
-				{/* {!isDonut && queryParams&& <React.Fragment>
-					<Spacing separator size={16} />
-					<Card className="DescriptionCardWiki">
-						<Placeholder action={<Button href="https://vk.com/donut/wiki.warlord" target="_blank" size="m" mode="commerce">Узнать подробнее</Button>} icon={<Icon56DonateOutline width="56" height="56" style={{color: '#ffae26'}} />} header="VK Donut">Смотри наличие вещей,<br/>а также многое другое вместе с подпиской</Placeholder>
-					</Card>
-				</React.Fragment>} */}
 			</React.Fragment>
 		);
 		async componentDidMount() {
@@ -1619,7 +1642,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 							</Panel>
 						</SplitCol>
 					)}
-					<SplitCol animate={!isDesktop} animate={false} spaced={isDesktop} width={isDesktop && activeStory ? '560px' : '100%'} maxWidth={isDesktop && activeStory ? '560px' : '100%'}>
+					<SplitCol animate={!isDesktop} spaced={isDesktop} width={isDesktop && activeStory ? '560px' : '100%'} maxWidth={isDesktop && activeStory ? '560px' : '100%'}>
 						<Epic activeStory={activeStory} tabbar={!isDesktop && activeStory &&
 							<Tabbar>
 								<TabbarItem
@@ -1798,6 +1821,20 @@ const App = withAdaptivity(({ viewWidth }) => {
 											</div>
 											<Spacing separator size={12} />
 											<React.Fragment>
+												{/* <SimpleCell onClick={() => setActivePanel('8', true)} before={<Avatar mode="app" src={`${pathImages}labels/29.png`} />} description="Автоматизация" expandable indicator={<React.Fragment>
+													<span className="Text">{!isDonut&&<Icon28DonateCircleFillYellow width={24} height={24}/>}</span>
+												</React.Fragment>}>Боссы</SimpleCell> */}
+												<SimpleCell onClick={() => setActivePanel('6', true)} before={<Avatar mode="app" src={`${pathImages}labels/4.png`} />} description="Автоматизация" expandable indicator={<React.Fragment>
+													<span className="Text">{!isDonut&&<Icon28DonateCircleFillYellow width={24} height={24}/>}</span>
+												</React.Fragment>}>Рейды</SimpleCell>
+												<SimpleCell onClick={() => setActivePanel('7', true)} before={<Avatar mode="app" src={`${pathImages}labels/30.png`} />} description="Автоматизация" expandable indicator={<React.Fragment>
+													{!isDonut ? <span className="Text"><Icon28DonateCircleFillYellow width={24} height={24}/></span> : <React.Fragment><span className="Text">{numberSpaces(syncUserGame._ap)}</span>
+													<span className="Subhead">{numberForm(syncUserGame._ap, ['кубок', 'кубка', 'кубков'])}</span></React.Fragment>}
+												</React.Fragment>}>Арена</SimpleCell>
+												{/* <SimpleCell onClick={() => setActivePanel('9', true)} before={<Avatar mode="app" src={`${pathImages}labels/14.png`} />} description="Автоматизация" expandable indicator={<React.Fragment>
+													<span className="Text">{!isDonut&&<Icon28DonateCircleFillYellow width={24} height={24}/>}</span>
+												</React.Fragment>}>Ресурсы</SimpleCell> */}
+												<Spacing separator size={12} />
 												<SimpleCell onClick={() => setActivePanel('1', true)} before={<Avatar mode="app" src={`${pathImages}labels/12.png`} />} description="Ассортимент вещей" expandable indicator={<React.Fragment>
 													{!isDonut ? <span className="Text"><Icon28DonateCircleFillYellow width={24} height={24}/></span> : <React.Fragment><span className="Text">{syncItems.length} / {Items.length}</span>
 													<span className="Subhead">{numberForm(Items.length, ['вещь', 'вещи', 'вещей'])}</span></React.Fragment>}
@@ -1817,14 +1854,6 @@ const App = withAdaptivity(({ viewWidth }) => {
 													{!isDonut ? <span className="Text"><Icon28DonateCircleFillYellow width={24} height={24}/></span> : <React.Fragment><span className="Text">{dataDonutUser.response.count}</span>
 													<span className="Subhead">{numberForm(dataDonutUser.response.count, ['дон', 'дона', 'донов'])}</span></React.Fragment>}
 												</React.Fragment>}>Доны</SimpleCell>}
-												<Spacing separator size={12} />
-												<SimpleCell onClick={() => setActivePanel('6', true)} before={<Avatar mode="app" src={`${pathImages}labels/4.png`} />} description="Автоматизация" expandable indicator={<React.Fragment>
-													<span className="Text">{!isDonut&&<Icon28DonateCircleFillYellow width={24} height={24}/>}</span>
-												</React.Fragment>}>Рейды</SimpleCell>
-												<SimpleCell onClick={() => setActivePanel('7', true)} before={<Avatar mode="app" src={`${pathImages}labels/30.png`} />} description="Автоматизация" expandable indicator={<React.Fragment>
-													{!isDonut ? <span className="Text"><Icon28DonateCircleFillYellow width={24} height={24}/></span> : <React.Fragment><span className="Text">{numberSpaces(syncUserGame._ap)}</span>
-													<span className="Subhead">{numberForm(syncUserGame._ap, ['кубок', 'кубка', 'кубков'])}</span></React.Fragment>}
-												</React.Fragment>}>Арена</SimpleCell>
 											</React.Fragment>
 										</PullToRefresh>
 									</Group>}
@@ -1837,6 +1866,8 @@ const App = withAdaptivity(({ viewWidth }) => {
 								<PANEL_profile__5 id='5' parent='profile' state={this.state} options={this} />
 								<PANEL_profile__6 id='6' parent='profile' state={this.state} options={this} />
 								<PANEL_profile__7 id='7' parent='profile' state={this.state} options={this} />
+								{/* <PANEL_profile__8 id='8' parent='profile' state={this.state} options={this} /> */}
+								{/* <PANEL_profile__9 id='9' parent='profile' state={this.state} options={this} /> */}
 							</View>
 
 

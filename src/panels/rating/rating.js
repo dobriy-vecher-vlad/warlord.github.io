@@ -53,10 +53,6 @@ let ratingGuildsData = [{
 	subname: 'навыки и постройки',
 	items: []
 }, {
-	name: 'Казна',
-	subname: 'серебро и золото',
-	items: []
-}, {
 	name: 'Стража',
 	subname: 'атака и здоровье',
 	items: []
@@ -65,15 +61,15 @@ let ratingGuildsData = [{
 	subname: 'атака и здоровье',
 	items: []
 }, {
-	name: 'Уровень',
-	subname: 'статистика состава',
-	items: []
-}, {
 	name: 'Атака',
 	subname: 'статистика состава',
 	items: []
 }, {
 	name: 'Здоровье',
+	subname: 'статистика состава',
+	items: []
+}, {
+	name: 'Уровень',
 	subname: 'статистика состава',
 	items: []
 }, {
@@ -228,15 +224,6 @@ class PANEL extends React.Component {
 							tag: guild.tag
 						}));
 						ratingGuildsData[1].items = dataRating.sort((a, b) => {
-							return b.treasury.reduce((first, second) => first + second) - a.treasury.reduce((first, second) => first + second)
-						}).map(guild => ({
-							id: guild.id,
-							name: guild.name,
-							title: guild.treasury.reduce((first, second) => first + second),
-							leader: guild.leader,
-							tag: guild.tag
-						}));
-						ratingGuildsData[2].items = dataRating.sort((a, b) => {
 							return b.guard.reduce((first, second) => first + second) - a.guard.reduce((first, second) => first + second)
 						}).map(guild => ({
 							id: guild.id,
@@ -245,7 +232,7 @@ class PANEL extends React.Component {
 							leader: guild.leader,
 							tag: guild.tag
 						}));
-						ratingGuildsData[3].items = dataRating.sort((a, b) => {
+						ratingGuildsData[2].items = dataRating.sort((a, b) => {
 							return b.ram.reduce((first, second) => first + second) - a.ram.reduce((first, second) => first + second)
 						}).map(guild => ({
 							id: guild.id,
@@ -254,16 +241,7 @@ class PANEL extends React.Component {
 							leader: guild.leader,
 							tag: guild.tag
 						}));
-						ratingGuildsData[4].items = dataRating.sort((a, b) => {
-							return b.users.reduce((first, second) => ({lvl: first.lvl + second.lvl})).lvl - a.users.reduce((first, second) => ({lvl: first.lvl + second.lvl})).lvl
-						}).map(guild => ({
-							id: guild.id,
-							name: guild.name,
-							title: guild.users.reduce((first, second) => ({lvl: first.lvl + second.lvl})).lvl,
-							leader: guild.leader,
-							tag: guild.tag
-						}));
-						ratingGuildsData[5].items = dataRating.sort((a, b) => {
+						ratingGuildsData[3].items = dataRating.sort((a, b) => {
 							return b.users.reduce((first, second) => ({dmg: first.dmg + second.dmg})).dmg - a.users.reduce((first, second) => ({dmg: first.dmg + second.dmg})).dmg
 						}).map(guild => ({
 							id: guild.id,
@@ -272,7 +250,7 @@ class PANEL extends React.Component {
 							leader: guild.leader,
 							tag: guild.tag
 						}));
-						ratingGuildsData[6].items = dataRating.sort((a, b) => {
+						ratingGuildsData[4].items = dataRating.sort((a, b) => {
 							return b.users.reduce((first, second) => ({hp: first.hp + second.hp})).hp - a.users.reduce((first, second) => ({hp: first.hp + second.hp})).hp
 						}).map(guild => ({
 							id: guild.id,
@@ -281,7 +259,16 @@ class PANEL extends React.Component {
 							leader: guild.leader,
 							tag: guild.tag
 						}));
-						ratingGuildsData[7].items = dataRating.sort((a, b) => {
+						ratingGuildsData[5].items = dataRating.sort((a, b) => {
+							return b.users.reduce((first, second) => ({lvl: first.lvl + second.lvl})).lvl - a.users.reduce((first, second) => ({lvl: first.lvl + second.lvl})).lvl
+						}).map(guild => ({
+							id: guild.id,
+							name: guild.name,
+							title: guild.users.reduce((first, second) => ({lvl: first.lvl + second.lvl})).lvl,
+							leader: guild.leader,
+							tag: guild.tag
+						}));
+						ratingGuildsData[6].items = dataRating.sort((a, b) => {
 							return Math.ceil(100 / (b.users.length / b.users.filter(user => user.date[1] < 86400*7).length)) - Math.ceil(100 / (a.users.length / a.users.filter(user => user.date[1] < 86400*7).length))
 						}).map(guild => ({
 							id: guild.id,
@@ -290,7 +277,7 @@ class PANEL extends React.Component {
 							leader: guild.leader,
 							tag: guild.tag
 						}));
-						ratingGuildsData[8].items = dataRating.sort((a, b) => {
+						ratingGuildsData[7].items = dataRating.sort((a, b) => {
 							return b.actions.bosses.filter(boss => boss.time > milliseconds-86400000*7).length - a.actions.bosses.filter(boss => boss.time > milliseconds-86400000*7).length
 						}).map(guild => ({
 							id: guild.id,
@@ -299,7 +286,7 @@ class PANEL extends React.Component {
 							leader: guild.leader,
 							tag: guild.tag
 						}));
-						ratingGuildsData[9].items = dataRating.sort((a, b) => {
+						ratingGuildsData[8].items = dataRating.sort((a, b) => {
 							return b.actions.wars.to.filter(war => war.time > milliseconds-86400000*7).length - a.actions.wars.to.filter(war => war.time > milliseconds-86400000*7).length
 						}).map(guild => ({
 							id: guild.id,
@@ -448,7 +435,7 @@ class PANEL extends React.Component {
 						</>}
 						{this.state.tab == 2 && <>
 							<div className={`HorizontalRatingsGroup`}>
-								{ratingGuildsData.map((rating, x) => <Group separator="hide" key={x}>
+								{ratingGuildsData.map((rating, x) => <Group separator="hide" key={x} style={{gridColumnStart: x == 0 ? 'span 2' : ''}}>
 									<div className="HorizontalRating">
 										{rating?.items?.length?<React.Fragment>
 											<Header subtitle={rating.subname} title={rating.name} mode="primary" aside={<Link onClick={() => this.setState({ currentRating: {...rating, tab: 2, id: this.state.mainGuildID} }, () => options.setActivePanel('1'))}>Список <Icon12ChevronOutline /></Link>}>{rating.name}</Header>
