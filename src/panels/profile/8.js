@@ -49,20 +49,14 @@ class PANEL extends React.Component {
 		};
 		this._isMounted = false;
 	};
-	updateSelect = async(el) => {
+	updateSelect = (el) => {
 		if (el.target.name) {
 			if (el.target.name == 'skipMode') {
 				this._isMounted && this.setState({ botSettings: {
 					...this.state.botSettings,
 					useEnergy: Number(el.target.value) == 1 ? true : false,
 					useGold: Number(el.target.value) == 2 ? true : false
-				}}, async() => {
-					let data = {
-						...this.state.botSettings,
-						tryLimit: this.state.tryLimit
-					}
-					this._isMounted && await this.props.options.Storage({key: 'arenaSettings', value: JSON.stringify(data)});
-				});
+				}});
 			}
 		}
 	};
@@ -434,17 +428,6 @@ class PANEL extends React.Component {
 			this._isMounted && syncBot.isStart && this.BotArena('pause');
 		}
 		if (mode == 'load' || mode == 'reload') {
-			if (mode == 'load') {
-				let settings = this._isMounted && await this.props.options.Storage({key: 'arenaSettings', defaultValue: JSON.stringify(botSettings)});
-				if (settings) {
-					settings = JSON.parse(settings.value);
-					if (settings) {
-						botSettings.useEnergy = settings.useEnergy;
-						botSettings.useGold = settings.useGold;
-						this.state.tryLimit = settings.tryLimit || 20;
-					}
-				}
-			}
 			if (mode == 'reload') {
 				this._isMounted && setBotLog(`Данные обновлены`, 'text');
 			}
@@ -576,12 +559,12 @@ class PANEL extends React.Component {
 								</Card>
 							</CardGrid>
 							<Spacing size={8} />
-							<CardGrid size="m">
+							<CardGrid size="m" onChange={(e) => this._isMounted && this.updateSelect(e)}>
 								<Card className='DescriptionCardWiki Clear'>
-									<Radio checked={this.state.botSettings.useEnergy} onChange={(e) => this._isMounted && this.updateSelect(e)} name="skipMode" disabled={syncBot.isStart} value="1" description="Тратит 4 энергии">Энергия</Radio>
+									<Radio name="skipMode" disabled={syncBot.isStart} value="1" description="Тратит 4 энергии">Энергия</Radio>
 								</Card>
 								<Card className='DescriptionCardWiki Clear'>
-									<Radio checked={this.state.botSettings.useGold} onChange={(e) => this._isMounted && this.updateSelect(e)} name="skipMode" disabled={syncBot.isStart} value="2" description={`Тратит ${["0", "10", "30", "50", "90", "150", "250", "350", "500", "650"][syncBot.arena.player._al]} золота и 16 кубков`}>Золото</Radio>
+									<Radio name="skipMode" disabled={syncBot.isStart} value="2" description={`Тратит ${["0", "10", "30", "50", "90", "150", "250", "350", "500", "650"][syncBot.arena.player._al]} золота и 16 кубков`} defaultChecked>Золото</Radio>
 								</Card>
 							</CardGrid>
 						</div>

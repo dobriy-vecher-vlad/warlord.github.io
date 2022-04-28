@@ -74,6 +74,7 @@ class PANEL extends React.Component {
 			isLoad: false,
 			isExit: false,
 			isPause: false,
+			isDevLog: false,
 			
 			botLog: <Placeholder
 				style={{overflow: "hidden"}}
@@ -227,8 +228,7 @@ class PANEL extends React.Component {
 			if (type == 'text') {
 				log.push({ type: 'text', message: message, color: color });
 			}
-			// console.log(message);
-			if (type == 'boss') {
+			if (type == 'boss' && color == null) {
 				log.push({ type: 'boss', message: {
 					avatar: message.type,
 					title: 'Босс',
@@ -236,7 +236,7 @@ class PANEL extends React.Component {
 					message: `Успешно убит босс с ${this.props.options.numberSpaces(message._mhp)} HP и ${this.props.options.numberSpaces(message._dmg)} DMG`
 				} });
 			}
-			if (type == 'chest') {
+			if (type == 'chest' && color == null) {
 				let data = { type: 'chest', message: {
 					avatar: message.type,
 					title: 'Сундук',
@@ -246,7 +246,7 @@ class PANEL extends React.Component {
 				if (message.rstep&&message.rstep.r) data.message.message = data.message.message.concat(this.parseReward(message.rstep.r));
 				log.push(data);
 			}
-			if (type == 'barrel') {
+			if (type == 'barrel' && color == null) {
 				let data = { type: 'barrel', message: {
 					avatar: 'bot/raids/108.png',
 					title: 'Бочка',
@@ -254,6 +254,15 @@ class PANEL extends React.Component {
 					message: (message.rstep&&message.rstep.r)?[]:'Нет награды'
 				} };
 				if (message.rstep&&message.rstep.r) data.message.message = data.message.message.concat(this.parseReward(message.rstep.r));
+				log.push(data);
+			}
+			if (type == 'boss' && color != null && this.state.isDevLog == true) {
+				let data = { type: 'boss', message: {
+					avatar: message._type || message.type,
+					title: 'Босс',
+					time: this.props.options.getRealTime(),
+					message: color
+				} };
 				log.push(data);
 			}
 			this._isMounted && this.setState({ botLog: log })
@@ -288,6 +297,7 @@ class PANEL extends React.Component {
 				});
 				syncBot.raids.energy = energy;
 				this._isMounted && this.setState({ isLoad: false });
+				this._isMounted && needSnackbar&&await this.props.options.Storage({key: 'raidSettings', value: JSON.stringify(botRaidsSettings)});
 				needSnackbar&&openSnackbar({text: `Настройки успешно применены, на рейд необходимо ${energy} ${numberForm(energy, ['энергия', 'энергии', 'энергии'])}`, icon: 'done'});
 			}
 			return;
@@ -303,7 +313,6 @@ class PANEL extends React.Component {
 		let api_uid = state.user.vk.id;
 		let auth_key = state.auth;
 		if (!auth_key) {
-			console.log('test');
 			auth_key = this._isMounted && await BotAPI('getAuth', null, null, null, {stage: 'modal', text: 'Для продолжения работы необходимо указать ключ авторизации'});
 			if (auth_key == 'modal') {
 				this._isMounted && setActivePanel('profile');
@@ -883,6 +892,28 @@ class PANEL extends React.Component {
 											boss.status = 1;
 											// setBotLog(`Успешно убили босса {point: ${boss.point}, status: ${boss.status}}`);
 											dataGame.fight.type = boss.type;
+											this._isMounted && setBotLog(dataGame.fight, 'boss', [{
+												title: 'Атака босса',
+												message: this.props.options.numberSpaces(dmg)
+											}, {
+												title: 'Здоровье босса',
+												message: this.props.options.numberSpaces(hp)
+											}, {
+												title: 'Моя атака',
+												message: this.props.options.numberSpaces(mydmg)
+											}, {
+												title: 'Моё здоровье',
+												message: this.props.options.numberSpaces(myhp)
+											}, {
+												title: 'Количество ударов',
+												message: this.props.options.numberSpaces(количествоУдаров)
+											}, {
+												title: 'Количество возможных ударов',
+												message: this.props.options.numberSpaces(количествоУдаровВозможных)
+											}, {
+												title: 'Количество ударов навыка',
+												message: this.props.options.numberSpaces(количествоУдаровНавыка)
+											}]);
 											this._isMounted && setBotLog(dataGame.fight, 'boss');
 											return true;
 										} else {
@@ -901,6 +932,28 @@ class PANEL extends React.Component {
 									}
 								} else {
 									// setBotLog(`Невозможно убить босса, вы умрёте {point: ${boss.point}, status: ${boss.status}}`);
+									this._isMounted && setBotLog(dataGame.fight, 'boss', [{
+										title: 'Атака босса',
+										message: this.props.options.numberSpaces(dmg)
+									}, {
+										title: 'Здоровье босса',
+										message: this.props.options.numberSpaces(hp)
+									}, {
+										title: 'Моя атака',
+										message: this.props.options.numberSpaces(mydmg)
+									}, {
+										title: 'Моё здоровье',
+										message: this.props.options.numberSpaces(myhp)
+									}, {
+										title: 'Количество ударов',
+										message: this.props.options.numberSpaces(количествоУдаров)
+									}, {
+										title: 'Количество возможных ударов',
+										message: this.props.options.numberSpaces(количествоУдаровВозможных)
+									}, {
+										title: 'Количество ударов навыка',
+										message: this.props.options.numberSpaces(количествоУдаровНавыка)
+									}]);
 									this._isMounted && setBotLog(`Невозможно убить босса, вы умрёте`, 'text', 'red');
 									this._isMounted && this.BotRaids('pause');
 									await wait(3000);
@@ -1038,6 +1091,18 @@ class PANEL extends React.Component {
 				// console.log(dataGame);
 				if (dataGame !== undefined && dataGame.uraid !== undefined) {
 					// this.setState({ popout: null });
+					let settings = this._isMounted && await this.props.options.Storage({key: 'raidSettings', defaultValue: JSON.stringify(botRaidsSettings)});
+					if (settings) {
+						settings = JSON.parse(settings.value);
+						if (settings) {
+							botRaidsSettings.barrels = settings.barrels;
+							botRaidsSettings.chestsTier1 = settings.chestsTier1;
+							botRaidsSettings.chestsTier2 = settings.chestsTier2;
+							botRaidsSettings.chestsTier3 = settings.chestsTier3;
+							botRaidsSettings.chestsTier4 = settings.chestsTier4;
+							botRaidsSettings.chestsTier5 = settings.chestsTier5;
+						}
+					}
 					this._isMounted && updateInfo(dataGame.uraid);
 					this._isMounted && this.BotRaids('energy');
 				} else {
@@ -1135,6 +1200,18 @@ class PANEL extends React.Component {
 			if (mode == 'load') {
 				// this.setState({ activeStory: 'profile' });
 				// this.setState({ activePanel: '6' });
+				let settings = this._isMounted && await this.props.options.Storage({key: 'raidSettings', defaultValue: JSON.stringify(botRaidsSettings)});
+				if (settings) {
+					settings = JSON.parse(settings.value);
+					if (settings) {
+						botRaidsSettings.barrels = settings.barrels;
+						botRaidsSettings.chestsTier1 = settings.chestsTier1;
+						botRaidsSettings.chestsTier2 = settings.chestsTier2;
+						botRaidsSettings.chestsTier3 = settings.chestsTier3;
+						botRaidsSettings.chestsTier4 = settings.chestsTier4;
+						botRaidsSettings.chestsTier5 = settings.chestsTier5;
+					}
+				}
 				this._isMounted && this.setState({ isLoad: false });
 			}
 			if (mode == 'reload') {
@@ -1207,7 +1284,7 @@ class PANEL extends React.Component {
 										Попытки
 									</SimpleCell>
 								</Card> */}
-								<Card className='DescriptionCardWiki'>
+								<Card className='DescriptionCardWiki' onClick={() => this.setState({ isDevLog: !this.state.isDevLog }, this.props.options.openSnackbar({text: `Режим разработчика ${this.state.isDevLog?'выключен':'включен'}`, icon: 'done'}))}>
 									<SimpleCell
 										before={<Avatar size={32} mode="app" src={`${pathImages}bot/raids/8.png`} />}
 										description={`${botRaidsSettings.selectMode[syncBot.raids.mode].title}`}
@@ -1778,15 +1855,15 @@ class PANEL extends React.Component {
 							<div className="BotLog Scroll" style={{marginLeft: 8, marginRight: state.isDesktop?0:8}}>{!Array.isArray(this.state.botLog)?this.state.botLog:this.state.botLog.map((item, x) => {
 								if (item.type == 'text') return (<span key={x} className={item.color}>{item.message}</span>)
 								if (item.type == 'barrel' || item.type == 'chest' || item.type == 'boss') return (<div key={x} className="Log__message">
-									<Avatar size={36} mode="app" src={`${pathImages}${item.type == 'boss'?bosses[syncBot.raids.id-1][item.message.avatar-1][1]:item.type == 'barrel'?item.message.avatar:chests[item.message.avatar-1][1]}`} />
+									<Avatar size={36} mode="app" src={`${pathImages}${item.type == 'boss'?bosses[syncBot.raids.id-1]?.[item.message.avatar-1]?.[1]:item.type == 'barrel'?item.message.avatar:chests[item.message.avatar-1][1]}`} />
 									<div className="Log__message--main">
 										<div className="Log__message--title">
-											<span>{item.type == 'boss'?bosses[syncBot.raids.id-1][item.message.avatar-1][0]:item.type == 'barrel'?item.message.title:chests[item.message.avatar-1][0]}</span>
+											<span>{item.type == 'boss'?bosses[syncBot.raids.id-1]?.[item.message.avatar-1]?.[0]:item.type == 'barrel'?item.message.title:chests[item.message.avatar-1][0]}</span>
 											<span>{item.message.time}</span>
 										</div>
 										<div className="Log__message--children">{Array.isArray(item.message.message)?item.message.message.map((item, x) => {
 											return (<div key={x} className="Log__message">
-												<Avatar className={['Предмет', 'Коллекция', 'Заточка', 'Камень'].includes(item.title)&&"Item"} size={36} mode="app" src={`${pathImages}${item.avatar}`} />
+												{item.avatar&&<Avatar className={['Предмет', 'Коллекция', 'Заточка', 'Камень'].includes(item.title)&&"Item"} size={36} mode="app" src={`${pathImages}${item.avatar}`} />}
 												<div className="Log__message--main">
 													<div className="Log__message--title">
 														<span>{item.title}</span>

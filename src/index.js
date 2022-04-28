@@ -293,18 +293,16 @@ const App = withAdaptivity(({ viewWidth }) => {
 		}
 	}
 
-	if (!isDesktop) {
-		bridge.subscribe(({ detail: { type, data }}) => {
-			switch (type) {
-				case 'VKWebAppUpdateConfig':
-					const schemeAttribute = document.createAttribute('scheme');
-					schemeAttribute.value = data.scheme ? data.scheme : 'client_light';
-					document.body.attributes.setNamedItem(schemeAttribute);
-					break;
-				default:
-			}
-		});
-	}
+	bridge.subscribe(({ detail: { type, data }}) => {
+		switch (type) {
+			case 'VKWebAppUpdateConfig':
+				const schemeAttribute = document.createAttribute('scheme');
+				schemeAttribute.value = ['space_gray', 'vkcom_dark'].includes(data.scheme) ? 'space_gray' : 'bright_light';
+				document.body.attributes.setNamedItem(schemeAttribute);
+				break;
+			default:
+		}
+	});
 	bridge.send("VKWebAppInit");
 
 	const getParseBosses = async() => {
@@ -1404,7 +1402,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 				label: 'hashParams',
 				message: hashParams
 			}]);
-			await (isDesktop || !isEmbedded) && setTheme();
+			await (!isEmbedded) && setTheme();
 			if (isEmbedded) await checkServer();
 			if (isEmbedded && serverStatus) {
 				if (!hashParams) hashParams = {"": undefined};
@@ -1630,13 +1628,13 @@ const App = withAdaptivity(({ viewWidth }) => {
 										description="События, лотерея"
 										// after={isEmbedded&&<Counter size="s" mode="prominent">НОВОЕ</Counter>}
 									>Разное</RichCell>
-									<Spacing separator size={16} />
+									{!isEmbedded&&<><Spacing separator size={16} />
 									<RichCell
 										className="RichCell--Context"
 										onClick={() => this.setTheme(true)}
 										before={theme == 'bright_light' ? <Icon28MoonOutline/> : <Icon28SunOutline/>}
 										description={theme == 'bright_light' ? 'Установлена светлая тема' : 'Установлена тёмная тема'}
-									>{theme == 'bright_light' ? 'Тёмная тема' : 'Светлая тема'}</RichCell>
+									>{theme == 'bright_light' ? 'Тёмная тема' : 'Светлая тема'}</RichCell></>}
 									{isEmbedded&&serverStatus&&<Footer style={{display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '8px 0 0 0', cursor: 'pointer', userSelect: 'none', gap: 8, color: serverStatusTime<50?'var(--dynamic_green)':serverStatusTime<150?'var(--dynamic_orange)':'var(--dynamic_red)'}} onClick={() => this.checkServer()}><Icon12OnlineVkmobile/>Задержка сервера {serverStatusTime} мс.</Footer>}
 								</Group>
 							</Panel>

@@ -3,17 +3,15 @@ import {
 	Panel,
 	Group,
 	Spacing,
-	SimpleCell,
 	CardGrid,
 	Card,
 	Avatar,
 	Button,
-	Radio,
 	Placeholder,
-	Slider,
-	FormItem
+	RichCell,
+	ButtonGroup
 } from '@vkontakte/vkui';
-import { Icon28ListOutline } from '@vkontakte/icons';
+import { Icon12Clock, Icon12ClockOutline, Icon24RefreshOutline, Icon28ListOutline, Icon28UserAddOutline } from '@vkontakte/icons';
 import Skeleton from '../../components/skeleton';
 
 import dataArena from '../../data/arena.json';
@@ -49,20 +47,14 @@ class PANEL extends React.Component {
 		};
 		this._isMounted = false;
 	};
-	updateSelect = async(el) => {
+	updateSelect = (el) => {
 		if (el.target.name) {
 			if (el.target.name == 'skipMode') {
 				this._isMounted && this.setState({ botSettings: {
 					...this.state.botSettings,
 					useEnergy: Number(el.target.value) == 1 ? true : false,
 					useGold: Number(el.target.value) == 2 ? true : false
-				}}, async() => {
-					let data = {
-						...this.state.botSettings,
-						tryLimit: this.state.tryLimit
-					}
-					this._isMounted && await this.props.options.Storage({key: 'arenaSettings', value: JSON.stringify(data)});
-				});
+				}});
 			}
 		}
 	};
@@ -434,17 +426,6 @@ class PANEL extends React.Component {
 			this._isMounted && syncBot.isStart && this.BotArena('pause');
 		}
 		if (mode == 'load' || mode == 'reload') {
-			if (mode == 'load') {
-				let settings = this._isMounted && await this.props.options.Storage({key: 'arenaSettings', defaultValue: JSON.stringify(botSettings)});
-				if (settings) {
-					settings = JSON.parse(settings.value);
-					if (settings) {
-						botSettings.useEnergy = settings.useEnergy;
-						botSettings.useGold = settings.useGold;
-						this.state.tryLimit = settings.tryLimit || 20;
-					}
-				}
-			}
 			if (mode == 'reload') {
 				this._isMounted && setBotLog(`Данные обновлены`, 'text');
 			}
@@ -476,9 +457,9 @@ class PANEL extends React.Component {
 		const { botSettings } = this.state;
 		const { BotArena } = this;
 		const pathImages = 'https://dobriy-vecher-vlad.github.io/warlord-helper/media/images/';
-		const title = 'Арена';
+		const title = 'Ресурсы';
 		const description = 'Мой профиль';
-		const avatar = 'labels/30.png';
+		const avatar = 'labels/14.png';
 		return (
 			<Panel id={this.props.id}>
 				{!state.isDesktop && options.getPanelHeader(title, description, avatar, this.props.id, parent)}
@@ -486,102 +467,48 @@ class PANEL extends React.Component {
 					{state.isDesktop && options.getPanelHeader(title, description, avatar, this.props.id, parent)}
 					{syncBot.arena?<React.Fragment>
 						<div className="Scroll" style={{maxHeight: state.isDesktop ? '299px' : 'unset'}}>
-							{!this.state.isLoad?<CardGrid size={state.isDesktop ? "s" : "m"}>
-								<Card className='DescriptionCardWiki'>
-									<SimpleCell
-										before={<Avatar size={32} mode="app" src={`${pathImages}bot/arena/10.png`} />}
-										description={options.numberSpaces(syncBot.arena.player._exp)}
-									>
-										Опыт
-									</SimpleCell>
-								</Card>
-								<Card className='DescriptionCardWiki'>
-									<SimpleCell
-										before={<Avatar size={32} mode="app" src={`${pathImages}bot/arena/19.png`} />}
-										description={options.numberSpaces(syncBot.arena.player._en)}
-									>
-										Энергия
-									</SimpleCell>
-								</Card>
-								<Card className='DescriptionCardWiki'>
-									<SimpleCell
-										before={<Avatar size={32} mode="app" src={`${pathImages}bot/arena/11.png`} />}
-										description={options.numberSpaces(syncBot.arena.player._m3)}
-									>
-										Золото
-									</SimpleCell>
-								</Card>
-								<Card className='DescriptionCardWiki'>
-									<SimpleCell
-										before={<Avatar size={32} mode="app" src={`${pathImages}bot/arena/${["46", "37", "38", "39", "40", "41", "42", "43", "44", "45"][syncBot.arena.player._al]}.png`} />}
-										description={["Нет лиги", "Лига Новичков", "Лига Воинов I", "Лига Воинов II", "Лига Мастеров", "Лига Рыцарей", "Лига Чемпионов", "Тёмная Лига", "Кровавая Лига", "Легендарная Лига"][syncBot.arena.player._al]}
-									>
-										Лига
-									</SimpleCell>
-								</Card>
-								<Card className='DescriptionCardWiki'>
-									<SimpleCell
-										before={<Avatar size={32} mode="app" src={`${pathImages}bot/arena/8.png`} />}
-										description={options.numberSpaces(syncBot.arena.player.rating._val)}
-									>
-										Место в лиге
-									</SimpleCell>
-								</Card>
-								<Card className='DescriptionCardWiki'>
-									<SimpleCell
-										before={<Avatar size={32} mode="app" src={`${pathImages}bot/arena/1.png`} />}
-										description={options.numberSpaces(syncBot.arena.player._ap)}
-									>
-										Кубки арены
-									</SimpleCell>
-								</Card>
-							</CardGrid>:<CardGrid size={state.isDesktop ? "s" : "m"}>
-								<Card className='DescriptionCardWiki withSkeleton'>
-									<Skeleton height={32} width={32}/>
-									<Skeleton height={state.isDesktop?38:38} width={108} />
-								</Card>
-								<Card className='DescriptionCardWiki withSkeleton'>
-									<Skeleton height={32} width={32}/>
-									<Skeleton height={state.isDesktop?38:38} width={108} />
-								</Card>
-								<Card className='DescriptionCardWiki withSkeleton'>
-									<Skeleton height={32} width={32}/>
-									<Skeleton height={state.isDesktop?38:38} width={108} />
-								</Card>
-								<Card className='DescriptionCardWiki withSkeleton'>
-									<Skeleton height={32} width={32}/>
-									<Skeleton height={state.isDesktop?38:38} width={108} />
-								</Card>
-								<Card className='DescriptionCardWiki withSkeleton'>
-									<Skeleton height={32} width={32}/>
-									<Skeleton height={state.isDesktop?38:38} width={108} />
-								</Card>
-								<Card className='DescriptionCardWiki withSkeleton'>
-									<Skeleton height={32} width={32}/>
-									<Skeleton height={state.isDesktop?38:38} width={108} />
-								</Card>
-							</CardGrid>}
-							<Spacing separator size={16} />
-							<CardGrid size="l" onChange={(e) => this._isMounted && this.updateSelect(e)}>
-								<Card className='DescriptionCardWiki Clear forSlider'>
-									<Slider
-										disabled={syncBot.isStart}
-										step={1}
-										min={1}
-										max={100}
-										value={Number(this.state.tryLimit)}
-										onChange={tryLimit => this.setState({tryLimit})}
-									/>
-									<Radio className="Clear" disabled={syncBot.isStart} description={`Остановка после ${this.state.tryLimit} ${options.numberForm(this.state.tryLimit, ['боя', 'боёв', 'боёв'])}`}>Лимит проигрышей</Radio>
-								</Card>
-							</CardGrid>
-							<Spacing size={8} />
 							<CardGrid size="m">
-								<Card className='DescriptionCardWiki Clear'>
-									<Radio checked={this.state.botSettings.useEnergy} onChange={(e) => this._isMounted && this.updateSelect(e)} name="skipMode" disabled={syncBot.isStart} value="1" description="Тратит 4 энергии">Энергия</Radio>
+								<Card>
+									<RichCell
+										disabled
+										caption="Взаимодействие со зданиями на карте"
+										actions={<ButtonGroup mode="horizontal"><Button mode="commerce">Собрать</Button><Button mode="secondary">Улучшить</Button></ButtonGroup>}
+									>Карта <span style={{color: 'var(--text_secondary)', fontSize: 12}}>- 02:00:00</span></RichCell>
 								</Card>
-								<Card className='DescriptionCardWiki Clear'>
-									<Radio checked={this.state.botSettings.useGold} onChange={(e) => this._isMounted && this.updateSelect(e)} name="skipMode" disabled={syncBot.isStart} value="2" description={`Тратит ${["0", "10", "30", "50", "90", "150", "250", "350", "500", "650"][syncBot.arena.player._al]} золота и 16 кубков`}>Золото</Radio>
+								<Card>
+									<RichCell
+										disabled
+										caption="Взаимодействие с сундуками в профиле"
+										actions={<ButtonGroup mode="horizontal"><Button mode="commerce">Собрать</Button><Button mode="secondary">Вскрыть</Button></ButtonGroup>}
+									>Сундуки</RichCell>
+								</Card>
+								<Card>
+									<RichCell
+										disabled
+										caption="Взаимодействие с активным питомцем"
+										actions={<ButtonGroup mode="horizontal"><Button mode="commerce">Собрать</Button><Button mode="secondary">Отправить</Button></ButtonGroup>}
+									>Питомец</RichCell>
+								</Card>
+								<Card>
+									<RichCell
+										disabled
+										caption="Взаимодействие с ежедневной лотереей"
+										actions={<ButtonGroup mode="horizontal"><Button mode="commerce">Собрать</Button></ButtonGroup>}
+									>Лотерея</RichCell>
+								</Card>
+								<Card>
+									<RichCell
+										disabled
+										caption="Взаимодействие с наградой гильдии"
+										actions={<ButtonGroup mode="horizontal"><Button mode="commerce">Собрать</Button></ButtonGroup>}
+									>Здания гильдии</RichCell>
+								</Card>
+								<Card>
+									<RichCell
+										disabled
+										caption="Взаимодействие с наградой гильдии"
+										actions={<ButtonGroup mode="horizontal"><Button mode="commerce">Собрать</Button></ButtonGroup>}
+									>Дань гильдии</RichCell>
 								</Card>
 							</CardGrid>
 						</div>
@@ -608,24 +535,6 @@ class PANEL extends React.Component {
 							}}>
 								<Button size="m" mode="tertiary" onClick={() => this._isMounted && this.setBotLog('clear')} stretched>Отчистить лог действий</Button>
 							</div>
-							<Spacing size={8} />
-							{state.isDesktop?<div style={{
-								display: 'flex',
-								marginRight: 0,
-								marginLeft: 0
-							}}>
-								<Button size="m" onClick={() => this._isMounted && BotArena('start')} disabled={syncBot.isStart} loading={syncBot.isStart} stretched mode="commerce" style={{ marginRight: 8 }}>Запустить</Button>
-								<Button size="m" onClick={() => this._isMounted && this.setState({ isPause: true }, () => BotArena('pause'))} disabled={!syncBot.isStart} loading={this.state.isPause} stretched mode="destructive" style={{ marginRight: 8 }}>Остановить</Button>
-								<Button size="m" onClick={() => this._isMounted && this.setState({ isLoad: true }, () => BotArena('reload'))} disabled={syncBot.isStart||this.state.isLoad} loading={this.state.isLoad} stretched mode="secondary">Обновить</Button>
-							</div>:<div style={{
-								display: 'flex',
-								marginRight: 8,
-								marginLeft: 8
-							}}>
-								<Button size="m" onClick={() => this._isMounted && BotArena('start')} disabled={syncBot.isStart} loading={syncBot.isStart} stretched mode="commerce" style={{ marginRight: 8 }}>Запустить</Button>
-								<Button size="m" onClick={() => this._isMounted && this.setState({ isPause: true }, () => BotArena('pause'))} disabled={!syncBot.isStart} loading={this.state.isPause} stretched mode="destructive" style={{ marginRight: 8 }}>Остановить</Button>
-								<Button size="m" onClick={() => this._isMounted && this.setState({ isLoad: true }, () => BotArena('reload'))} disabled={syncBot.isStart||this.state.isLoad} loading={this.state.isLoad} stretched mode="secondary">Обновить</Button>
-							</div>}
 						</div>
 					</React.Fragment>:<React.Fragment>
 					<div className="Scroll" style={{maxHeight: state.isDesktop ? '299px' : 'unset', overflow: 'hidden'}}>
@@ -701,24 +610,6 @@ class PANEL extends React.Component {
 							}}>
 								<Skeleton height={state.isDesktop?32:36}/>
 							</div>
-							<Spacing size={8} />
-							{state.isDesktop?<div style={{
-								display: 'flex',
-								marginRight: 0,
-								marginLeft: 0
-							}}>
-								<Skeleton height={32} width="100%" marginRight={8}/>
-								<Skeleton height={32} width="100%" marginRight={8}/>
-								<Skeleton height={32} width="100%"/>
-							</div>:<div style={{
-								display: 'flex',
-								marginRight: 8,
-								marginLeft: 8
-							}}>
-								<Skeleton height={36} width="100%" marginRight={8}/>
-								<Skeleton height={36} width="100%" marginRight={8}/>
-								<Skeleton height={36} width="100%"/>
-							</div>}
 					</div>
 					</React.Fragment>}
 				</Group>
