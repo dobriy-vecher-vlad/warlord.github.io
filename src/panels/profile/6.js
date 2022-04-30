@@ -258,7 +258,7 @@ class PANEL extends React.Component {
 			}
 			if (type == 'boss' && color != null && this.state.isDevLog == true) {
 				let data = { type: 'boss', message: {
-					avatar: message._type || message.type,
+					avatar: message.type,
 					title: 'Босс',
 					time: this.props.options.getRealTime(),
 					message: color
@@ -846,114 +846,81 @@ class PANEL extends React.Component {
 								let skill_3 = Number(data.player._s3);
 								let свитокМолнии = Number(data.player._item1);
 								let свитокОгня = Number(data.player._item3);
-								// свитокОгня = 0;
 								let свитокМолнииУрон = Math.floor(mydmg*1.5);
 								let свитокОгняУрон = mydmg*3;
-								let количествоУдаровВозможных = Math.ceil(myhp/dmg);
-								let количествоУдаров;
-								if (botRaidsSettings.useScrollLightning) {
-									количествоУдаров = Math.ceil(hp/свитокМолнииУрон);
-								} else if (botRaidsSettings.useScrollFire) {
-									количествоУдаров = Math.ceil(hp/свитокОгняУрон);
-								} else {
-									количествоУдаров = Math.ceil(hp/mydmg);
-								}
-								let количествоУдаровНавыка = Math.floor((10+количествоУдаров)/9);
-								if (количествоУдаров <= (количествоУдаровВозможных+количествоУдаровНавыка)) {
-									if (
-										botRaidsSettings.useScrollLightning || botRaidsSettings.useScrollFire ? 
-											количествоУдаров <= (botRaidsSettings.useScrollLightning ?
-												(свитокМолнии+количествоУдаровНавыка) : 
-												botRaidsSettings.useScrollFire ? 
-													(свитокОгня+количествоУдаровНавыка) : 
-													0) : 
-											true
-									) {
-										let hash = this._isMounted && await BotAPI('getFightHash', null, null, null, {key: `<data><d 
-											s0="${botRaidsSettings.useScrollLightning || botRaidsSettings.useScrollFire ? 0 : количествоУдаров}"
-											s1="0"
-											s2="0"
-											s3="${количествоУдаровНавыка}"
-											s4="1"
-											c1="${botRaidsSettings.useScrollLightning ? количествоУдаров : 0}"
-											c2="0"
-											c3="${botRaidsSettings.useScrollFire ? количествоУдаров : 0}"
-											c4="0"
-											c5="0"
-											m0="3"
-											r="${количествоУдаров+количествоУдаровНавыка}"
-											dd="${(количествоУдаров*(botRaidsSettings.useScrollLightning ? свитокМолнииУрон : botRaidsSettings.useScrollFire ? свитокОгняУрон : mydmg))+(количествоУдаровНавыка*(mydmg+skill_3*7))}"
-											dg="${количествоУдаров*dmg}"
-										/></data>`.replace(/\s+/g,' ')});
-										// console.log(hash);
-										dataGame = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&i=12&t=${hash}`);
-										// console.log(dataGame);
-										if (dataGame && dataGame.fight && Number(dataGame.fight._hp) <= 0) {
-											boss.status = 1;
-											// setBotLog(`Успешно убили босса {point: ${boss.point}, status: ${boss.status}}`);
-											dataGame.fight.type = boss.type;
-											this._isMounted && setBotLog(dataGame.fight, 'boss', [{
-												title: 'Атака босса',
-												message: this.props.options.numberSpaces(dmg)
-											}, {
-												title: 'Здоровье босса',
-												message: this.props.options.numberSpaces(hp)
-											}, {
-												title: 'Моя атака',
-												message: this.props.options.numberSpaces(mydmg)
-											}, {
-												title: 'Моё здоровье',
-												message: this.props.options.numberSpaces(myhp)
-											}, {
-												title: 'Количество ударов',
-												message: this.props.options.numberSpaces(количествоУдаров)
-											}, {
-												title: 'Количество возможных ударов',
-												message: this.props.options.numberSpaces(количествоУдаровВозможных)
-											}, {
-												title: 'Количество ударов навыка',
-												message: this.props.options.numberSpaces(количествоУдаровНавыка)
-											}]);
-											this._isMounted && setBotLog(dataGame.fight, 'boss');
-											return true;
-										} else {
-											// setBotLog(`Ошибка при убийстве босса {point: ${boss.point}, status: ${boss.status}}`);
-											this._isMounted && setBotLog(`Ошибка при убийстве босса`, 'text', 'red');
-											this._isMounted && this.BotRaids('pause');
-											return false;
-										}
+								let количествоУдаров = 0;
+								let количествоУдаровРуки = 0;
+								let количествоУдаровМолнии = 0;
+								let количествоУдаровОгня = 0;
+								let количествоУдаровНавыка = 0;
+								let уронПолученный = 0;
+								let уронНанесённый = 0;
+								let очкиНавыка = 10;
+								do {
+									if (очкиНавыка >= 9) {
+										очкиНавыка = очкиНавыка - 9;
+										hp = hp - (mydmg+skill_3*7);
+										уронНанесённый = уронНанесённый + (mydmg+skill_3*7);
+										количествоУдаровНавыка++;
+										if (hp <= 0) break;
+									}
+									if (botRaidsSettings.useScrollLightning && свитокМолнии != 0) {
+										hp = hp - свитокМолнииУрон;
+										уронНанесённый = уронНанесённый + свитокМолнииУрон;
+										свитокМолнии--;
+										количествоУдаровМолнии++;
+									} else if (botRaidsSettings.useScrollFire && свитокОгня != 0) {
+										hp = hp - свитокОгняУрон;
+										уронНанесённый = уронНанесённый + свитокОгняУрон;
+										свитокОгня--;
+										количествоУдаровОгня++;
 									} else {
-										// setBotLog(`Невозможно убить босса, вам не хватает свитков {point: ${boss.point}, status: ${boss.status}}`);
-										this._isMounted && setBotLog(`Невозможно убить босса, вам не хватает свитков`, 'text', 'red');
+										hp = hp - mydmg;
+										уронНанесённый = уронНанесённый + mydmg;
+										количествоУдаровРуки++;
+									}
+									myhp = myhp - dmg;
+									уронПолученный = уронПолученный + dmg;
+									очкиНавыка++;
+									количествоУдаров++;
+								} while (hp > 0 && myhp > 0);
+								this._isMounted && setBotLog({...dataGame.fight, type: boss.type}, 'boss', [{
+									title: 'Данные боя',
+									message: `Атака босса: ${this.props.options.numberSpaces(dmg)}\nЗдоровье босса: ${this.props.options.numberSpaces(hp)}\nМоя атака: ${this.props.options.numberSpaces(mydmg)}\nМоё здоровье: ${this.props.options.numberSpaces(myhp)}\nСвиток молнии: ${this.props.options.numberSpaces(свитокМолнии)}\nСвиток огня: ${this.props.options.numberSpaces(свитокОгня)}\nСвиток молнии урон: ${this.props.options.numberSpaces(свитокМолнииУрон)}\nСвиток огня урон: ${this.props.options.numberSpaces(свитокОгняУрон)}\nКоличество ударов: ${this.props.options.numberSpaces(количествоУдаров)}\nКоличество ударов руки: ${this.props.options.numberSpaces(количествоУдаровРуки)}\nКоличество ударов молнии: ${this.props.options.numberSpaces(количествоУдаровМолнии)}\nКоличество ударов огня: ${this.props.options.numberSpaces(количествоУдаровОгня)}\nКоличество ударов навыка: ${this.props.options.numberSpaces(количествоУдаровНавыка)}\nУрон полученный: ${this.props.options.numberSpaces(уронПолученный)}\nУрон нанесённый: ${this.props.options.numberSpaces(уронНанесённый)}\n`
+								}]);
+								if (myhp > 0) {
+									let hash = this._isMounted && await BotAPI('getFightHash', null, null, null, {key: `<data><d 
+										s0="${количествоУдаровРуки}"
+										s1="0"
+										s2="0"
+										s3="${количествоУдаровНавыка}"
+										s4="1"
+										c1="${количествоУдаровМолнии}"
+										c2="0"
+										c3="${количествоУдаровОгня}"
+										c4="0"
+										c5="0"
+										m0="3"
+										r="${количествоУдаров+количествоУдаровНавыка}"
+										dd="${уронНанесённый}"
+										dg="${уронПолученный}"
+									/></data>`.replace(/\s+/g,' ')});
+									// console.log(hash);
+									dataGame = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&i=12&t=${hash}`);
+									// console.log(dataGame);
+									if (dataGame && dataGame.fight && Number(dataGame.fight._hp) <= 0) {
+										boss.status = 1;
+										// setBotLog(`Успешно убили босса {point: ${boss.point}, status: ${boss.status}}`);
+										this._isMounted && setBotLog({...dataGame.fight, type: boss.type}, 'boss');
+										return true;
+									} else {
+										// setBotLog(`Ошибка при убийстве босса {point: ${boss.point}, status: ${boss.status}}`);
+										this._isMounted && setBotLog(`Ошибка при убийстве босса`, 'text', 'red');
 										this._isMounted && this.BotRaids('pause');
-										await wait(3000);
-										dataGame = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&i=11&t=${boss.id}&t2=3&t3=0&t4=0&t5=0`);
 										return false;
 									}
 								} else {
 									// setBotLog(`Невозможно убить босса, вы умрёте {point: ${boss.point}, status: ${boss.status}}`);
-									this._isMounted && setBotLog(dataGame.fight, 'boss', [{
-										title: 'Атака босса',
-										message: this.props.options.numberSpaces(dmg)
-									}, {
-										title: 'Здоровье босса',
-										message: this.props.options.numberSpaces(hp)
-									}, {
-										title: 'Моя атака',
-										message: this.props.options.numberSpaces(mydmg)
-									}, {
-										title: 'Моё здоровье',
-										message: this.props.options.numberSpaces(myhp)
-									}, {
-										title: 'Количество ударов',
-										message: this.props.options.numberSpaces(количествоУдаров)
-									}, {
-										title: 'Количество возможных ударов',
-										message: this.props.options.numberSpaces(количествоУдаровВозможных)
-									}, {
-										title: 'Количество ударов навыка',
-										message: this.props.options.numberSpaces(количествоУдаровНавыка)
-									}]);
 									this._isMounted && setBotLog(`Невозможно убить босса, вы умрёте`, 'text', 'red');
 									this._isMounted && this.BotRaids('pause');
 									await wait(3000);

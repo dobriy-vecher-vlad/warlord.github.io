@@ -2020,6 +2020,7 @@ body[scheme=space_gray] {
 	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
+	white-space: pre;
 	/* column-gap: 12px; */
 }
 .Log__message--children > .Log__message {
