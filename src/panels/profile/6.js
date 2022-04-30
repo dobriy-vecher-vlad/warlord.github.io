@@ -859,13 +859,13 @@ class PANEL extends React.Component {
 									количествоУдаров = Math.ceil(hp/mydmg);
 								}
 								let количествоУдаровНавыка = Math.floor((10+количествоУдаров)/9);
-								if (количествоУдаров <= количествоУдаровВозможных) {
+								if (количествоУдаров <= (количествоУдаровВозможных+количествоУдаровНавыка)) {
 									if (
 										botRaidsSettings.useScrollLightning || botRaidsSettings.useScrollFire ? 
 											количествоУдаров <= (botRaidsSettings.useScrollLightning ?
-												свитокМолнии : 
+												(свитокМолнии+количествоУдаровНавыка) : 
 												botRaidsSettings.useScrollFire ? 
-													свитокОгня : 
+													(свитокОгня+количествоУдаровНавыка) : 
 													0) : 
 											true
 									) {
