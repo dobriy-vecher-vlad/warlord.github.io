@@ -413,7 +413,8 @@ class MODAL extends React.Component {
 					{!state.isDesktop?<Spacing size={8} />:<DescriptionHeader avatar={`${pathImages}${data.icon}`} state={state} options={options} data={data} header={data.title} description="Персонаж — Таланты"/>}
 					<DescriptionCell label={`Описание`} text={data.description}/>
 					<DescriptionCell label={`Бонус`} text={data.bonus}/>
-					<DescriptionCell label={`Валюта прокачки навыка`} text={data.currency === 1 ? 'Золото' : 'Серебро'}/>
+					<DescriptionCell label={`Стоимость использования`} text={`${data.point} ${options.numberForm(data.point, ['очко', 'очка', 'очков'])}`}/>
+					<DescriptionCell label={`Валюта улучшения`} text={data.currency === 1 ? 'Золото' : 'Серебро'}/>
 					{!state.isDesktop&&<Spacing size={8} />}
 				</Div>
 			</ModalPage>
