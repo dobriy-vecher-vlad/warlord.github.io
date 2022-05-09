@@ -369,17 +369,7 @@ class PANEL extends React.Component {
 				if (fight && fight.fight) {
 					let reward = fight.r;
 					fight = fight.fight;
-					if (Number(fight._myhp) <= 0) {
-						// console.warn('endFight', fight);
-						isAlive = false;
-						// console.warn(syncBot.arena.player._ap, syncBot.arena.player._ap);
-						syncBot.arena.player._ap = Number(syncBot.arena.player._ap) - 16;
-						let league = this.getLeague(syncBot.arena.player._ap);
-						syncBot.arena.player._al = league.id;
-						syncBot.arena.try++;
-						this._isMounted && syncBot.isStart && setBotLog(`Противник оказался сильнее ${syncBot.arena.try}/${this.state.tryLimit}`, 'text', 'red');
-						return true;
-					} else if (Number(fight._hp) <= 0) {
+					if ((Number(fight._myhp) > 0 && Number(fight._hp) <= 0) || (Number(fight._myhp) <= 0 && Number(fight._hp) <= 0)) {
 						// console.warn('endFight', fight);
 						isAlive = false;
 						// console.warn(syncBot.arena.player._ap, syncBot.arena.player._ap, reward._ap);
@@ -388,6 +378,16 @@ class PANEL extends React.Component {
 						let league = this.getLeague(syncBot.arena.player._ap);
 						syncBot.arena.player._al = league.id;
 						this._isMounted && syncBot.isStart && setBotLog(`Успешно убили противника`, 'text', 'green');
+						return true;
+					} else if (Number(fight._myhp) <= 0) {
+						// console.warn('endFight', fight);
+						isAlive = false;
+						// console.warn(syncBot.arena.player._ap, syncBot.arena.player._ap);
+						syncBot.arena.player._ap = Number(syncBot.arena.player._ap) - 16;
+						let league = this.getLeague(syncBot.arena.player._ap);
+						syncBot.arena.player._al = league.id;
+						syncBot.arena.try++;
+						this._isMounted && syncBot.isStart && setBotLog(`Противник оказался сильнее ${syncBot.arena.try}/${this.state.tryLimit}`, 'text', 'red');
 						return true;
 					} else {
 						isAlive = true;

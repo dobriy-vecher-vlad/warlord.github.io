@@ -1379,11 +1379,17 @@ div.Scroll::-webkit-scrollbar-track {
 
 
 .beautifulCard {
-	background: var(--background_content);
+	background: var(--content_tint_background, var(--vkui--color_background_secondary) );
 	border-radius: 16px;
 	pointer-events: none;
 	-webkit-transform: translate3d(0, 0, 0);
 	width: calc(100% / 3 - 8px * 2)!important;
+}
+.CardGrid .beautifulCard {
+	width: calc((100% - 8px)/2)!important;
+}
+.Gradient .beautifulCard {
+	background: var(--background_content);
 }
 .beautifulCard::before {
 	display: none;
@@ -2030,6 +2036,10 @@ body[scheme=space_gray] {
 /* .Log__message--children > .Log__message + .Log__message {
 	margin-left: 12px;
 } */
+.Log__message .Avatar__img {
+	image-rendering: pixelated;
+	image-rendering: -webkit-optimize-contrast;
+}
 
 .DescriptionCardWiki.withSkeleton .Card__in {
 	display: flex;
@@ -2342,6 +2352,112 @@ input::-webkit-inner-spin-button {
 .CardScroll--withSpaces:last-child {
 	padding-bottom: var(--vkui--size_cardgrid_padding_vertical--regular);
 }
+
+
+
+.ActionCards {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	grid-gap: 4px;
+}
+.ActionCard {
+	display: flex;
+	flex-direction: column;
+	cursor: default;
+	overflow: hidden;
+
+	position: relative;
+	background: var(--content_tint_background, var(--vkui--color_background_secondary) );
+	border-radius: var(--vkui--size_card_border_radius--regular);
+
+	padding: 12px 16px;
+}
+.ActionCard[isdisabled="true"] {
+	opacity: .5;
+	pointer-events: none!important;
+}
+.ActionCard[isdisabled="true"] * {
+	pointer-events: none!important;
+}
+.ActionCard::after {
+	content: '';
+	display: block;
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	border: var(--thin-border) solid #E9E9E9;
+	border-radius: inherit;
+	box-sizing: border-box;
+	pointer-events: none;
+	z-index: 1;
+}
+body[scheme=space_gray] .ActionCard::after {
+	border: var(--thin-border) solid #2B2B2B;
+}
+.ActionCard__head {
+	display: flex;
+	gap: 12px;
+	align-items: center;
+	justify-content: space-between;
+	
+	font-weight: 500;
+	font-size: 15px;
+	line-height: 20px;
+	letter-spacing: var(--vk-sans-ls-17);
+}
+.ActionCard__head--title {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.ActionCard__head--after {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-size: 12px;
+	color: var(--text_secondary);
+}
+.ActionCard__body {
+	color: var(--text_secondary);
+	font-size: var(--vkui--font_subhead--font_size--compact);
+	line-height: var(--vkui--font_subhead--line_height--compact);
+	font-weight: var(--vkui--font_subhead--font_weight--regular);
+	letter-spacing: var(--vk-sans-ls-1);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+* + .ActionCard__body {
+	margin-top: 2px;
+}
+.ActionCard__bottom {
+	display: flex;
+	gap: 12px;
+}
+* + .ActionCard__bottom {
+	margin-top: 12px;
+}
+
+
+.ActionCards [isdisabled="true"] .Button__spinner,
+.ActionCards .Button[disabled] .Button__spinner {
+	visibility: hidden;
+	pointer-events: none;
+}
+.ActionCards [isdisabled="true"] .Button__spinner + .Button__in,
+.ActionCards .Button[disabled] .Button__spinner + .Button__in {
+	visibility: visible;
+}
+
+
+
+.Sticky {
+	background: var(--background_content);
+	position: relative;
+}
+
 
 
 @media screen and (orientation: landscape) {
@@ -3152,6 +3268,12 @@ input::-webkit-inner-spin-button {
 		margin-left: 8px;
 	}
 	.Horizontal__Cells.CardScroll .CardScroll__in > .Card:nth-last-of-type(1) {
+		margin-right: 8px;
+	}
+
+	.ActionCards {
+		grid-template-columns: repeat(1, 1fr);
+		margin-left: 8px;
 		margin-right: 8px;
 	}
 }

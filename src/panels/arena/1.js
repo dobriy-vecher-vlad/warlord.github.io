@@ -8,7 +8,8 @@ import {
 	InfoRow,
 	FormItem,
 	Slider,
-	Input
+	Input,
+	CardScroll
 } from '@vkontakte/vkui';
 import { Icon20MoneyCircleOutline, Icon20SkullOutline, Icon20StatisticsOutline } from '@vkontakte/icons';
 
@@ -114,20 +115,22 @@ class PANEL extends React.Component {
 							</FormItem>
 						</Card>
 					</CardGrid>
-					<CardGrid size="s">
-						<Card className="beautifulCard" mode="outline">
-							<InfoRow header="Победные бои">{options.numberSpaces(Math.ceil((this.state.finalCups-this.state.currentCups)/19))} шт.</InfoRow>
-							<Icon20SkullOutline/>
-						</Card>
-						<Card className="beautifulCard" mode="outline">
-							<InfoRow header="Кубки">{options.numberSpaces(Math.ceil((this.state.finalCups-this.state.currentCups)/19)*19)} ед.</InfoRow>
-							<Icon20StatisticsOutline/>
-						</Card>
-						<Card className="beautifulCard" mode="outline">
-							<InfoRow header="Золото">{options.numberSpaces(this.getFightPrice(this.state.currentCups, this.state.finalCups))} ед.</InfoRow>
-							<Icon20MoneyCircleOutline/>
-						</Card>
-					</CardGrid>
+					<div style={{margin: state.isDesktop ? '-7px' : 0}}>
+						<CardScroll>
+							<Card className="beautifulCard" mode="outline">
+								<InfoRow header="Победные бои"><span>{options.numberSpaces(Math.ceil((this.state.finalCups-this.state.currentCups)/19))} шт.</span></InfoRow>
+								<Icon20SkullOutline style={{['--fill']: 'var(--systemRed)' }}/>
+							</Card>
+							<Card className="beautifulCard" mode="outline">
+								<InfoRow header="Кубки"><span>{options.numberSpaces(Math.ceil((this.state.finalCups-this.state.currentCups)/19)*19)} ед.</span></InfoRow>
+								<Icon20StatisticsOutline style={{['--fill']: 'var(--systemYellow)' }}/>
+							</Card>
+							<Card className="beautifulCard" mode="outline">
+								<InfoRow header="Золото"><span>{options.numberSpaces(this.getFightPrice(this.state.currentCups, this.state.finalCups))} ед.</span></InfoRow>
+								<Icon20MoneyCircleOutline style={{['--fill']: 'var(--systemOrange)' }}/>
+							</Card>
+						</CardScroll>
+					</div>
 				</Group>
 				{this.state.snackbar}
 			</Panel>

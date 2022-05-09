@@ -888,7 +888,7 @@ class PANEL extends React.Component {
 									title: 'Данные боя',
 									message: `Атака босса: ${this.props.options.numberSpaces(dmg)}\nЗдоровье босса: ${this.props.options.numberSpaces(hp)}\nМоя атака: ${this.props.options.numberSpaces(mydmg)}\nМоё здоровье: ${this.props.options.numberSpaces(myhp)}\nСвиток молнии: ${this.props.options.numberSpaces(свитокМолнии)}\nСвиток огня: ${this.props.options.numberSpaces(свитокОгня)}\nСвиток молнии урон: ${this.props.options.numberSpaces(свитокМолнииУрон)}\nСвиток огня урон: ${this.props.options.numberSpaces(свитокОгняУрон)}\nКоличество ударов: ${this.props.options.numberSpaces(количествоУдаров)}\nКоличество ударов руки: ${this.props.options.numberSpaces(количествоУдаровРуки)}\nКоличество ударов молнии: ${this.props.options.numberSpaces(количествоУдаровМолнии)}\nКоличество ударов огня: ${this.props.options.numberSpaces(количествоУдаровОгня)}\nКоличество ударов навыка: ${this.props.options.numberSpaces(количествоУдаровНавыка)}\nУрон полученный: ${this.props.options.numberSpaces(уронПолученный)}\nУрон нанесённый: ${this.props.options.numberSpaces(уронНанесённый)}\n`
 								}]);
-								if (myhp > 0) {
+								if ((myhp > 0 && hp <= 0) || (myhp <= 0 && hp <= 0)) {
 									let hash = this._isMounted && await BotAPI('getFightHash', null, null, null, {key: `<data><d 
 										s0="${количествоУдаровРуки}"
 										s1="0"

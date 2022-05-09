@@ -3,25 +3,21 @@ import {
 	Panel,
 	Group,
 	Spacing,
-	CardGrid,
-	Card,
 	Avatar,
 	Button,
 	Placeholder,
-	RichCell,
-	ButtonGroup
+	PullToRefresh,
 } from '@vkontakte/vkui';
-import { Icon12Clock, Icon12ClockOutline, Icon24RefreshOutline, Icon28ListOutline, Icon28UserAddOutline } from '@vkontakte/icons';
+import { Icon28ListOutline } from '@vkontakte/icons';
 import Skeleton from '../../components/skeleton';
 
-import dataArena from '../../data/arena.json';
+import Items from '../../data/items.json';
+import Stones from '../../data/stones.json';
+import Resources from '../../data/resources.json';
 
-let syncBot = {
-	arena: null,
-	isStart: false
-};
+let syncBot = null;
 let api_id = 5536422;
-const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+let globalTimer;
 
 class PANEL extends React.Component {
 	constructor(props) {
@@ -30,7 +26,15 @@ class PANEL extends React.Component {
 			snackbar: null,
 
 			isLoad: false,
-			isPause: false,
+
+			times: {
+				map: '0/0',
+				chest: 0,
+				pet: 0,
+				lottery: 0,
+				guildBuilds: 0,
+				guildReward: 0,
+			},
 			
 			botLog: <Placeholder
 				style={{overflow: "hidden"}}
@@ -38,91 +42,131 @@ class PANEL extends React.Component {
 				stretched
 			>
 				Нет новых<br />действий
-			</Placeholder>,
-			botSettings: {
-				useEnergy: false,
-				useGold: true
-			},
-			tryLimit: 20
+			</Placeholder>
 		};
 		this._isMounted = false;
 	};
-	updateSelect = (el) => {
-		if (el.target.name) {
-			if (el.target.name == 'skipMode') {
-				this._isMounted && this.setState({ botSettings: {
-					...this.state.botSettings,
-					useEnergy: Number(el.target.value) == 1 ? true : false,
-					useGold: Number(el.target.value) == 2 ? true : false
-				}});
+	parseReward = (reward) => {
+		let returnData = [];
+		if (Array.isArray(reward)) {
+			let newReward = {
+				i: []
+			};
+			for (let item of reward) {
+				if (item.hasOwnProperty('_type')) {
+					newReward.i.push({...item, _id: item._item});
+				} else {
+					newReward = {...newReward, ...item};
+				}
+			}
+			reward = newReward;
+		}
+		if (reward.i) {
+			typeof reward.i.length == 'undefined' ? reward.i = [reward.i] : '';
+			for (let item of reward.i) {
+				try {
+					if (Number(item._type) == 6) {
+						let itemFull = Items.find(x => x.fragments.includes(Number(item._id)));
+						if (!itemFull) itemFull = Resources.find(x => x.fragments.includes(Number(item._id)));
+						returnData.push({
+							avatar: `collections/${Number(item._id)}.png`,
+							title: 'Коллекция',
+							message: itemFull.title
+						});
+					} else if (Number(item._type) == 8) {
+						let itemFull = Items.find(x => x.id === Number(item._id));
+						returnData.push({
+							avatar: itemFull.icon,
+							title: 'Заточка',
+							message: itemFull.title
+						});
+					} else if (Number(item._type) == 11) {
+						let itemFull = Stones.find(x => x.id === Number(item._id));
+						returnData.push({
+							avatar: `stones/${Number(item._id)}.png`,
+							title: 'Камень',
+							message: itemFull.title
+						});
+					} else {
+						let itemFull = Items.find(x => x.id === Number(item._id));
+						returnData.push({
+							avatar: itemFull.icon,
+							title: 'Предмет',
+							message: itemFull.title
+						});
+					}
+				} catch (error) {
+					console.error(error);
+					console.warn(item);
+				}
 			}
 		}
-	};
-	getLeague = (cups) => {
-		// console.log(cups);
-		// console.log(syncBot.arena.player);
-		cups = Number(cups);
-		let league = {
-			id: 0,
-			price: 0,
-			cups: cups
-		};
-		if (cups < dataArena.league[0].to) {
-			league = {
-				...league,
-				id: 1,
-				price: dataArena.league[0].price
-			};
-		} else if (cups < dataArena.league[1].to) {
-			league = {
-				...league,
-				id: 2,
-				price: dataArena.league[1].price
-			};
-		} else if (cups < dataArena.league[2].to) {
-			league = {
-				...league,
-				id: 3,
-				price: dataArena.league[2].price
-			};
-		} else if (cups < dataArena.league[3].to) {
-			league = {
-				...league,
-				id: 4,
-				price: dataArena.league[3].price
-			};
-		} else if (cups < dataArena.league[4].to) {
-			league = {
-				...league,
-				id: 5,
-				price: dataArena.league[4].price
-			};
-		} else if (cups < dataArena.league[5].to) {
-			league = {
-				...league,
-				id: 6,
-				price: dataArena.league[5].price
-			};
-		} else if (cups < dataArena.league[6].to) {
-			league = {
-				...league,
-				id: 7,
-				price: dataArena.league[6].price
-			};
-		} else if (cups < dataArena.league[7].to) {
-			league = {
-				...league,
-				id: 8,
-				price: dataArena.league[7].price
-			};
-		} else {
-			league = {
-				...league,
-				id: 9,
-				price: dataArena.league[8].price
-			};
-		}
-		return league;
+		reward.hasOwnProperty('_m1')&&returnData.push({
+			avatar: 'bot/raids/12.png',
+			title: 'Серебро',
+			message: `${this.props.options.numberSpaces(Number(reward._m1))} ед.`
+		});
+		reward.hasOwnProperty('_m2')&&returnData.push({
+			avatar: 'bot/raids/13.png',
+			title: 'Рубины',
+			message: `${this.props.options.numberSpaces(Number(reward._m2))} ед.`
+		});
+		reward.hasOwnProperty('_m3')&&returnData.push({
+			avatar: 'bot/raids/11.png',
+			title: 'Золото',
+			message: `${this.props.options.numberSpaces(Number( reward._m3))} ед.`
+		});
+		reward.hasOwnProperty('_m4')&&returnData.push({
+			avatar: 'bot/raids/15.png',
+			title: 'Аметисты',
+			message: `${this.props.options.numberSpaces(Number( reward._m4))} ед.`
+		});
+		reward.hasOwnProperty('_m5')&&returnData.push({
+			avatar: 'bot/raids/14.png',
+			title: 'Топазы',
+			message: `${this.props.options.numberSpaces(Number( reward._m5))} ед.`
+		});
+		reward.hasOwnProperty('_m6')&&returnData.push({
+			avatar: 'bot/raids/21.png',
+			title: 'Турмалины',
+			message: `${this.props.options.numberSpaces(Number(reward._m6))} ед.`
+		});
+		reward.hasOwnProperty('_m7')&&returnData.push({
+			avatar: 'bot/raids/22.png',
+			title: 'Пергаменты',
+			message: `${this.props.options.numberSpaces(Number(reward._m7))} ед.`
+		});
+		reward.hasOwnProperty('_i2')&&returnData.push({
+			avatar: 'bot/raids/18.png',
+			title: 'Целебные зелья',
+			message: `${this.props.options.numberSpaces(Number(reward._i2))} ед.`
+		});
+		reward.hasOwnProperty('_i1')&&returnData.push({
+			avatar: 'bot/raids/17.png',
+			title: 'Свитки молнии',
+			message: `${this.props.options.numberSpaces(Number(reward._i1))} ед.`
+		});
+		reward.hasOwnProperty('_i3')&&returnData.push({
+			avatar: 'bot/raids/16.png',
+			title: 'Свитки огня',
+			message: `${this.props.options.numberSpaces(Number(reward._i3))} ед.`
+		});
+		reward.hasOwnProperty('_pf1')&&returnData.push({
+			avatar: 'bot/raids/20.png',
+			title: 'Еда',
+			message: `${this.props.options.numberSpaces(Number(reward._pf1))} ед.`
+		});
+		reward.hasOwnProperty('_en')&&returnData.push({
+			avatar: 'bot/raids/19.png',
+			title: 'Энергия',
+			message: `${this.props.options.numberSpaces(Number(reward._en))} ед.`
+		});
+		reward.hasOwnProperty('_exp')&&returnData.push({
+			avatar: 'bot/raids/10.png',
+			title: 'Опыт',
+			message: `${this.props.options.numberSpaces(Number(reward._exp))} ед.`
+		});
+		return returnData;
 	};
 	setBotLog = async(message = 'update...', type = 'text', color = null) => {
 		if (message == 'clear') {
@@ -132,7 +176,7 @@ class PANEL extends React.Component {
 				stretched
 			>
 				Нет новых<br />действий
-			</Placeholder>})
+			</Placeholder>}, () => this._isMounted && document.querySelector('.BotLog.Scroll')&&document.querySelector('.BotLog.Scroll').scrollTo({ top: document.querySelector('.BotLog.Scroll').scrollHeight }))
 		} else {
 			let log = this.state.botLog;
 			if (!Array.isArray(this.state.botLog)) {
@@ -140,32 +184,23 @@ class PANEL extends React.Component {
 			}
 			if (type == 'text') {
 				log.push({ type: 'text', message: message, color: color });
-			}
-			if (type == 'newEnemy') {
-				log.push({ type: 'enemy', message: {
-					avatar: `bot/arena/avatar_${message.avatar}.png`,
-					title: message.name,
-					time: this.props.options.getRealTime(),
-					message: `Обнаружен противник с ${this.props.options.numberSpaces(message.hp*15)} HP и ${this.props.options.numberSpaces(message.dmg)} DMG`
-				} });
-			}
-			this._isMounted && this.setState({ botLog: log })
+			} else log.push({ type: 'message', message: {
+				avatar: message.avatar,
+				title: message.name,
+				time: this.props.options.getRealTime(),
+				message: message.message
+			} });
+			this._isMounted && this.setState({ botLog: log }, () => this._isMounted && document.querySelector('.BotLog.Scroll')&&document.querySelector('.BotLog.Scroll').scrollTo({ top: document.querySelector('.BotLog.Scroll').scrollHeight }))
 		}
-		this._isMounted && document.querySelector('.BotLog.Scroll')&&document.querySelector('.BotLog.Scroll').scrollTo({ top: document.querySelector('.BotLog.Scroll').scrollHeight });
 	};
-	BotArena = async(mode = 'load') => {
-		const { botSettings } = this.state;
+	BotResources = async(mode = '', action = '') => {
 		const { setBotLog } = this;
-		const { OpenModal, BotAPI, openSnackbar, numberForm, setActivePanel } = this.props.options;
+		const { BotAPI, openSnackbar, setActivePanel, numberForm } = this.props.options;
 		const { state } = this.props;
 		const { getData, server } = this.props.state;
-		if (mode == 'pause') {
-			syncBot.isStart = false;
-			this._isMounted && setBotLog(`Бот поставлен на паузу, завершаем последнее действие`, 'text');
-			this._isMounted && this.BotArena('reload');
-			this._isMounted && this.setState({ isPause: false, isLoad: true });
-			return;
-		}
+		
+		this._isMounted && this.setState({ isLoad: true });
+
 		let sslt = 0;
 		let api_uid = state.user.vk.id;
 		let auth_key = state.auth;
@@ -173,279 +208,234 @@ class PANEL extends React.Component {
 			auth_key = this._isMounted && await BotAPI('getAuth', null, null, null, {stage: 'modal', text: 'Для продолжения работы необходимо указать ключ авторизации'});
 			if (auth_key == 'modal') {
 				this._isMounted && setActivePanel('profile');
-				return
+				return;
 			} else if (!auth_key) {
 				this._isMounted && setActivePanel('profile');
-				return
+				return;
 			}
 		}
-		let data = {
-			player: null,
-			try: 0
-		};
-		let player = this._isMounted && await BotAPI('getStats', auth_key, api_uid, sslt);
-		if (!player) {
+
+		let dataProfile = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}`);
+		let dataGuild = {};
+		if (Number(dataProfile?.u?._clan_id) != 0) {
+			dataGuild = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&UID=${dataProfile?.u?._id}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&i=49&t1=${dataProfile?.u?._clan_id}`);
+			if (dataGuild?.clan) {
+				dataGuild = dataGuild?.clan;
+			} else {
+				dataGuild = null;
+			}
+		}
+		syncBot = true;
+		// console.warn(dataProfile);
+		// console.warn(dataGuild);
+		if (!dataProfile?.u || dataGuild == null) {
 			openSnackbar({text: 'Ключ авторизации игры неисправен, введите новый', icon: 'error'});
 			this._isMounted && BotAPI('getAuth', null, null, null, {stage: 'modal', text: 'Ключ авторизации игры неисправен, введите новый'});
 			this._isMounted && setActivePanel('profile');
 			return;
 		}
-		let dataArena = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&i=9&UID=${player._id}&t=1`);
-		if (!dataArena || (dataArena && !dataArena.my_rating)) {
-			this._isMounted && setActivePanel('profile');
-			openSnackbar({text: 'Ошибка при получении данных арены', icon: 'error'});
-			return;
+
+		if (dataProfile?.j) {
+			typeof dataProfile?.j?.length == 'undefined' ? dataProfile.j = [dataProfile?.j] : [];
+			this.state.times.map = dataProfile?.j?.length ? `${dataProfile?.j?.filter(build => Number(build?._t) <= 0)?.length}/${dataProfile?.j?.length}` : null;
+		} else {
+			this.state.times.map = null;
 		}
-		data.player = {
-			...player,
-			enemy: dataArena.u,
-			rating: dataArena.my_rating
+		if (dataProfile?.chests?.ch) {
+			typeof dataProfile?.chests?.ch?.length == 'undefined' ? dataProfile.chests.ch = [dataProfile?.chests?.ch] : [];
+			this.state.times.chest = Number(dataProfile?.chests?.ch?.find(chest => Number(chest._o) == 1)?._ot) || 'clear';
+		} else {
+			this.state.times.chest = null;
 		}
-		// console.log('Player', data.player);
-		syncBot.arena = data;
-		const startFight = async(auth_key, api_uid, sslt, id) => {
-			let isAlive = true;
-			let enemy = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&i=9&UID=${player._id}&t=1`);
-			if (!enemy || (enemy && !enemy.my_rating)) {
-				this._isMounted && syncBot.isStart && setBotLog(`Ошибка при получении данных врага`, 'text', 'red');
-				this._isMounted && this.BotArena('pause');
-				return;
-			}
-			syncBot.arena.player = {
-				...syncBot.arena.player,
-				enemy: enemy.u,
-				rating: enemy.my_rating
-			};
-			enemy = enemy.u;
-			this._isMounted && syncBot.isStart && setBotLog({ name: enemy._name == '' ? `Player${enemy._id}` : enemy._name, hp: Number(enemy._end) + Number(enemy._endi), dmg: Number(enemy._dmgi), avatar: Number(enemy._aid) }, 'newEnemy');
-			
-			let hp = (Number(enemy._end) + Number(enemy._endi)) * 15;
-			let dmg = Number(enemy._dmgi);
-			let myhp = (Number(data.player._end) + Number(data.player._endi)) * 15;
-			let mydmg = Number(data.player._dmgi);
-			let количествоУдаров = Math.ceil(hp/mydmg);
-			let количествоУдаровНавыка = Math.floor((10+количествоУдаров)/9);
-			let количествоУдаровВозможных = Math.ceil(myhp/dmg);
-			// let количествоУдаровВозможных = Math.ceil(myhp/dmg)+количествоУдаровНавыка;
-			if (!(количествоУдаров <= количествоУдаровВозможных) && botSettings.useEnergy) {
-				isAlive = false;
-				if (Number(syncBot.arena.player._en) >= 4) {
-					syncBot.arena.player._en = this._isMounted && syncBot.arena.player._en - 4;
-					this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&i=121&UID=${player._id}`);
-					syncBot.arena.try++;
-					this._isMounted && syncBot.isStart && setBotLog(`Успешно пропустили противника ${syncBot.arena.try}/${this.state.tryLimit}`, 'text', 'green');
-				} else {
-					this._isMounted && syncBot.isStart && setBotLog(`Не хватает энергии на пропуск противника`, 'text', 'red');
-					this._isMounted && this.BotArena('pause');
-				}
-				return false;
-			}
-
-			let fightPrice = Number(["0", "10", "30", "50", "90", "150", "250", "350", "500", "650"][syncBot.arena.player._al]);
-			if (Number(syncBot.arena.player._m3) < fightPrice) {
-				this._isMounted && syncBot.isStart && setBotLog(`Не хватает золота на создание противника`, 'text', 'red');
-				this._isMounted && this.BotArena('pause');
-				return false;
-			}
-			syncBot.arena.player._m3 = this._isMounted && Number(syncBot.arena.player._m3) - fightPrice;
-			
-			
-			let fight = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${id}&i=11&t=${enemy._id}`);
-			if ((fight == null) || (fight && !fight.fight)) {
-				await wait(3000);
-				fight = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${id}&i=11&t=${enemy._id}`);
-			}
-
-
-			
-
-			const hit = async() => {
-				fight._dmg = Number(enemy._dmgi);
-				// console.warn('getFight', fight);
-				let dmg = Number(fight._dmg);
-				let mydmg = Number(data.player._dmgi);
-				let навыкПротивника = Number(fight._esk);
-				let hash;
-				if (Number(fight._myr) >= 9) {
-					// console.log('INVISIBLE HIT');
-					hash = this._isMounted && await BotAPI('getFightHash', null, null, null, {key: `<data><d 
-						s0="0"
-						s1="0"
-						s2="0"
-						s3="1"
-						s4="0"
-						c1="0"
-						c2="0"
-						c3="0"
-						c4="0"
-						c5="0"
-						m0="3"
-						r="1"
-						dd="${mydmg+Number(data.player._s3)*7}"
-						dg="0"
-					/></data>`.replace(/\s+/g,' ')});
-				} else {
-					// console.log('SIMPLE HIT', навыкПротивника);
-					if (навыкПротивника == 1) {
-						hash = this._isMounted && await BotAPI('getFightHash', null, null, null, {key: `<data><d 
-							s0="1"
-							s1="0"
-							s2="0"
-							s3="0"
-							s4="0"
-							c1="0"
-							c2="0"
-							c3="0"
-							c4="0"
-							c5="0"
-							m0="3"
-							r="1"
-							dd="${mydmg}"
-							dg="${dmg+Number(enemy._s1)*5}"
-						/></data>`.replace(/\s+/g,' ')});
-					} else if (навыкПротивника == 2) {
-						hash = this._isMounted && await BotAPI('getFightHash', null, null, null, {key: `<data><d 
-							s0="1"
-							s1="0"
-							s2="0"
-							s3="0"
-							s4="0"
-							c1="0"
-							c2="0"
-							c3="0"
-							c4="0"
-							c5="0"
-							m0="3"
-							r="1"
-							dd="${mydmg-Number(enemy._s2)}"
-							dg="${dmg}"
-						/></data>`.replace(/\s+/g,' ')});
-					} else if (навыкПротивника == 3) {
-						hash = this._isMounted && await BotAPI('getFightHash', null, null, null, {key: `<data><d 
-						s0="1"
-						s1="0"
-						s2="0"
-						s3="0"
-						s4="0"
-						c1="0"
-						c2="0"
-						c3="0"
-						c4="0"
-						c5="0"
-						m0="3"
-						r="1"
-						dd="0"
-						dg="${dmg+Number(enemy._s3)*7}"
-					/></data>`.replace(/\s+/g,' ')});
-					} else {
-						hash = this._isMounted && await BotAPI('getFightHash', null, null, null, {key: `<data><d 
-							s0="1"
-							s1="0"
-							s2="0"
-							s3="0"
-							s4="0"
-							c1="0"
-							c2="0"
-							c3="0"
-							c4="0"
-							c5="0"
-							m0="3"
-							r="1"
-							dd="${mydmg}"
-							dg="${dmg}"
-						/></data>`.replace(/\s+/g,' ')});
-					}
-				}
-
-				fight = await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${id}&i=12&t=${hash}`);
-				if (fight && fight.fight) {
-					let reward = fight.r;
-					fight = fight.fight;
-					if (Number(fight._myhp) <= 0) {
-						// console.warn('endFight', fight);
-						isAlive = false;
-						// console.warn(syncBot.arena.player._ap, syncBot.arena.player._ap);
-						syncBot.arena.player._ap = Number(syncBot.arena.player._ap) - 16;
-						let league = this.getLeague(syncBot.arena.player._ap);
-						syncBot.arena.player._al = league.id;
-						syncBot.arena.try++;
-						this._isMounted && syncBot.isStart && setBotLog(`Противник оказался сильнее ${syncBot.arena.try}/${this.state.tryLimit}`, 'text', 'red');
-						return true;
-					} else if (Number(fight._hp) <= 0) {
-						// console.warn('endFight', fight);
-						isAlive = false;
-						// console.warn(syncBot.arena.player._ap, syncBot.arena.player._ap, reward._ap);
-						syncBot.arena.player._ap = Number(syncBot.arena.player._ap) + 19;
-						syncBot.arena.player._exp = Number(syncBot.arena.player._exp) + (Number.isInteger(Number(reward._exp)) ? Number(reward._exp) : 0);
-						let league = this.getLeague(syncBot.arena.player._ap);
-						syncBot.arena.player._al = league.id;
-						this._isMounted && syncBot.isStart && setBotLog(`Успешно убили противника`, 'text', 'green');
-						return true;
-					} else {
-						isAlive = true;
-						// console.warn('isAlive', isAlive);
-						// this._isMounted && setBotLog(`Успешно ударили противника`, 'text');
-						return true;
-					}
-				} else {
-					isAlive = false;
-					// console.warn('isAlive', isAlive);
-					this._isMounted && syncBot.isStart && setBotLog(`Ошибка при убийстве противника`, 'text', 'red');
-					this._isMounted && this.BotArena('pause');
-					return false;
-				}
-			}
-
-			if (fight && fight.fight) {
-				// if (!(количествоУдаров <= количествоУдаровВозможных)) {
-				// 	isAlive = false;
-				// 	await wait(3000);
-				// 	this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${id}&i=11&t=${enemy._id}&t2=3&t3=0&t4=0&t5=0`);
-				// 	this._isMounted && setBotLog(`Противника удалось избежать`, 'text', 'green');
-				// 	return true;
-				// } else {
-				// 	do {
-				// 		this._isMounted && await hit();
-				// 	} while (this._isMounted && isAlive);
-				// }
-				do {
-					this._isMounted && await hit();
-				} while (this._isMounted && isAlive);
+		if (Number(dataProfile?.u?._pet) == 0) {
+			this.state.times.pet = null;
+		} else {
+			if (dataProfile?.mypets?.p) {
+				typeof dataProfile?.mypets?.p?.length == 'undefined' ? dataProfile.mypets.p = [dataProfile?.mypets?.p] : [];
+				this.state.times.pet = Number(dataProfile?.mypets?.p?.find(pet => Number(pet._is_loot) == 1)?._end_time) || 'clear';
 			} else {
-				this._isMounted && setBotLog(`Невозможно создать противника`, 'text', 'red');
-				this._isMounted && this.BotArena('pause');
-				return false;
+				this.state.times.pet = null;
 			}
-		};
-		if (mode == 'start') {
-			syncBot.isStart = true;
-			this._isMounted && setBotLog(`Бот успешно запущен`, 'text', 'green');
-			do {
-				this._isMounted && await startFight(auth_key, api_uid, sslt, Number(player._id));
-			} while (this._isMounted && syncBot.isStart && syncBot.arena.try < this.state.tryLimit);
-			this._isMounted && syncBot.isStart && this.BotArena('pause');
 		}
-		if (mode == 'load' || mode == 'reload') {
-			if (mode == 'reload') {
-				this._isMounted && setBotLog(`Данные обновлены`, 'text');
+		this.state.times.lottery = Number(dataProfile?.u?._lott) || 0;
+		if (dataGuild?.bldngs?.b) {
+			typeof dataGuild?.bldngs?.b?.length == 'undefined' ? dataGuild.bldngs.b = [dataGuild?.bldngs?.b] : [];
+			this.state.times.guildBuilds = Number(dataGuild?.bldngs?.b.find(build => Number(build._id) == 5)?._ptl) || 0;
+		} else {
+			this.state.times.guildBuilds = null;
+			this.state.times.guildReward = null;
+		}
+
+		if (mode == 'map' && action == 'collect') {
+			let data;
+			let count = 0;
+			for (let build of dataProfile?.j || []) {
+				data = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&UID=${dataProfile?.u?._id}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&i=23&t1=${build._r}&t2=${build._rn}`);
+				if (data?.j) {
+					count++;
+					this._isMounted && setBotLog({
+						avatar: `bot/resources/${build._r}_${build._rn}.png`,
+						name: data?.j?._n,
+						message: this.parseReward(data?.r),
+					}, 'message');
+				}
 			}
-			this._isMounted && this.setState({ isLoad: false });
+			if (count == 0) this._isMounted && this.setBotLog(`Нет доступных зданий для обыска`, 'text');
+			this._isMounted && await this.BotResources();
 		}
+		if (mode == 'map' && action == 'upgrade') {
+			let data;
+			let count = 0;
+			for (let build of dataProfile?.j || []) {
+				let hash = this._isMounted && await BotAPI('getAcceptHash', null, null, null, {key: `${build._r}ja6`});
+				data = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&UID=${dataProfile?.u?._id}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&i=24&t1=${build._r}&t2=${build._rn}&g_sig=${hash}`);
+				if (Number(data?.j?._ok) == 1) {
+					count++;
+					this._isMounted && setBotLog({
+						avatar: `bot/resources/${build._r}_${build._rn}.png`,
+						name: ['Магическая лавка', 'Таверна', 'Хижина отшельника', 'Постоялый двор', 'Лавка колдуньи Ванессы', 'Шахта Растхельма', 'Таверна', 'Постоялый двор', 'Постоялый двор', 'Постоялый двор'][Number(data?.j?._id)-1],
+						message: `Получен ${Number(data?.j?._lvl)} уровень`,
+					}, 'message');
+				}
+			}
+			if (count == 0) this._isMounted && this.setBotLog(`Нет доступных зданий для улучшения`, 'text');
+			this._isMounted && await this.BotResources();
+		}
+		if (mode == 'chest' && action == 'collect') {
+			let data;
+			if (dataProfile?.chests?.ch?.length) {
+				let chest = dataProfile?.chests?.ch?.find(chest => Number(chest._o) == 1);
+				if (chest) {
+					data = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&UID=${dataProfile?.u?._id}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&i=102&t=${chest?._id}`);
+					if (data?.r) {
+						this._isMounted && setBotLog({
+							avatar: `bot/resources/1_${chest._ci}.png`,
+							name: ['', 'Деревянный сундук', 'Серебряный сундук', 'Золотой сундук', 'Магический сундук', 'Трофейный сундук', 'Сундук', 'Пиратский сундук'][chest._ci],
+							message: this.parseReward(data?.r),
+						}, 'message');
+					} else this._isMounted && this.setBotLog(`Сундук ещё взламывается`, 'text');
+				} else this._isMounted && this.setBotLog(`Нет доступных сундуков для открытия`, 'text');
+			} else {
+				this.state.times.chest = null;
+			}
+			this._isMounted && await this.BotResources();
+		}
+		if (mode == 'chest' && action == 'open') {
+			let data;
+			if (dataProfile?.chests?.ch?.length) {
+				let chest = dataProfile?.chests?.ch?.find(chest => Number(chest._o) == 0);
+				if (chest) {
+					data = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&UID=${dataProfile?.u?._id}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&i=100&t=${chest?._id}`);
+					if (data?.ch) {
+						this._isMounted && setBotLog({
+							avatar: `bot/resources/1_${chest._ci}.png`,
+							name: ['', 'Деревянный сундук', 'Серебряный сундук', 'Золотой сундук', 'Магический сундук', 'Трофейный сундук', 'Сундук', 'Пиратский сундук'][chest._ci],
+							message: `Откроется через ${this.props.options.getTime(data?.ch?._ot)}`,
+						}, 'message');
+					} else this._isMounted && this.setBotLog(`Нет доступных мест для взлома`, 'text');
+				} else this._isMounted && this.setBotLog(`Нет доступных сундуков для взлома`, 'text');
+			} else {
+				this.state.times.chest = null;
+			}
+			this._isMounted && await this.BotResources();
+		}
+		if (mode == 'pet' && action == 'collect') {
+			let data;
+			data = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&UID=${dataProfile?.u?._id}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&i=136&t=${dataProfile?.u?._pet}`);
+			if (data?.r) {
+				this._isMounted && setBotLog({
+					avatar: `bot/resources/4_${dataProfile?.u?._pet}.png`,
+					name: ['', 'Полярный Тигр', 'Северный Волк', 'Дух Воды', 'Панда', 'Грабоид'][dataProfile?.u?._pet],
+					message: this.parseReward(data?.r),
+				}, 'message');
+			} else this._isMounted && this.setBotLog(`Питомец ещё в пути`, 'text');
+			this._isMounted && await this.BotResources();
+		}
+		if (mode == 'pet' && action == 'send') {
+			let data;
+			data = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&UID=${dataProfile?.u?._id}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&i=135&t=${dataProfile?.u?._pet}`);
+			if (data?.petloot) {
+				this._isMounted && setBotLog({
+					avatar: `bot/resources/4_${dataProfile?.u?._pet}.png`,
+					name: ['', 'Полярный Тигр', 'Северный Волк', 'Дух Воды', 'Панда', 'Грабоид'][dataProfile?.u?._pet],
+					message: `Прибудет через ${this.props.options.getTime(data?.petloot?._end_time)}`,
+				}, 'message');
+			} else {
+				if (Number(dataProfile?.pets?.p?.find(pet => Number(pet._id) == Number(dataProfile?.u?._pet))?._lp) > Number(dataProfile?.u?._pf1)) {
+					this._isMounted && this.setBotLog(`На отправку питомца не хватает еды`, 'text');
+				} else this._isMounted && this.setBotLog(`Питомец ещё не прибыл`, 'text');
+			}
+			this._isMounted && await this.BotResources();
+		}
+		if (mode == 'lottery' && action == 'collect') {
+			let data;
+			if (this.state.times.lottery <= 0) {
+				data = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&UID=${dataProfile?.u?._id}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&i=28&t1=5&t2=1&t3=0`);
+				data = data?.r?.find(reward => reward?._id == undefined);
+				if (data) {
+					this._isMounted && setBotLog({
+						avatar: `bot/resources/3.png`,
+						name: `Лотерея`,
+						message: this.parseReward(data),
+					}, 'message');
+				} else this._isMounted && this.setBotLog(`Нет бесплатных попыток лотереи`, 'text');
+			}
+			this._isMounted && await this.BotResources();
+		}
+		if (mode == 'guildBuild' && action == 'collect') {
+			let data;
+			for (let build of [5, 6]) {
+				data = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&UID=${dataProfile?.u?._id}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&i=112&t=${build}`);
+				if (data?.r) {
+					this._isMounted && setBotLog({
+						avatar: `bot/resources/1.png`,
+						name: `Здание гильдии`,
+						message: this.parseReward(data?.r),
+					}, 'message');
+				} else this._isMounted && this.setBotLog(`Нет доступных зданий для обыска`, 'text');
+			}
+			this._isMounted && await this.BotResources();
+		}
+		if (mode == 'guildReward' && action == 'collect') {
+			let data;
+			data = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&UID=${dataProfile?.u?._id}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&i=155`);
+			if (data?.msg == 'Необходимо состоять в Гильдии.' || data?.msg == 'Ваша гильдия не имеет захваченных территорий.' || data?.msg == 'Вы уже забрали свою долю на сегодня.') {
+				this.state.times.guildReward = null;
+				this._isMounted && this.setBotLog(data?.msg.replace(/\./gm, ''), 'text');
+			} else this._isMounted && setBotLog({
+				avatar: `bot/resources/2.png`,
+				name: `Дань гильдии`,
+				message: this.parseReward(data?.r),
+			}, 'message');
+			this._isMounted && await this.BotResources();
+		}
+
+		this._isMounted && clearInterval(globalTimer);
+		globalTimer = this._isMounted && setInterval(() => {
+			let times = this.state.times;
+			if (times.chest > 0) times = {...times, chest: times.chest-1};
+			if (times.pet > 0) times = {...times, pet: times.pet-1};
+			if (times.lottery > 0) times = {...times, lottery: times.lottery-1};
+			if (times.guildBuilds > 0) times = {...times, guildBuilds: times.guildBuilds-1};
+			this.setState({times});
+		}, 1000);
+
+		this._isMounted && this.setState({ isLoad: false });
 	};
 	async componentDidMount() {
 		console.log('[PANEL] >', this.props.id);
 		!this.props.state.isDesktop && this.props.options.updateFixedLayout();
 		this._isMounted = true;
-		syncBot.arena = null;
-		await this.BotArena('load');
+		syncBot = null;
+		await this.BotResources();
 	};
 	async componentDidUpdate() {
 		!this.props.state.isDesktop && this.props.options.updateFixedLayout();
 	};
 	async componentWillUnmount () {
 		this._isMounted = false;
-		syncBot.isStart = false;
-		syncBot.arena = null;
+		syncBot = null;
+		clearInterval(globalTimer);
 	};
 	async shouldComponentUpdate(nextProps, nextState) {
 		if (nextProps.state.snackbar!=this.state.snackbar&&nextState.snackbar==this.state.snackbar) this.setState({ snackbar: nextProps.state.snackbar });
@@ -454,8 +444,6 @@ class PANEL extends React.Component {
 	}
 	render() {
 		const { state, options, parent } = this.props;
-		const { botSettings } = this.state;
-		const { BotArena } = this;
 		const pathImages = 'https://dobriy-vecher-vlad.github.io/warlord-helper/media/images/';
 		const title = 'Ресурсы';
 		const description = 'Мой профиль';
@@ -465,67 +453,98 @@ class PANEL extends React.Component {
 				{!state.isDesktop && options.getPanelHeader(title, description, avatar, this.props.id, parent)}
 				<Group>
 					{state.isDesktop && options.getPanelHeader(title, description, avatar, this.props.id, parent)}
-					{syncBot.arena?<React.Fragment>
-						<div className="Scroll" style={{maxHeight: state.isDesktop ? '299px' : 'unset'}}>
-							<CardGrid size="m">
-								<Card>
-									<RichCell
-										disabled
-										caption="Взаимодействие со зданиями на карте"
-										actions={<ButtonGroup mode="horizontal"><Button mode="commerce">Собрать</Button><Button mode="secondary">Улучшить</Button></ButtonGroup>}
-									>Карта <span style={{color: 'var(--text_secondary)', fontSize: 12}}>- 02:00:00</span></RichCell>
-								</Card>
-								<Card>
-									<RichCell
-										disabled
-										caption="Взаимодействие с сундуками в профиле"
-										actions={<ButtonGroup mode="horizontal"><Button mode="commerce">Собрать</Button><Button mode="secondary">Вскрыть</Button></ButtonGroup>}
-									>Сундуки</RichCell>
-								</Card>
-								<Card>
-									<RichCell
-										disabled
-										caption="Взаимодействие с активным питомцем"
-										actions={<ButtonGroup mode="horizontal"><Button mode="commerce">Собрать</Button><Button mode="secondary">Отправить</Button></ButtonGroup>}
-									>Питомец</RichCell>
-								</Card>
-								<Card>
-									<RichCell
-										disabled
-										caption="Взаимодействие с ежедневной лотереей"
-										actions={<ButtonGroup mode="horizontal"><Button mode="commerce">Собрать</Button></ButtonGroup>}
-									>Лотерея</RichCell>
-								</Card>
-								<Card>
-									<RichCell
-										disabled
-										caption="Взаимодействие с наградой гильдии"
-										actions={<ButtonGroup mode="horizontal"><Button mode="commerce">Собрать</Button></ButtonGroup>}
-									>Здания гильдии</RichCell>
-								</Card>
-								<Card>
-									<RichCell
-										disabled
-										caption="Взаимодействие с наградой гильдии"
-										actions={<ButtonGroup mode="horizontal"><Button mode="commerce">Собрать</Button></ButtonGroup>}
-									>Дань гильдии</RichCell>
-								</Card>
-							</CardGrid>
-						</div>
+					{syncBot?<React.Fragment>
+						<PullToRefresh onRefresh={() => this.BotResources()} isFetching={this.state.isLoad}>
+							<div className='ActionCards'>
+								<div className='ActionCard' isdisabled={`${this.state.times.map == null}`}>
+									<div className='ActionCard__head'>
+										<div className='ActionCard__head--title'>Карта</div>
+										<div className='ActionCard__head--after'>{this.state.times.map || '0/0'}</div>
+									</div>
+									<div className='ActionCard__body'>Взаимодействие со зданиями на карте</div>
+									<div className='ActionCard__bottom'>
+										<Button mode="commerce" loading={this.state.isLoad} onClick={() => this.BotResources('map', 'collect')}>Собрать</Button>
+										<Button mode="secondary" loading={this.state.isLoad} onClick={() => this.BotResources('map', 'upgrade')}>Улучшить</Button>
+									</div>
+								</div>
+								<div className='ActionCard' isdisabled={`${this.state.times.chest == null}`}>
+									<div className='ActionCard__head'>
+										<div className='ActionCard__head--title'>Сундук</div>
+										<div className='ActionCard__head--after'>{this.props.options.getTime(this.state.times.chest)}</div>
+									</div>
+									<div className='ActionCard__body'>Взаимодействие с сундуками в профиле</div>
+									<div className='ActionCard__bottom'>
+										<Button mode="commerce" loading={this.state.isLoad} disabled={this.state.times.chest > 0 || this.state.times.chest == 'clear'} onClick={() => this.BotResources('chest', 'collect')}>Собрать</Button>
+										<Button mode="secondary" loading={this.state.isLoad} disabled={this.state.times.chest != 'clear'} onClick={() => this.BotResources('chest', 'open')}>Взломать</Button>
+									</div>
+								</div>
+								<div className='ActionCard' isdisabled={`${this.state.times.pet == null}`}>
+									<div className='ActionCard__head'>
+										<div className='ActionCard__head--title'>Питомец</div>
+										<div className='ActionCard__head--after'>{this.props.options.getTime(this.state.times.pet)}</div>
+									</div>
+									<div className='ActionCard__body'>Взаимодействие с активным питомцем</div>
+									<div className='ActionCard__bottom'>
+										<Button mode="commerce" loading={this.state.isLoad} disabled={this.state.times.pet > 0 || this.state.times.pet == 'clear'} onClick={() => this.BotResources('pet', 'collect')}>Собрать</Button>
+										<Button mode="secondary" loading={this.state.isLoad} disabled={this.state.times.pet != 'clear'} onClick={() => this.BotResources('pet', 'send')}>Отправить</Button>
+									</div>
+								</div>
+								<div className='ActionCard' isdisabled={`${this.state.times.lottery == null}`}>
+									<div className='ActionCard__head'>
+										<div className='ActionCard__head--title'>Лотерея</div>
+										<div className='ActionCard__head--after'>{this.props.options.getTime(this.state.times.lottery)}</div>
+									</div>
+									<div className='ActionCard__body'>Взаимодействие с ежедневной лотереей</div>
+									<div className='ActionCard__bottom'>
+										<Button mode="commerce" loading={this.state.isLoad} disabled={this.state.times.lottery > 0} onClick={() => this.BotResources('lottery', 'collect')}>Собрать</Button>
+									</div>
+								</div>
+								<div className='ActionCard' isdisabled={`${this.state.times.guildBuilds == null}`}>
+									<div className='ActionCard__head'>
+										<div className='ActionCard__head--title'>Здания гильдии</div>
+										<div className='ActionCard__head--after'>{this.props.options.getTime(this.state.times.guildBuilds)}</div>
+									</div>
+									<div className='ActionCard__body'>Взаимодействие с наградой гильдии</div>
+									<div className='ActionCard__bottom'>
+										<Button mode="commerce" loading={this.state.isLoad} disabled={this.state.times.guildBuilds > 0} onClick={() => this.BotResources('guildBuild', 'collect')}>Собрать</Button>
+									</div>
+								</div>
+								<div className='ActionCard' isdisabled={`${this.state.times.guildReward == null}`}>
+									<div className='ActionCard__head'>
+										<div className='ActionCard__head--title'>Дань гильдии</div>
+									</div>
+									<div className='ActionCard__body'>Взаимодействие с наградой гильдии</div>
+									<div className='ActionCard__bottom'>
+										<Button mode="commerce" loading={this.state.isLoad} onClick={() => this.BotResources('guildReward', 'collect')}>Собрать</Button>
+									</div>
+								</div>
+							</div>
+						</PullToRefresh>
 						<div className='Sticky Sticky__bottom withSeparator'>
 							<Spacing size={8} />
 							<div className="BotLog Scroll" style={{marginLeft: 8, marginRight: state.isDesktop?0:8}}>{!Array.isArray(this.state.botLog)?this.state.botLog:this.state.botLog.map((item, x) => {
-								if (item.type == 'text') return (<span key={x} className={item.color}>{item.message}</span>)
-								if (item.type == 'newEnemy' || item.type == 'enemy') return (<div key={x} className="Log__message">
+								if (item.type == 'text') {
+									return (<span key={x} className={item.color}>{item.message}</span>);
+								} else return (<div key={x} className="Log__message">
 									<Avatar size={36} mode="app" src={`${pathImages}${item.message.avatar}`} />
 									<div className="Log__message--main">
 										<div className="Log__message--title">
 											<span>{item.message.title}</span>
 											<span>{item.message.time}</span>
 										</div>
-										<div className="Log__message--children">{item.message.message}</div>
+										<div className="Log__message--children">{Array.isArray(item.message.message)?item.message.message.map((item, x) => {
+											return (<div key={x} className="Log__message">
+												{item.avatar&&<Avatar className={['Предмет', 'Коллекция', 'Заточка', 'Камень'].includes(item.title)&&"Item"} size={36} mode="app" src={`${pathImages}${item.avatar}`} />}
+												<div className="Log__message--main">
+													<div className="Log__message--title">
+														<span>{item.title}</span>
+													</div>
+													<div className="Log__message--children">{item.message}</div>
+												</div>
+											</div>)
+										}):item.message.message}</div>
 									</div>
-								</div>)
+								</div>);
 							})}</div>
 							<Spacing separator size={16} style={{padding: 0, marginRight: state.isDesktop&&'-7px', marginLeft: state.isDesktop&&'-7px'}}/>
 							<div style={{
@@ -537,54 +556,17 @@ class PANEL extends React.Component {
 							</div>
 						</div>
 					</React.Fragment>:<React.Fragment>
-					<div className="Scroll" style={{maxHeight: state.isDesktop ? '299px' : 'unset', overflow: 'hidden'}}>
-							<CardGrid size={state.isDesktop ? "s" : "m"}>
-								<Card className='DescriptionCardWiki withSkeleton'>
-									<Skeleton height={32} width={32}/>
-									<Skeleton height={state.isDesktop?38:38} width={108} />
-								</Card>
-								<Card className='DescriptionCardWiki withSkeleton'>
-									<Skeleton height={32} width={32}/>
-									<Skeleton height={state.isDesktop?38:38} width={108} />
-								</Card>
-								<Card className='DescriptionCardWiki withSkeleton'>
-									<Skeleton height={32} width={32}/>
-									<Skeleton height={state.isDesktop?38:38} width={108} />
-								</Card>
-								<Card className='DescriptionCardWiki withSkeleton'>
-									<Skeleton height={32} width={32}/>
-									<Skeleton height={state.isDesktop?38:38} width={108} />
-								</Card>
-								<Card className='DescriptionCardWiki withSkeleton'>
-									<Skeleton height={32} width={32}/>
-									<Skeleton height={state.isDesktop?38:38} width={108} />
-								</Card>
-								<Card className='DescriptionCardWiki withSkeleton'>
-									<Skeleton height={32} width={32}/>
-									<Skeleton height={state.isDesktop?38:38} width={108} />
-								</Card>
-							</CardGrid>
-							<Spacing separator size={16} />
-							<CardGrid size={state.isDesktop ? "m" : "l"}>
-								{state.isDesktop ? <React.Fragment>
-									<Card className='DescriptionCardWiki Clear'>
-										<Skeleton height={state.isDesktop?36:44} width={state.isDesktop ? 268 : "auto"}/>
-									</Card>
-									<Card className='DescriptionCardWiki Clear'>
-										<Skeleton height={state.isDesktop?36:44} width={state.isDesktop ? 268 : "auto"}/>
-									</Card>
-									<Card className='DescriptionCardWiki Clear'>
-										<Skeleton height={state.isDesktop?36:44} width={state.isDesktop ? 268 : "auto"}/>
-									</Card>
-								</React.Fragment>:<React.Fragment>
-									<Card className='DescriptionCardWiki Clear'>
-										<Skeleton height={68} width="auto"/>
-									</Card>
-								</React.Fragment>}
-								<Card className='DescriptionCardWiki Clear'>
-									<Skeleton height={state.isDesktop?36:44} width={state.isDesktop ? 268 : "auto"}/>
-								</Card>
-							</CardGrid>
+						<div className='ActionCards'>
+							{new Array(6).fill(null).map((item, x) => <div className='ActionCard' key={x}>
+								<div className='ActionCard__head'>
+									<div className='ActionCard__head--title'><Skeleton height={20} width={70}/></div>
+								</div>
+								<div className='ActionCard__body'><Skeleton height={16} width={'75%'}/></div>
+								<div className='ActionCard__bottom'>
+									<Skeleton height={state.isDesktop ? 28 : 30} width={90}/>
+									<Skeleton height={state.isDesktop ? 28 : 30} width={90}/>
+								</div>
+							</div>)}
 						</div>
 						<div className='Sticky Sticky__bottom withSeparator'>
 							<Spacing size={8} />

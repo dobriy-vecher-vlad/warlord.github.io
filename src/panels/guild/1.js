@@ -8,7 +8,7 @@ import {
 	InfoRow,
 	FormItem,
 	Slider,
-	Input
+	Input,
 } from '@vkontakte/vkui';
 import { Icon20DiamondOutline, Icon20ShareExternalOutline } from '@vkontakte/icons';
 
@@ -49,36 +49,36 @@ class PANEL extends React.Component {
 					</div>
 					<CardGrid size="m">
 						<Card className="beautifulCard" mode="outline">
-							<InfoRow header={`${options.numberSpaces(1)} ${options.numberForm(1, ['топаз', 'топаза', 'топазов'])}`}>{options.numberSpaces(75*1)} золота</InfoRow>
-							<Icon20DiamondOutline/>
+							<InfoRow header={`${options.numberSpaces(1)} ${options.numberForm(1, ['топаз', 'топаза', 'топазов'])}`}><span>{options.numberSpaces(75*1)} золота</span></InfoRow>
+							<Icon20DiamondOutline style={{['--fill']: 'var(--systemOrange)' }}/>
 						</Card>
 						<Card className="beautifulCard" mode="outline">
-							<InfoRow header={`${options.numberSpaces(1)} ${options.numberForm(1, ['аметист', 'аметиста', 'аметистов'])}`}>{options.numberSpaces(55*1)} серебра</InfoRow>
-							<Icon20DiamondOutline/>
+							<InfoRow header={`${options.numberSpaces(1)} ${options.numberForm(1, ['аметист', 'аметиста', 'аметистов'])}`}><span>{options.numberSpaces(55*1)} серебра</span></InfoRow>
+							<Icon20DiamondOutline style={{['--fill']: 'var(--systemIndigo)' }}/>
 						</Card>
 						<Card className="beautifulCard" mode="outline">
-							<InfoRow header={`${options.numberSpaces(5)} ${options.numberForm(5, ['топаз', 'топаза', 'топазов'])}`}>{options.numberSpaces(75*5)} золота</InfoRow>
-							<Icon20DiamondOutline/>
+							<InfoRow header={`${options.numberSpaces(5)} ${options.numberForm(5, ['топаз', 'топаза', 'топазов'])}`}><span>{options.numberSpaces(75*5)} золота</span></InfoRow>
+							<Icon20DiamondOutline style={{['--fill']: 'var(--systemOrange)' }}/>
 						</Card>
 						<Card className="beautifulCard" mode="outline">
-							<InfoRow header={`${options.numberSpaces(5)} ${options.numberForm(5, ['аметист', 'аметиста', 'аметистов'])}`}>{options.numberSpaces(55*5)} серебра</InfoRow>
-							<Icon20DiamondOutline/>
+							<InfoRow header={`${options.numberSpaces(5)} ${options.numberForm(5, ['аметист', 'аметиста', 'аметистов'])}`}><span>{options.numberSpaces(55*5)} серебра</span></InfoRow>
+							<Icon20DiamondOutline style={{['--fill']: 'var(--systemIndigo)' }}/>
 						</Card>
 						<Card className="beautifulCard" mode="outline">
-							<InfoRow header={`${options.numberSpaces(25)} ${options.numberForm(25, ['топаз', 'топаза', 'топазов'])}`}>{options.numberSpaces(75*25)} золота</InfoRow>
-							<Icon20DiamondOutline/>
+							<InfoRow header={`${options.numberSpaces(25)} ${options.numberForm(25, ['топаз', 'топаза', 'топазов'])}`}><span>{options.numberSpaces(75*25)} золота</span></InfoRow>
+							<Icon20DiamondOutline style={{['--fill']: 'var(--systemOrange)' }}/>
 						</Card>
 						<Card className="beautifulCard" mode="outline">
-							<InfoRow header={`${options.numberSpaces(25)} ${options.numberForm(25, ['аметист', 'аметиста', 'аметистов'])}`}>{options.numberSpaces(55*25)} серебра</InfoRow>
-							<Icon20DiamondOutline/>
+							<InfoRow header={`${options.numberSpaces(25)} ${options.numberForm(25, ['аметист', 'аметиста', 'аметистов'])}`}><span>{options.numberSpaces(55*25)} серебра</span></InfoRow>
+							<Icon20DiamondOutline style={{['--fill']: 'var(--systemIndigo)' }}/>
 						</Card>
 						<Card className="beautifulCard" mode="outline">
-							<InfoRow header={`${options.numberSpaces(50)} ${options.numberForm(50, ['топаз', 'топаза', 'топазов'])}`}>{options.numberSpaces(75*50)} золота</InfoRow>
-							<Icon20DiamondOutline/>
+							<InfoRow header={`${options.numberSpaces(50)} ${options.numberForm(50, ['топаз', 'топаза', 'топазов'])}`}><span>{options.numberSpaces(75*50)} золота</span></InfoRow>
+							<Icon20DiamondOutline style={{['--fill']: 'var(--systemOrange)' }}/>
 						</Card>
 						<Card className="beautifulCard" mode="outline">
-							<InfoRow header={`${options.numberSpaces(50)} ${options.numberForm(50, ['аметист', 'аметиста', 'аметистов'])}`}>{options.numberSpaces(55*50)} серебра</InfoRow>
-							<Icon20DiamondOutline/>
+							<InfoRow header={`${options.numberSpaces(50)} ${options.numberForm(50, ['аметист', 'аметиста', 'аметистов'])}`}><span>{options.numberSpaces(55*50)} серебра</span></InfoRow>
+							<Icon20DiamondOutline style={{['--fill']: 'var(--systemIndigo)' }}/>
 						</Card>
 					</CardGrid>
 					<CardGrid size="m">
@@ -113,20 +113,20 @@ class PANEL extends React.Component {
 					</CardGrid>
 					<CardGrid size="m">
 						<Card className="beautifulCard" mode="outline">
-							<InfoRow header="Необходимо золота">{options.numberSpaces(this.state.topaz*75)} ед.</InfoRow>
-							<Icon20DiamondOutline/>
+							<InfoRow header="Необходимо серебра"><span>{options.numberSpaces(this.state.topaz*75)} ед.</span></InfoRow>
+							<Icon20DiamondOutline style={{['--fill']: 'var(--systemOrange)' }}/>
 						</Card>
 						<Card className="beautifulCard" mode="outline">
-							<InfoRow header="Необходимо серебра">{options.numberSpaces(this.state.amethyst*55)} ед.</InfoRow>
-							<Icon20DiamondOutline/>
+							<InfoRow header="Необходимо серебра"><span>{options.numberSpaces(this.state.amethyst*55)} ед.</span></InfoRow>
+							<Icon20DiamondOutline style={{['--fill']: 'var(--systemCyan)' }}/>
 						</Card>
 						<Card className="beautifulCard" mode="outline">
-							<InfoRow header="Пополнение казны">{options.numberSpaces(Math.ceil(this.state.topaz*75/3750))} раз</InfoRow>
-							<Icon20ShareExternalOutline/>
+							<InfoRow header="Пополнение казны"><span>{options.numberSpaces(Math.ceil(this.state.topaz*75/3750))} раз</span></InfoRow>
+							<Icon20ShareExternalOutline style={{['--fill']: 'var(--systemYellow)' }}/>
 						</Card>
 						<Card className="beautifulCard" mode="outline">
-							<InfoRow header="Пополнение казны">{options.numberSpaces(Math.ceil(this.state.amethyst*55/2750))} раз</InfoRow>
-							<Icon20ShareExternalOutline/>
+							<InfoRow header="Пополнение казны"><span>{options.numberSpaces(Math.ceil(this.state.amethyst*55/2750))} раз</span></InfoRow>
+							<Icon20ShareExternalOutline style={{['--fill']: 'var(--systemYellow)' }}/>
 						</Card>
 					</CardGrid>
 				</Group>

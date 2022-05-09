@@ -133,7 +133,7 @@ const islocalStorage = (() => {
 })();
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
-const wikiVersion = '1.6.1';
+const wikiVersion = '1.6.2';
 const pathImages = 'https://dobriy-vecher-vlad.github.io/warlord-helper/media/images/';
 
 
@@ -158,7 +158,7 @@ import PANEL_profile__5 from './panels/profile/5';
 import PANEL_profile__6 from './panels/profile/6';
 import PANEL_profile__7 from './panels/profile/7';
 // import PANEL_profile__8 from './panels/profile/8';
-// import PANEL_profile__9 from './panels/profile/9';
+import PANEL_profile__9 from './panels/profile/9';
 
 import VIEW_rating from './panels/rating/rating';
 
@@ -594,6 +594,9 @@ const App = withAdaptivity(({ viewWidth }) => {
 			});	
 		};
 		getTime = (s = 0) => {
+			s = Number(s);
+			if (s < 0) s = 0;
+			if (!Number.isInteger(s)) s = 0;
 			let hours = Math.floor(s/(60*60));
 			let minutes = parseInt((s/(60))%60);
 			let seconds = parseInt((s)%60);
@@ -921,6 +924,227 @@ const App = withAdaptivity(({ viewWidth }) => {
 				} catch (error) {
 					return null;
 				}
+			}
+			if (mode == 'getAcceptHash' && data && data.key) {
+				// console.warn(data.key);
+				var Jb = function(a) {
+					this.length = a.byteLength;
+					this.b = new Uint8Array(a);
+					this.b.bufferValue = a;
+					a.hxBytes = this;
+					a.bytes = this.b
+				};
+				Jb.ofString = function(a, b) {
+					b = [];
+					for (var c = 0; c < a.length; ) {
+						var e = a.charCodeAt(c++);
+						55296 <= e && 56319 >= e && (e = e - 55232 << 10 | a.charCodeAt(c++) & 1023);
+						127 >= e ? b.push(e) : (2047 >= e ? b.push(192 | e >> 6) : (65535 >= e ? b.push(224 | e >> 12) : (b.push(240 | e >> 18),
+						b.push(128 | e >> 12 & 63)),
+						b.push(128 | e >> 6 & 63)),
+						b.push(128 | e & 63))
+					}
+					return new Jb((new Uint8Array(b)).buffer)
+				};
+				Jb.prototype = {
+					length: null,
+					b: null,
+					data: null,
+					blit: function(a, b, c, e) {
+						if (0 > a || 0 > c || 0 > e || a + e > this.length || c + e > b.length)
+							throw R.thrown(wf.OutsideBounds);
+						0 == c && e == b.b.byteLength ? this.b.set(b.b, a) : this.b.set(b.b.subarray(c, c + e), a)
+					},
+					getString: function(a, b, c) {
+						if (0 > a || 0 > b || a + b > this.length)
+							throw R.thrown(wf.OutsideBounds);
+						c = "";
+						var e = this.b
+						  , k = ar.fromCharCode
+						  , d = a;
+						for (a += b; d < a; )
+							if (b = e[d++],
+							128 > b) {
+								if (0 == b)
+									break;
+								c += k(b)
+							} else if (224 > b)
+								c += k((b & 63) << 6 | e[d++] & 127);
+							else if (240 > b) {
+								var f = e[d++];
+								c += k((b & 31) << 12 | (f & 127) << 6 | e[d++] & 127)
+							} else {
+								f = e[d++];
+								var g = e[d++];
+								b = (b & 15) << 18 | (f & 127) << 12 | (g & 127) << 6 | e[d++] & 127;
+								c += k((b >> 10) + 55232);
+								c += k(b & 1023 | 56320)
+							}
+						return c
+					},
+					toString: function() {
+						return this.getString(0, this.length)
+					},
+					__class__: Jb
+				};
+				var Nc = function () {};
+				Nc.__name__ = "haxe.crypto.Md5";
+				Nc.encode = function (a) {
+					var b = new Nc;
+					a = b.doEncode(Nc.str2blks(a));
+					return b.hex(a)
+				};
+				Nc.str2blks = function (a) {
+					var b = Jb.ofString(a),
+						c = (b.length + 8 >> 6) + 1;
+					a = [];
+					for (var e = 0, k = 16 * c; e < k;) {
+						var d = e++;
+						a[d] = 0
+					}
+					d = 0;
+					k = b.length;
+					for (e = 8 * k; d < k;) a[d >> 2] |= b.b[d] << (e + d) % 4 * 8, ++d;
+					a[d >> 2] |= 128 << (e + d) % 4 * 8;
+					b = 16 * c - 2;
+					a[b] = e & 255;
+					a[b] |= (e >>> 8 & 255) <<
+						8;
+					a[b] |= (e >>> 16 & 255) << 16;
+					a[b] |= (e >>> 24 & 255) << 24;
+					return a
+				};
+				Nc.prototype = {
+					bitOR: function (a, b) {
+						return (a >>> 1 | b >>> 1) << 1 | a & 1 | b & 1
+					},
+					bitXOR: function (a, b) {
+						return (a >>> 1 ^ b >>> 1) << 1 | a & 1 ^ b & 1
+					},
+					bitAND: function (a, b) {
+						return (a >>> 1 & b >>> 1) << 1 | a & 1 & b & 1
+					},
+					addme: function (a, b) {
+						var c = (a & 65535) + (b & 65535);
+						return (a >> 16) + (b >> 16) + (c >> 16) << 16 | c & 65535
+					},
+					hex: function (a) {
+						for (var b = "", c = 0; c < a.length;) {
+							var e = a[c];
+							++c;
+							b += "0123456789abcdef".charAt(e >> 4 & 15) + "0123456789abcdef".charAt(e & 15);
+							b += "0123456789abcdef".charAt(e >> 12 & 15) + "0123456789abcdef".charAt(e >>
+								8 & 15);
+							b += "0123456789abcdef".charAt(e >> 20 & 15) + "0123456789abcdef".charAt(e >> 16 & 15);
+							b += "0123456789abcdef".charAt(e >> 28 & 15) + "0123456789abcdef".charAt(e >> 24 & 15)
+						}
+						return b
+					},
+					rol: function (a, b) {
+						return a << b | a >>> 32 - b
+					},
+					cmn: function (a, b, c, e, k, d) {
+						return this.addme(this.rol(this.addme(this.addme(b, a), this.addme(e, d)), k), c)
+					},
+					ff: function (a, b, c, e, k, d, f) {
+						return this.cmn(this.bitOR(this.bitAND(b, c), this.bitAND(~b, e)), a, b, k, d, f)
+					},
+					gg: function (a, b, c, e, k, d, f) {
+						return this.cmn(this.bitOR(this.bitAND(b, e), this.bitAND(c, ~e)),
+							a, b, k, d, f)
+					},
+					hh: function (a, b, c, e, k, d, f) {
+						return this.cmn(this.bitXOR(this.bitXOR(b, c), e), a, b, k, d, f)
+					},
+					ii: function (a, b, c, e, k, d, f) {
+						return this.cmn(this.bitXOR(c, this.bitOR(b, ~e)), a, b, k, d, f)
+					},
+					doEncode: function (a) {
+						for (var b = 1732584193, c = -271733879, e = -1732584194, k = 271733878, d = 0; d < a.length;) {
+							var f = b,
+								g = c,
+								l = e,
+								h = k;
+							b = this.ff(b, c, e, k, a[d], 7, -680876936);
+							k = this.ff(k, b, c, e, a[d + 1], 12, -389564586);
+							e = this.ff(e, k, b, c, a[d + 2], 17, 606105819);
+							c = this.ff(c, e, k, b, a[d + 3], 22, -1044525330);
+							b = this.ff(b, c, e, k, a[d + 4], 7, -176418897);
+							k =
+								this.ff(k, b, c, e, a[d + 5], 12, 1200080426);
+							e = this.ff(e, k, b, c, a[d + 6], 17, -1473231341);
+							c = this.ff(c, e, k, b, a[d + 7], 22, -45705983);
+							b = this.ff(b, c, e, k, a[d + 8], 7, 1770035416);
+							k = this.ff(k, b, c, e, a[d + 9], 12, -1958414417);
+							e = this.ff(e, k, b, c, a[d + 10], 17, -42063);
+							c = this.ff(c, e, k, b, a[d + 11], 22, -1990404162);
+							b = this.ff(b, c, e, k, a[d + 12], 7, 1804603682);
+							k = this.ff(k, b, c, e, a[d + 13], 12, -40341101);
+							e = this.ff(e, k, b, c, a[d + 14], 17, -1502002290);
+							c = this.ff(c, e, k, b, a[d + 15], 22, 1236535329);
+							b = this.gg(b, c, e, k, a[d + 1], 5, -165796510);
+							k = this.gg(k, b, c, e, a[d +
+								6], 9, -1069501632);
+							e = this.gg(e, k, b, c, a[d + 11], 14, 643717713);
+							c = this.gg(c, e, k, b, a[d], 20, -373897302);
+							b = this.gg(b, c, e, k, a[d + 5], 5, -701558691);
+							k = this.gg(k, b, c, e, a[d + 10], 9, 38016083);
+							e = this.gg(e, k, b, c, a[d + 15], 14, -660478335);
+							c = this.gg(c, e, k, b, a[d + 4], 20, -405537848);
+							b = this.gg(b, c, e, k, a[d + 9], 5, 568446438);
+							k = this.gg(k, b, c, e, a[d + 14], 9, -1019803690);
+							e = this.gg(e, k, b, c, a[d + 3], 14, -187363961);
+							c = this.gg(c, e, k, b, a[d + 8], 20, 1163531501);
+							b = this.gg(b, c, e, k, a[d + 13], 5, -1444681467);
+							k = this.gg(k, b, c, e, a[d + 2], 9, -51403784);
+							e = this.gg(e,
+								k, b, c, a[d + 7], 14, 1735328473);
+							c = this.gg(c, e, k, b, a[d + 12], 20, -1926607734);
+							b = this.hh(b, c, e, k, a[d + 5], 4, -378558);
+							k = this.hh(k, b, c, e, a[d + 8], 11, -2022574463);
+							e = this.hh(e, k, b, c, a[d + 11], 16, 1839030562);
+							c = this.hh(c, e, k, b, a[d + 14], 23, -35309556);
+							b = this.hh(b, c, e, k, a[d + 1], 4, -1530992060);
+							k = this.hh(k, b, c, e, a[d + 4], 11, 1272893353);
+							e = this.hh(e, k, b, c, a[d + 7], 16, -155497632);
+							c = this.hh(c, e, k, b, a[d + 10], 23, -1094730640);
+							b = this.hh(b, c, e, k, a[d + 13], 4, 681279174);
+							k = this.hh(k, b, c, e, a[d], 11, -358537222);
+							e = this.hh(e, k, b, c, a[d + 3], 16, -722521979);
+							c = this.hh(c, e, k, b, a[d + 6], 23, 76029189);
+							b = this.hh(b, c, e, k, a[d + 9], 4, -640364487);
+							k = this.hh(k, b, c, e, a[d + 12], 11, -421815835);
+							e = this.hh(e, k, b, c, a[d + 15], 16, 530742520);
+							c = this.hh(c, e, k, b, a[d + 2], 23, -995338651);
+							b = this.ii(b, c, e, k, a[d], 6, -198630844);
+							k = this.ii(k, b, c, e, a[d + 7], 10, 1126891415);
+							e = this.ii(e, k, b, c, a[d + 14], 15, -1416354905);
+							c = this.ii(c, e, k, b, a[d + 5], 21, -57434055);
+							b = this.ii(b, c, e, k, a[d + 12], 6, 1700485571);
+							k = this.ii(k, b, c, e, a[d + 3], 10, -1894986606);
+							e = this.ii(e, k, b, c, a[d + 10], 15, -1051523);
+							c = this.ii(c, e, k, b, a[d + 1],
+								21, -2054922799);
+							b = this.ii(b, c, e, k, a[d + 8], 6, 1873313359);
+							k = this.ii(k, b, c, e, a[d + 15], 10, -30611744);
+							e = this.ii(e, k, b, c, a[d + 6], 15, -1560198380);
+							c = this.ii(c, e, k, b, a[d + 13], 21, 1309151649);
+							b = this.ii(b, c, e, k, a[d + 4], 6, -145523070);
+							k = this.ii(k, b, c, e, a[d + 11], 10, -1120210379);
+							e = this.ii(e, k, b, c, a[d + 2], 15, 718787259);
+							c = this.ii(c, e, k, b, a[d + 9], 21, -343485551);
+							b = this.addme(b, f);
+							c = this.addme(c, g);
+							e = this.addme(e, l);
+							k = this.addme(k, h);
+							d += 16
+						}
+						return [b, c, e, k]
+					},
+					__class__: Nc
+				};
+				let hash = Nc.encode(data.key);
+				return hash;
 			}
 			if (mode == 'getFightHash' && data && data.key) {
 				// console.log(data.key);
@@ -1784,7 +2008,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 									{!isDesktop && <PanelHeader>Мой профиль</PanelHeader>}
 									{user.vk && <Group>
 										{isDesktop && <PanelHeader className='HeaderFix' fixed={false} separator={true} right={this.getCopy(this.state.activeStory)}>Мой профиль</PanelHeader>}
-										<PullToRefresh onRefresh={this.storeProfilesRefresh} isFetching={this.state.fetching}>
+										<PullToRefresh onRefresh={() => this.storeProfilesRefresh()} isFetching={this.state.fetching}>
 											<Spacing size={6} />
 											<Gallery
 												getRef={this.storeProfilesRef}
@@ -1829,9 +2053,9 @@ const App = withAdaptivity(({ viewWidth }) => {
 													{!isDonut ? <span className="Text"><Icon28DonateCircleFillYellow width={24} height={24}/></span> : <React.Fragment><span className="Text">{numberSpaces(syncUserGame._ap)}</span>
 													<span className="Subhead">{numberForm(syncUserGame._ap, ['кубок', 'кубка', 'кубков'])}</span></React.Fragment>}
 												</React.Fragment>}>Арена</SimpleCell>
-												{/* <SimpleCell onClick={() => setActivePanel('9', true)} before={<Avatar mode="app" src={`${pathImages}labels/14.png`} />} description="Автоматизация" expandable indicator={<React.Fragment>
+												<SimpleCell onClick={() => setActivePanel('9', true)} before={<Avatar mode="app" src={`${pathImages}labels/14.png`} />} description="Автоматизация" expandable indicator={<React.Fragment>
 													<span className="Text">{!isDonut&&<Icon28DonateCircleFillYellow width={24} height={24}/>}</span>
-												</React.Fragment>}>Ресурсы</SimpleCell> */}
+												</React.Fragment>}>Ресурсы</SimpleCell>
 												<Spacing separator size={12} />
 												<SimpleCell onClick={() => setActivePanel('1', true)} before={<Avatar mode="app" src={`${pathImages}labels/12.png`} />} description="Ассортимент вещей" expandable indicator={<React.Fragment>
 													{!isDonut ? <span className="Text"><Icon28DonateCircleFillYellow width={24} height={24}/></span> : <React.Fragment><span className="Text">{syncItems.length} / {Items.length}</span>
@@ -1865,7 +2089,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 								<PANEL_profile__6 id='6' parent='profile' state={this.state} options={this} />
 								<PANEL_profile__7 id='7' parent='profile' state={this.state} options={this} />
 								{/* <PANEL_profile__8 id='8' parent='profile' state={this.state} options={this} /> */}
-								{/* <PANEL_profile__9 id='9' parent='profile' state={this.state} options={this} /> */}
+								<PANEL_profile__9 id='9' parent='profile' state={this.state} options={this} />
 							</View>
 
 
