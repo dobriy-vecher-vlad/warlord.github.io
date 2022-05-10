@@ -344,7 +344,7 @@ class PANEL extends React.Component {
 						</Tabs>
 					</PanelHeader>}
 					{state.isDesktop && <Group>
-						<PanelHeader className='HeaderFix HeaderWithTabs' fixed={false} separator={true} right={options.getCopy(parent)}>
+						<PanelHeader className='HeaderFix HeaderWithTabs' fixed={false} separator={false} right={options.getCopy(parent)}>
 							<Tabs>
 								<TabsItem onClick={() => this.setState({ rating: null, tab: 1 }, () => this.loadRating())} selected={this.state.tab == 1}>Профили</TabsItem>
 								<TabsItem onClick={() => this.setState({ rating: null, tab: 2 }, () => this.loadRating())} selected={this.state.tab == 2}>Гильдии</TabsItem>

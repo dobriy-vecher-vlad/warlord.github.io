@@ -35,6 +35,14 @@ class PANEL extends React.Component {
 				guildBuilds: 0,
 				guildReward: 0,
 			},
+			hints: {
+				map: null,
+				chest: null,
+				pet: null,
+				lottery: null,
+				guildBuilds: null,
+				guildReward: null,
+			},
 			
 			botLog: <Placeholder
 				style={{overflow: "hidden"}}
@@ -238,32 +246,46 @@ class PANEL extends React.Component {
 		if (dataProfile?.j) {
 			typeof dataProfile?.j?.length == 'undefined' ? dataProfile.j = [dataProfile?.j] : [];
 			this.state.times.map = dataProfile?.j?.length ? `${dataProfile?.j?.filter(build => Number(build?._t) <= 0)?.length}/${dataProfile?.j?.length}` : null;
+			this.state.hints.map = null;
 		} else {
 			this.state.times.map = null;
+			this.state.hints.map = 'Нет доступных зданий';
 		}
 		if (dataProfile?.chests?.ch) {
 			typeof dataProfile?.chests?.ch?.length == 'undefined' ? dataProfile.chests.ch = [dataProfile?.chests?.ch] : [];
 			this.state.times.chest = Number(dataProfile?.chests?.ch?.find(chest => Number(chest._o) == 1)?._ot) || 'clear';
+			this.state.hints.chest = null;
 		} else {
 			this.state.times.chest = null;
+			this.state.hints.chest = 'Нет доступных сундуков';
 		}
 		if (Number(dataProfile?.u?._pet) == 0) {
 			this.state.times.pet = null;
+			this.state.hints.pet = 'Нет активного питомца';
 		} else {
 			if (dataProfile?.mypets?.p) {
 				typeof dataProfile?.mypets?.p?.length == 'undefined' ? dataProfile.mypets.p = [dataProfile?.mypets?.p] : [];
 				this.state.times.pet = Number(dataProfile?.mypets?.p?.find(pet => Number(pet._is_loot) == 1)?._end_time) || 'clear';
+				this.state.hints.pet = null;
+				if (Number(dataProfile?.pets?.p?.find(pet => Number(pet._id) == Number(dataProfile?.u?._pet))?._lp) > Number(dataProfile?.u?._pf1)) {
+					this.state.times.pet = null;
+					this.state.hints.pet = 'Не хватает еды';
+				}
 			} else {
 				this.state.times.pet = null;
+				this.state.hints.pet = 'Нет доступных питомцев';
 			}
 		}
 		this.state.times.lottery = Number(dataProfile?.u?._lott) || 0;
 		if (dataGuild?.bldngs?.b) {
 			typeof dataGuild?.bldngs?.b?.length == 'undefined' ? dataGuild.bldngs.b = [dataGuild?.bldngs?.b] : [];
 			this.state.times.guildBuilds = Number(dataGuild?.bldngs?.b.find(build => Number(build._id) == 5)?._ptl) || 0;
+			this.state.hints.guildBuilds = null;
 		} else {
 			this.state.times.guildBuilds = null;
 			this.state.times.guildReward = null;
+			this.state.hints.guildBuilds = 'Нет гильдии';
+			this.state.hints.guildReward = 'Нет гильдии';
 		}
 
 		if (mode == 'map' && action == 'collect') {
@@ -317,6 +339,7 @@ class PANEL extends React.Component {
 				} else this._isMounted && this.setBotLog(`Нет доступных сундуков для открытия`, 'text');
 			} else {
 				this.state.times.chest = null;
+				this.state.hints.chest = 'Нет доступных сундуков';
 			}
 			this._isMounted && await this.BotResources();
 		}
@@ -336,6 +359,7 @@ class PANEL extends React.Component {
 				} else this._isMounted && this.setBotLog(`Нет доступных сундуков для взлома`, 'text');
 			} else {
 				this.state.times.chest = null;
+				this.state.hints.chest = 'Нет доступных сундуков';
 			}
 			this._isMounted && await this.BotResources();
 		}
@@ -384,16 +408,19 @@ class PANEL extends React.Component {
 		}
 		if (mode == 'guildBuild' && action == 'collect') {
 			let data;
+			let count = 0;
 			for (let build of [5, 6]) {
 				data = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&UID=${dataProfile?.u?._id}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&i=112&t=${build}`);
 				if (data?.r) {
+					count++;
 					this._isMounted && setBotLog({
 						avatar: `bot/resources/1.png`,
 						name: `Здание гильдии`,
 						message: this.parseReward(data?.r),
 					}, 'message');
-				} else this._isMounted && this.setBotLog(`Нет доступных зданий для обыска`, 'text');
+				}
 			}
+			if (count == 0) this._isMounted && this.setBotLog(`Нет доступных зданий для обыска`, 'text');
 			this._isMounted && await this.BotResources();
 		}
 		if (mode == 'guildReward' && action == 'collect') {
@@ -401,6 +428,7 @@ class PANEL extends React.Component {
 			data = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&UID=${dataProfile?.u?._id}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&i=155`);
 			if (data?.msg == 'Необходимо состоять в Гильдии.' || data?.msg == 'Ваша гильдия не имеет захваченных территорий.' || data?.msg == 'Вы уже забрали свою долю на сегодня.') {
 				this.state.times.guildReward = null;
+				this.state.hints.guildReward = data?.msg.replace(/\./gm, '');
 				this._isMounted && this.setBotLog(data?.msg.replace(/\./gm, ''), 'text');
 			} else this._isMounted && setBotLog({
 				avatar: `bot/resources/2.png`,
@@ -457,65 +485,83 @@ class PANEL extends React.Component {
 						<PullToRefresh onRefresh={() => this.BotResources()} isFetching={this.state.isLoad}>
 							<div className='ActionCards'>
 								<div className='ActionCard' isdisabled={`${this.state.times.map == null}`}>
-									<div className='ActionCard__head'>
-										<div className='ActionCard__head--title'>Карта</div>
-										<div className='ActionCard__head--after'>{this.state.times.map || '0/0'}</div>
-									</div>
-									<div className='ActionCard__body'>Взаимодействие со зданиями на карте</div>
-									<div className='ActionCard__bottom'>
-										<Button mode="commerce" loading={this.state.isLoad} onClick={() => this.BotResources('map', 'collect')}>Собрать</Button>
-										<Button mode="secondary" loading={this.state.isLoad} onClick={() => this.BotResources('map', 'upgrade')}>Улучшить</Button>
+									{this.state.times.map == null && <div className='ActionCard__hint'>{this.state.hints.map || 'Недоступно'}</div>}
+									<div>
+										<div className='ActionCard__head'>
+											<div className='ActionCard__head--title'>Карта</div>
+											<div className='ActionCard__head--after'>{this.state.times.map || '0/0'}</div>
+										</div>
+										<div className='ActionCard__body'>Взаимодействие со зданиями на карте</div>
+										<div className='ActionCard__bottom'>
+											<Button mode="commerce" loading={this.state.isLoad} onClick={() => this.BotResources('map', 'collect')}>Собрать</Button>
+											<Button mode="secondary" loading={this.state.isLoad} onClick={() => this.BotResources('map', 'upgrade')}>Улучшить</Button>
+										</div>
 									</div>
 								</div>
 								<div className='ActionCard' isdisabled={`${this.state.times.chest == null}`}>
-									<div className='ActionCard__head'>
-										<div className='ActionCard__head--title'>Сундук</div>
-										<div className='ActionCard__head--after'>{this.props.options.getTime(this.state.times.chest)}</div>
-									</div>
-									<div className='ActionCard__body'>Взаимодействие с сундуками в профиле</div>
-									<div className='ActionCard__bottom'>
-										<Button mode="commerce" loading={this.state.isLoad} disabled={this.state.times.chest > 0 || this.state.times.chest == 'clear'} onClick={() => this.BotResources('chest', 'collect')}>Собрать</Button>
-										<Button mode="secondary" loading={this.state.isLoad} disabled={this.state.times.chest != 'clear'} onClick={() => this.BotResources('chest', 'open')}>Взломать</Button>
+									{this.state.times.chest == null && <div className='ActionCard__hint'>{this.state.hints.chest || 'Недоступно'}</div>}
+									<div>
+										<div className='ActionCard__head'>
+											<div className='ActionCard__head--title'>Сундук</div>
+											<div className='ActionCard__head--after'>{this.props.options.getTime(this.state.times.chest)}</div>
+										</div>
+										<div className='ActionCard__body'>Взаимодействие с сундуками в профиле</div>
+										<div className='ActionCard__bottom'>
+											<Button mode="commerce" loading={this.state.isLoad} disabled={this.state.times.chest > 0 || this.state.times.chest == 'clear'} onClick={() => this.BotResources('chest', 'collect')}>Собрать</Button>
+											<Button mode="secondary" loading={this.state.isLoad} disabled={this.state.times.chest != 'clear'} onClick={() => this.BotResources('chest', 'open')}>Взломать</Button>
+										</div>
 									</div>
 								</div>
 								<div className='ActionCard' isdisabled={`${this.state.times.pet == null}`}>
-									<div className='ActionCard__head'>
-										<div className='ActionCard__head--title'>Питомец</div>
-										<div className='ActionCard__head--after'>{this.props.options.getTime(this.state.times.pet)}</div>
-									</div>
-									<div className='ActionCard__body'>Взаимодействие с активным питомцем</div>
-									<div className='ActionCard__bottom'>
-										<Button mode="commerce" loading={this.state.isLoad} disabled={this.state.times.pet > 0 || this.state.times.pet == 'clear'} onClick={() => this.BotResources('pet', 'collect')}>Собрать</Button>
-										<Button mode="secondary" loading={this.state.isLoad} disabled={this.state.times.pet != 'clear'} onClick={() => this.BotResources('pet', 'send')}>Отправить</Button>
+									{this.state.times.pet == null && <div className='ActionCard__hint'>{this.state.hints.pet || 'Недоступно'}</div>}
+									<div>
+										<div className='ActionCard__head'>
+											<div className='ActionCard__head--title'>Питомец</div>
+											<div className='ActionCard__head--after'>{this.props.options.getTime(this.state.times.pet)}</div>
+										</div>
+										<div className='ActionCard__body'>Взаимодействие с активным питомцем</div>
+										<div className='ActionCard__bottom'>
+											<Button mode="commerce" loading={this.state.isLoad} disabled={this.state.times.pet > 0 || this.state.times.pet == 'clear'} onClick={() => this.BotResources('pet', 'collect')}>Собрать</Button>
+											<Button mode="secondary" loading={this.state.isLoad} disabled={this.state.times.pet != 'clear'} onClick={() => this.BotResources('pet', 'send')}>Отправить</Button>
+										</div>
 									</div>
 								</div>
 								<div className='ActionCard' isdisabled={`${this.state.times.lottery == null}`}>
-									<div className='ActionCard__head'>
-										<div className='ActionCard__head--title'>Лотерея</div>
-										<div className='ActionCard__head--after'>{this.props.options.getTime(this.state.times.lottery)}</div>
-									</div>
-									<div className='ActionCard__body'>Взаимодействие с ежедневной лотереей</div>
-									<div className='ActionCard__bottom'>
-										<Button mode="commerce" loading={this.state.isLoad} disabled={this.state.times.lottery > 0} onClick={() => this.BotResources('lottery', 'collect')}>Собрать</Button>
+									{this.state.times.lottery == null && <div className='ActionCard__hint'>{this.state.hints.lottery || 'Недоступно'}</div>}
+									<div>
+										<div className='ActionCard__head'>
+											<div className='ActionCard__head--title'>Лотерея</div>
+											<div className='ActionCard__head--after'>{this.props.options.getTime(this.state.times.lottery)}</div>
+										</div>
+										<div className='ActionCard__body'>Взаимодействие с ежедневной лотереей</div>
+										<div className='ActionCard__bottom'>
+											<Button mode="commerce" loading={this.state.isLoad} disabled={this.state.times.lottery > 0} onClick={() => this.BotResources('lottery', 'collect')}>Собрать</Button>
+										</div>
 									</div>
 								</div>
 								<div className='ActionCard' isdisabled={`${this.state.times.guildBuilds == null}`}>
-									<div className='ActionCard__head'>
-										<div className='ActionCard__head--title'>Здания гильдии</div>
-										<div className='ActionCard__head--after'>{this.props.options.getTime(this.state.times.guildBuilds)}</div>
-									</div>
-									<div className='ActionCard__body'>Взаимодействие с наградой гильдии</div>
-									<div className='ActionCard__bottom'>
-										<Button mode="commerce" loading={this.state.isLoad} disabled={this.state.times.guildBuilds > 0} onClick={() => this.BotResources('guildBuild', 'collect')}>Собрать</Button>
+									{this.state.times.guildBuilds == null && <div className='ActionCard__hint'>{this.state.hints.guildBuilds || 'Недоступно'}</div>}
+									<div>
+										<div className='ActionCard__head'>
+											<div className='ActionCard__head--title'>Здания гильдии</div>
+											<div className='ActionCard__head--after'>{this.props.options.getTime(this.state.times.guildBuilds)}</div>
+										</div>
+										<div className='ActionCard__body'>Взаимодействие с наградой гильдии</div>
+										<div className='ActionCard__bottom'>
+											<Button mode="commerce" loading={this.state.isLoad} disabled={this.state.times.guildBuilds > 0} onClick={() => this.BotResources('guildBuild', 'collect')}>Собрать</Button>
+										</div>
 									</div>
 								</div>
 								<div className='ActionCard' isdisabled={`${this.state.times.guildReward == null}`}>
-									<div className='ActionCard__head'>
-										<div className='ActionCard__head--title'>Дань гильдии</div>
-									</div>
-									<div className='ActionCard__body'>Взаимодействие с наградой гильдии</div>
-									<div className='ActionCard__bottom'>
-										<Button mode="commerce" loading={this.state.isLoad} onClick={() => this.BotResources('guildReward', 'collect')}>Собрать</Button>
+									{this.state.times.guildReward == null && <div className='ActionCard__hint'>{this.state.hints.guildReward || 'Недоступно'}</div>}
+									<div>
+										<div className='ActionCard__head'>
+											<div className='ActionCard__head--title'>Дань гильдии</div>
+										</div>
+										<div className='ActionCard__body'>Взаимодействие с наградой гильдии</div>
+										<div className='ActionCard__bottom'>
+											<Button mode="commerce" loading={this.state.isLoad} onClick={() => this.BotResources('guildReward', 'collect')}>Собрать</Button>
+										</div>
 									</div>
 								</div>
 							</div>

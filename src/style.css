@@ -2439,6 +2439,42 @@ body[scheme=space_gray] .ActionCard::after {
 * + .ActionCard__bottom {
 	margin-top: 12px;
 }
+.ActionCard__hint {
+	position: absolute;
+	z-index: 1;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	display: flex;
+    align-items: center;
+    justify-content: center;
+	color: var(--text_primary);
+	background-color: rgb(245 245 245 / 75%);
+	padding: 12px 16px;
+    text-align: center;
+	font-size: var(--vkui--font_subhead--font_size--compact);
+    line-height: var(--vkui--font_subhead--line_height--compact);
+    font-weight: var(--vkui--font_subhead--font_weight--regular);
+	text-transform: lowercase;
+}
+[scheme=space_gray] .ActionCard__hint {
+	background-color: rgba(35 35 36 / 75%);
+}
+.ActionCard__hint::before {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    content: "";
+    display: block;
+    border: 1px solid #e1e3e6;
+    border: var(--thin-border) solid var(--input_border, var(--vkui--color_image_border_alpha));
+    z-index: 1;
+    box-sizing: border-box;
+    border-radius: inherit;
+}
 
 
 .ActionCards [isdisabled="true"] .Button__spinner,
@@ -3275,6 +3311,14 @@ body[scheme=space_gray] .ActionCard::after {
 		grid-template-columns: repeat(1, 1fr);
 		margin-left: 8px;
 		margin-right: 8px;
+	}
+
+
+	.Panel__in {
+		overflow: hidden;
+	}
+	.PanelHeader > .Separator {
+		display: none;
 	}
 }
 

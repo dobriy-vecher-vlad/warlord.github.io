@@ -1331,15 +1331,22 @@ const App = withAdaptivity(({ viewWidth }) => {
 		removeProfileInStore = async() => {
 			const { activePanel, activeStory } = this.state;
 			isDev&&console.warn('removeProfileInStore', activeStory, activePanel);
-			this.state.storeProfiles.splice(this.state.storeProfilesIndex, 1);
-			this.state.storeProfiles.push({
-				id: null
-			});
-			await this.Storage({key: 'storeProfiles', value: JSON.stringify(this.state.storeProfiles)});
-			this.state.storeProfilesFull = this.state.storeProfiles.slice();
-			this.CloseModal();
-			this.openSnackbar({text: 'Профиль удалён', icon: 'done'});
-			await this.storeProfiles(this.state.storeProfilesIndex-1);
+			let count = Number((await this.Storage({key: 'storeProfilesDeleted', defaultValue: '0'})).value) || 0;
+			if (count <= 5) {
+				await this.Storage({key: 'storeProfilesDeleted', value: String(count+1)});
+				this.state.storeProfiles.splice(this.state.storeProfilesIndex, 1);
+				this.state.storeProfiles.push({
+					id: null
+				});
+				await this.Storage({key: 'storeProfiles', value: JSON.stringify(this.state.storeProfiles)});
+				this.state.storeProfilesFull = this.state.storeProfiles.slice();
+				this.CloseModal();
+				this.openSnackbar({text: 'Профиль удалён', icon: 'done'});
+				await this.storeProfiles(this.state.storeProfilesIndex-1);
+			} else {
+				this.CloseModal();
+				this.openSnackbar({text: 'Превышен лимит удаления', icon: 'error'});
+			}
 		};
 		loadProfile = async(dev = false, reload = false, version = 1, withParams = false) => {
 			const { activePanel, activeStory } = this.state;
