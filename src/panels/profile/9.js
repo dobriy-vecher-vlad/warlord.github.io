@@ -267,9 +267,11 @@ class PANEL extends React.Component {
 				typeof dataProfile?.mypets?.p?.length == 'undefined' ? dataProfile.mypets.p = [dataProfile?.mypets?.p] : [];
 				this.state.times.pet = Number(dataProfile?.mypets?.p?.find(pet => Number(pet._is_loot) == 1)?._end_time) || 'clear';
 				this.state.hints.pet = null;
-				if (Number(dataProfile?.pets?.p?.find(pet => Number(pet._id) == Number(dataProfile?.u?._pet))?._lp) > Number(dataProfile?.u?._pf1)) {
-					this.state.times.pet = null;
-					this.state.hints.pet = 'Не хватает еды';
+				if (this.state.times.pet == 'clear') {
+					if (Number(dataProfile?.pets?.p?.find(pet => Number(pet._id) == Number(dataProfile?.u?._pet))?._lp) > Number(dataProfile?.u?._pf1)) {
+						this.state.times.pet = null;
+						this.state.hints.pet = 'Не хватает еды';
+					}
 				}
 			} else {
 				this.state.times.pet = null;
