@@ -337,6 +337,14 @@ const App = withAdaptivity(({ viewWidth }) => {
 	};
 	// getParseBosses();
 
+	const getParseXML = async() => {
+		let xml = `<?xml version="1.0" encoding="utf-8"?><data><r  m1="41"  m3="434" /><r item="265" cnt="1" type="6" /><add_ach id="79" val="41" /><add_ach id="78" val="434" /></data>`;
+		let data = await x2js.xml_str2json(xml);
+		if (data && data.data != undefined) data = data.data;
+		console.log(data);
+	};
+	// getParseXML();
+
 
 	class Wiki extends React.Component {
 		constructor(props) {
