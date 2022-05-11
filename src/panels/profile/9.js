@@ -7,6 +7,7 @@ import {
 	Button,
 	Placeholder,
 	PullToRefresh,
+	Input,
 } from '@vkontakte/vkui';
 import { Icon28ListOutline } from '@vkontakte/icons';
 import Skeleton from '../../components/skeleton';
@@ -44,6 +45,12 @@ class PANEL extends React.Component {
 				guildBuilds: null,
 				guildReward: null,
 				guildWars: null,
+			},
+			data: {
+				guildWars: {
+					start: null,
+					end: null,
+				}
 			},
 			
 			botLog: <Placeholder
@@ -305,10 +312,13 @@ class PANEL extends React.Component {
 				enemy: Number(war._v1),
 				date: war._d
 			})) || 0;
+			this.state.data.guildWars.end = this.state.times.guildWars?.[0]?.id || null;
 			this.state.hints.guildWars = null;
 		} else {
 			this.state.times.guildWars = null;
 			this.state.hints.guildWars = 'Нет гильдии';
+			this.state.data.guildWars.start = null;
+			this.state.data.guildWars.end = null;
 		}
 
 		if (mode == 'map' && action == 'collect') {
@@ -463,10 +473,14 @@ class PANEL extends React.Component {
 		if (mode == 'guildWars' && action == 'collect') {
 			let data;
 			let count = 0;
+			if (this.state.data.guildWars.start && this.state.data.guildWars.end) {
+				this.state.times.guildWars = [];
+				for (let i = this.state.data.guildWars.start; i <= this.state.data.guildWars.end; i++) this.state.times.guildWars.push({ id: i, name: `Набег #${i}`, date: null });
+			}
 			for (let war of this.state.times.guildWars || []) {
 				data = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&UID=${dataProfile?.u?._id}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&i=106&t=${war.id}`);
 				if (data?.cwar?.u) {
-					war.name = data?.cwar?._en || 'Набег';
+					war.name = data?.cwar?._en || `Набег #${war.id}`;
 					typeof data?.cwar?.u?.length == 'undefined' ? data.cwar.u = [data?.cwar?.u] : [];
 					let reward = data?.cwar?.u?.find(user => user.hasOwnProperty('r'));
 					if (reward?.r && Number(reward?._rtn) == 0) {
@@ -478,7 +492,31 @@ class PANEL extends React.Component {
 								name: `${war.name} ${war.date}`,
 								message: this.parseReward(data?.r),
 							}, 'message');
+						} else if (data) {
+							if (!war.date) {
+								this._isMounted && setBotLog({
+									avatar: `bot/resources/6_${['', 'бандитскийлагерь', 'логовогоблинов', 'фортнежити'].indexOf(war.name.toLowerCase().replace(/ /gm, ''))}.png`,
+									name: `${war.name}`,
+									message: data.replace(/\./gm, ''),
+								}, 'message');
+							}
 						}
+					} else if (reward) {
+						if (!war.date) {
+							this._isMounted && setBotLog({
+								avatar: `bot/resources/6_${['', 'бандитскийлагерь', 'логовогоблинов', 'фортнежити'].indexOf(war.name.toLowerCase().replace(/ /gm, ''))}.png`,
+								name: `${war.name}`,
+								message: `Обнаружен набег #${war.id} с собранной наградой`,
+							}, 'message');
+						}
+					}
+				} else if (data?.cwar) {
+					if (!war.date) {
+						this._isMounted && setBotLog({
+							avatar: `bot/resources/6_${['', 'бандитскийлагерь', 'логовогоблинов', 'фортнежити'].indexOf(war.name.toLowerCase().replace(/ /gm, ''))}.png`,
+							name: `${war.name}`,
+							message: `Обнаружен набег #${war.id} без вашего участия`,
+						}, 'message');
 					}
 				}
 			}
@@ -622,6 +660,8 @@ class PANEL extends React.Component {
 											<div className='ActionCard__body'>Взаимодействие с набегами гильдии</div>
 											<div className='ActionCard__bottom'>
 												<Button mode="commerce" loading={this.state.isLoad} onClick={() => this.BotResources('guildWars', 'collect')}>Собрать</Button>
+												<Input disabled={this.state.isLoad} placeholder='Начало' value={String(this.state.data.guildWars.start || '')} onChange={(e) => (this.state.data.guildWars.start = Number(e.target.value), this.setState({ data: this.state.data }))} type="number"/>
+												<Input disabled={this.state.isLoad} placeholder='Конец' value={String(this.state.data.guildWars.end || '')} onChange={(e) => (this.state.data.guildWars.end = Number(e.target.value), this.setState({ data: this.state.data }))} type="number"/>
 											</div>
 										</div>
 									</div>
