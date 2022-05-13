@@ -221,7 +221,7 @@ class PANEL extends React.Component {
 		const { setBotLog } = this;
 		const { BotAPI, openSnackbar, setActivePanel, numberForm } = this.props.options;
 		const { state } = this.props;
-		const { getData, server } = this.props.state;
+		const { getGame, server } = this.props.state;
 		
 		this._isMounted && this.setState({ isLoad: true });
 
@@ -239,10 +239,18 @@ class PANEL extends React.Component {
 			}
 		}
 
-		let dataProfile = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}`);
+		let getGameAuth = {
+			login: api_uid,
+			password: auth_key,
+		};
+		let dataProfile = this._isMounted && await getGame(this.props.state.server, {}, getGameAuth);
+		getGameAuth.id = dataProfile?.u?._id || api_uid;
 		let dataGuild = {};
 		if (Number(dataProfile?.u?._clan_id) != 0) {
-			dataGuild = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&UID=${dataProfile?.u?._id}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&i=49&t1=${dataProfile?.u?._clan_id}`);
+			dataGuild = this._isMounted && await getGame(this.props.state.server, {
+				i: 49,
+				t1: dataProfile?.u?._clan_id || 0,
+			}, getGameAuth);
 			if (dataGuild?.clan) {
 				dataGuild = dataGuild?.clan;
 			} else {
@@ -325,7 +333,16 @@ class PANEL extends React.Component {
 			let data;
 			let count = 0;
 			for (let build of dataProfile?.j || []) {
-				data = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&UID=${dataProfile?.u?._id}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&i=23&t1=${build._r}&t2=${build._rn}`);
+				data = this._isMounted && await getGame(this.props.state.server, {
+					i: 23,
+					t1: build._r,
+					t2: build._rn,
+				}, getGameAuth);
+				if (dataGuild?.clan) {
+					dataGuild = dataGuild?.clan;
+				} else {
+					dataGuild = null;
+				}
 				if (data?.j) {
 					count++;
 					this._isMounted && setBotLog({
@@ -343,7 +360,12 @@ class PANEL extends React.Component {
 			let count = 0;
 			for (let build of dataProfile?.j || []) {
 				let hash = this._isMounted && await BotAPI('getAcceptHash', null, null, null, {key: `${build._r}ja6`});
-				data = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&UID=${dataProfile?.u?._id}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&i=24&t1=${build._r}&t2=${build._rn}&g_sig=${hash}`);
+				data = this._isMounted && await getGame(this.props.state.server, {
+					i: 24,
+					t1: build._r,
+					t2: build._rn,
+					g_sig: hash,
+				}, getGameAuth);
 				if (Number(data?.j?._ok) == 1) {
 					count++;
 					this._isMounted && setBotLog({
@@ -361,7 +383,10 @@ class PANEL extends React.Component {
 			if (dataProfile?.chests?.ch?.length) {
 				let chest = dataProfile?.chests?.ch?.find(chest => Number(chest._o) == 1);
 				if (chest) {
-					data = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&UID=${dataProfile?.u?._id}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&i=102&t=${chest?._id}`);
+					data = this._isMounted && await getGame(this.props.state.server, {
+						i: 102,
+						t: chest?._id,
+					}, getGameAuth);
 					if (data?.r) {
 						this._isMounted && setBotLog({
 							avatar: `bot/resources/1_${chest._ci}.png`,
@@ -381,7 +406,10 @@ class PANEL extends React.Component {
 			if (dataProfile?.chests?.ch?.length) {
 				let chest = dataProfile?.chests?.ch?.find(chest => Number(chest._o) == 0);
 				if (chest) {
-					data = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&UID=${dataProfile?.u?._id}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&i=100&t=${chest?._id}`);
+					data = this._isMounted && await getGame(this.props.state.server, {
+						i: 100,
+						t: chest?._id,
+					}, getGameAuth);
 					if (data?.ch) {
 						this._isMounted && setBotLog({
 							avatar: `bot/resources/1_${chest._ci}.png`,
@@ -398,7 +426,10 @@ class PANEL extends React.Component {
 		}
 		if (mode == 'pet' && action == 'collect') {
 			let data;
-			data = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&UID=${dataProfile?.u?._id}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&i=136&t=${dataProfile?.u?._pet}`);
+			data = this._isMounted && await getGame(this.props.state.server, {
+				i: 136,
+				t: dataProfile?.u?._pet,
+			}, getGameAuth);
 			if (data?.r) {
 				this._isMounted && setBotLog({
 					avatar: `bot/resources/4_${dataProfile?.u?._pet}.png`,
@@ -410,7 +441,10 @@ class PANEL extends React.Component {
 		}
 		if (mode == 'pet' && action == 'send') {
 			let data;
-			data = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&UID=${dataProfile?.u?._id}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&i=135&t=${dataProfile?.u?._pet}`);
+			data = this._isMounted && await getGame(this.props.state.server, {
+				i: 135,
+				t: dataProfile?.u?._pet,
+			}, getGameAuth);
 			if (data?.petloot) {
 				this._isMounted && setBotLog({
 					avatar: `bot/resources/4_${dataProfile?.u?._pet}.png`,
@@ -427,7 +461,12 @@ class PANEL extends React.Component {
 		if (mode == 'lottery' && action == 'collect') {
 			let data;
 			if (this.state.times.lottery <= 0) {
-				data = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&UID=${dataProfile?.u?._id}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&i=28&t1=5&t2=1&t3=0`);
+				data = this._isMounted && await getGame(this.props.state.server, {
+					i: 28,
+					t1: 5,
+					t2: 1,
+					t3: 0,
+				}, getGameAuth);
 				data = data?.r?.find(reward => reward?._id == undefined);
 				if (data) {
 					this._isMounted && setBotLog({
@@ -443,7 +482,10 @@ class PANEL extends React.Component {
 			let data;
 			let count = 0;
 			for (let build of [5, 6]) {
-				data = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&UID=${dataProfile?.u?._id}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&i=112&t=${build}`);
+				data = this._isMounted && await getGame(this.props.state.server, {
+					i: 112,
+					t: build,
+				}, getGameAuth);
 				if (data?.r) {
 					count++;
 					this._isMounted && setBotLog({
@@ -458,7 +500,9 @@ class PANEL extends React.Component {
 		}
 		if (mode == 'guildReward' && action == 'collect') {
 			let data;
-			data = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&UID=${dataProfile?.u?._id}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&i=155`);
+			data = this._isMounted && await getGame(this.props.state.server, {
+				i: 155,
+			}, getGameAuth);
 			if (data?.msg == 'Необходимо состоять в Гильдии.' || data?.msg == 'Ваша гильдия не имеет захваченных территорий.' || data?.msg == 'Вы уже забрали свою долю на сегодня.') {
 				this.state.times.guildReward = null;
 				this.state.hints.guildReward = data?.msg.replace(/\./gm, '');
@@ -478,13 +522,19 @@ class PANEL extends React.Component {
 				for (let i = this.state.data.guildWars.start; i <= this.state.data.guildWars.end; i++) this.state.times.guildWars.push({ id: i, name: `Набег #${i}`, date: null });
 			}
 			for (let war of this.state.times.guildWars || []) {
-				data = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&UID=${dataProfile?.u?._id}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&i=106&t=${war.id}`);
+				data = this._isMounted && await getGame(this.props.state.server, {
+					i: 106,
+					t: war.id,
+				}, getGameAuth);
 				if (data?.cwar?.u) {
 					war.name = data?.cwar?._en || `Набег #${war.id}`;
 					typeof data?.cwar?.u?.length == 'undefined' ? data.cwar.u = [data?.cwar?.u] : [];
 					let reward = data?.cwar?.u?.find(user => user.hasOwnProperty('r'));
 					if (reward?.r && Number(reward?._rtn) == 0) {
-						data = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&UID=${dataProfile?.u?._id}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&i=125&t=${war.id}`);
+						data = this._isMounted && await getGame(this.props.state.server, {
+							i: 125,
+							t: war.id,
+						}, getGameAuth);
 						if (data?.r) {
 							count++;
 							this._isMounted && setBotLog({
@@ -568,7 +618,7 @@ class PANEL extends React.Component {
 				<Group>
 					{state.isDesktop && options.getPanelHeader(title, description, avatar, this.props.id, parent)}
 					{syncBot?<React.Fragment>
-						<PullToRefresh onRefresh={() => this.BotResources()} isFetching={this.state.isLoad}>
+						<PullToRefresh onRefresh={() => !this.state.isLoad&&this.BotResources()} isFetching={this.state.isLoad}>
 							<div className="Scroll" style={{maxHeight: state.isDesktop ? '314px' : 'unset'}}>
 								<div className='ActionCards'>
 									<div className='ActionCard' isdisabled={`${this.state.times.map == null}`}>

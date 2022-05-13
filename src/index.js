@@ -121,6 +121,28 @@ let server = 1;
 let isMask = false;
 let serverStatus = false;
 let serverStatusTime = 0;
+const serverHub = [{
+	id: 1,
+	name: 'Эрмун (vk.com)'
+}, {
+	id: 2,
+	name: 'Антарес (vk.com)'
+}, {
+	id: 3,
+	name: 'Эрмун (ok.ru)'
+}, {
+	id: 4,
+	name: 'Эрмун (yandex.ru)'
+}, {
+	id: 5,
+	name: 'Эрмун (exe.ru)'
+}, {
+	id: 6,
+	name: 'Эрмун (store.my.games)'
+}, {
+	id: 7,
+	name: 'Эрмун (onlineigry.net)'
+}];
 
 const islocalStorage = (() => {
 	try {
@@ -133,7 +155,7 @@ const islocalStorage = (() => {
 })();
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
-const wikiVersion = '1.6.2';
+const wikiVersion = '1.7.0';
 const pathImages = 'https://dobriy-vecher-vlad.github.io/warlord-helper/media/images/';
 
 
@@ -292,6 +314,55 @@ const App = withAdaptivity(({ viewWidth }) => {
 			}
 		}
 	}
+	const getGame = async(server = 'vk1', body = {}, auth = {}) => {
+		console.log(server, auth);
+		if (!server) return 'Укажите сервер запроса';
+		if (!body) return 'Укажите тело запроса';
+		if (!auth?.login) return 'Укажите логин запроса';
+		if (!auth?.password) return 'Укажите пароль запроса';
+		let host;
+		let request;
+		if (server == 'vk1' || server == 1) {
+			host = 'tmp1-fb.geronimo.su/warlord_vk/game.php';
+			request = {
+				api_type: 'vk',
+				api_id: 5536422,
+				sslt: 0,
+				api_uid: auth.login,
+				auth_key: auth.password,
+				...body,
+			};
+			if (Object.keys(body).length) request.UID = auth.id || auth.login;
+		}
+		if (server == 'vk2' || server == 2) {
+			host = 'tmp1-fb.geronimo.su/warlord_vk2/game.php';
+			request = {
+				api_type: 'vk',
+				api_id: 5536422,
+				sslt: 0,
+				api_uid: auth.login,
+				auth_key: auth.password,
+				...body,
+			};
+			if (Object.keys(body).length) request.UID = auth.id || auth.login;
+		}
+		if (server == 'yandex' || server == 3) {
+			host = 'gs1.geronimo.su/warlord_ya1/game.php';
+			request = {
+				api_type: 'ya',
+				api_id: 100430,
+				sslt: 0,
+				UID: auth.login,
+				api_uid: auth.password,
+				...body,
+			};
+			if (Object.keys(body).length) request.lapi_uid = auth.id || auth.login;
+		}
+		if (!host) return 'Укажите хост запроса';
+		if (!request) return 'Укажите запрос запроса';
+		let data = await getData(`https://${host}?${new URLSearchParams(request).toString()}`);
+		return data;
+	}
 
 	bridge.subscribe(({ detail: { type, data }}) => {
 		switch (type) {
@@ -373,9 +444,11 @@ const App = withAdaptivity(({ viewWidth }) => {
 				id: null,
 				auth: null,
 				server: null,
+				serverHub: serverHub,
 
 				getBridge: getBridge,
 				getData: getData,
+				getGame: getGame,
 				
 				platform: platform,
 				isEmbedded: isEmbedded,

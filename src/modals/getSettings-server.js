@@ -37,14 +37,10 @@ class MODAL extends React.Component {
 						status={Number(key) != 0 ? 'valid' : 'error'}
 						bottom={Number(key) != 0 ? 'Сервер выбран верно!' : 'Пожалуйста, выберите сервер'}
 					>
-						<Radio name="type"
-							defaultChecked={key == 1}
-							onChange={() => this.setState({ key: 1 })}
-						>Эрмун</Radio>
-						<Radio name="type"
-							defaultChecked={key == 2}
-							onChange={() => this.setState({ key: 2 })}
-						>Антарес</Radio>
+						{this.props.state.serverHub.map(server => <Radio key={server.id} name="type"
+							defaultChecked={key == server.id}
+							onChange={() => this.setState({ key: server.id })}
+						>{server.name}</Radio>)}
 					</FormItem>
 				</Div>
 			</ModalPage>
