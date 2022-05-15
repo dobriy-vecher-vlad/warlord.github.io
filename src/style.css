@@ -2561,12 +2561,12 @@ body[scheme=space_gray] .ActionCard::after {
 		align-items: center;
 		min-height: unset;
 	}
-	/* .RichCell--Header .Icon,
+	/* .RichCell--Header .Icon, */
 	.RichCell--Header .Avatar {
 		margin-right: 12px;
 		margin-top: 12px;
 		margin-bottom: 12px;
-	} */
+	}
 	.RichCell--Context .Icon,
 	.RichCell--Context .Avatar {
 		margin-right: 6px;
