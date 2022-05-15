@@ -320,12 +320,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 		if (link == null) link = type;
 		if (type && link) {
 			try {
-				let data = await fetch(link.replace(/%2B/g, '+').replace(/%3D/g, '='), {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-					},
-				});
+				let data = await fetch(link.replace(/%2B/g, '+').replace(/%3D/g, '='));
 				data = await data.text();
 				if (data == 'Err. More than 1 request per second' || data == 'Too many requests per second.') {
 					await wait(1000);
