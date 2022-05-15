@@ -17,7 +17,7 @@ class MODAL extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			key: this.props.state.id ? this.props.state.id : ''
+			key: this.props.state.auth ? this.props.state.auth : ''
 		};
 	};
 	async componentDidMount() {
@@ -32,23 +32,22 @@ class MODAL extends React.Component {
 				id={this.props.id}
 				header={<ModalPageHeader
 					left={<PanelHeaderBack onClick={() => options.BackModal()}/>}
-					right={<PanelHeaderSubmit disabled={!(Number(key) > 0)} onClick={() => setState({ id: key }, options.BackModal())}/>}
-				>Идентификатор</ModalPageHeader>}
+					right={<PanelHeaderSubmit disabled={!(String(key).length > 0)} onClick={() => setState({ auth: key }, options.BackModal())}/>}
+				>Пароль авторизации</ModalPageHeader>}
 			>
 				<Div>
 					<FormItem
-						top="Цифровой идентификатор профиля"
-						status={Number(key) != 0 ? 'valid' : 'error'}
-						bottom={Number(key) != 0 ? 'Идентификатор введён верно!' : 'Пожалуйста, введите идентификатор'}
+						top="Пароль авторизации игры" 
+						status={String(key).length != 0 ? 'valid' : 'error'}
+						bottom={String(key).length != 0 ? 'Пароль введён верно!' : 'Пожалуйста, введите пароль'}
 					>
 						<Input
-							type="number"
-							name="id"
-							placeholder="id"
-							max="999999999"
-							min="1"
+							type="text"
+							name="password_key"
+							placeholder="password_key"
+							maxLength={44}
 							value={key}
-							onChange={e => this.setState({ key: Math.max(Number(e.target.min), Math.min(Number(e.target.max), e.target.value))})}
+							onChange={e => this.setState({ key: e.target.value })}
 							after={<IconButton hoverMode="opacity" aria-label="Очистить поле" onClick={() => this.setState({ key: '' })}><Icon16Clear/></IconButton>}
 						/>
 					</FormItem>

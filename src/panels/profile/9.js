@@ -33,6 +33,8 @@ class PANEL extends React.Component {
 				chest: 0,
 				pet: 0,
 				lottery: 0,
+				daily: 0,
+				vip: 0,
 				guildBuilds: 0,
 				guildReward: 0,
 				guildWars: 0,
@@ -42,6 +44,8 @@ class PANEL extends React.Component {
 				chest: null,
 				pet: null,
 				lottery: null,
+				daily: null,
+				vip: null,
 				guildBuilds: null,
 				guildReward: null,
 				guildWars: null,
@@ -226,7 +230,7 @@ class PANEL extends React.Component {
 		this._isMounted && this.setState({ isLoad: true });
 
 		let sslt = 0;
-		let api_uid = state.user.vk.id;
+		let api_uid = state.login || state.user.vk.id;
 		let auth_key = state.auth;
 		if (!auth_key) {
 			auth_key = this._isMounted && await BotAPI('getAuth', null, null, null, {stage: 'modal', text: 'Для продолжения работы необходимо указать ключ авторизации'});
@@ -266,7 +270,10 @@ class PANEL extends React.Component {
 			this._isMounted && setActivePanel('profile');
 			return;
 		}
-
+		if (Number(dataProfile?.u?._va) == 0) {
+			this.state.times.vip = null;
+			this.state.hints.vip = 'Нет премиум статуса';
+		}
 		if (dataProfile?.j) {
 			typeof dataProfile?.j?.length == 'undefined' ? dataProfile.j = [dataProfile?.j] : [];
 			this.state.times.map = dataProfile?.j?.length ? `${dataProfile?.j?.filter(build => Number(build?._t) <= 0)?.length}/${dataProfile?.j?.length}` : null;
@@ -302,7 +309,6 @@ class PANEL extends React.Component {
 				this.state.hints.pet = 'Нет доступных питомцев';
 			}
 		}
-		this.state.times.lottery = Number(dataProfile?.u?._lott) || 0;
 		if (dataGuild?.bldngs?.b) {
 			typeof dataGuild?.bldngs?.b?.length == 'undefined' ? dataGuild.bldngs.b = [dataGuild?.bldngs?.b] : [];
 			this.state.times.guildBuilds = Number(dataGuild?.bldngs?.b?.find(build => Number(build._id) == 5)?._ptl) || 0;
@@ -547,7 +553,7 @@ class PANEL extends React.Component {
 								this._isMounted && setBotLog({
 									avatar: `bot/resources/6_${['', 'бандитскийлагерь', 'логовогоблинов', 'фортнежити'].indexOf(war.name.toLowerCase().replace(/ /gm, ''))}.png`,
 									name: `${war.name}`,
-									message: data.replace(/\./gm, ''),
+									message: `Обнаружен набег #${war.id} с неизвестным состоянием`,
 								}, 'message');
 							}
 						}
@@ -568,9 +574,48 @@ class PANEL extends React.Component {
 							message: `Обнаружен набег #${war.id} без вашего участия`,
 						}, 'message');
 					}
+				} else {
+					this._isMounted && this.setBotLog(`Набег #${war.id} не найден`, 'text');
 				}
 			}
 			if (count == 0) this._isMounted && this.setBotLog(`Нет доступных набегов для сбора`, 'text');
+			this._isMounted && await this.BotResources();
+		}
+		if (mode == 'daily' && action == 'collect') {
+			let data;
+			data = this._isMounted && await getGame(this.props.state.server, {
+				i: 20,
+			}, getGameAuth);
+			if (Number(data.res._val) == 1) {
+				this._isMounted && setBotLog({
+					avatar: `bot/resources/7.png`,
+					name: `Ежедневная награда`,
+					message: 'Ежедневная награда собрана',
+				}, 'message');
+			} else {
+				this.state.times.daily = null;
+				this.state.hints.daily = 'Ежедневная награда уже собрана';
+				this._isMounted && this.setBotLog(`Ежедневная награда уже собрана`, 'text');
+			}
+			this._isMounted && await this.BotResources();
+		}
+		if (mode == 'vip' && action == 'collect') {
+			let data;
+			data = this._isMounted && await getGame(this.props.state.server, {
+				i: 146,
+				t: 1,
+			}, getGameAuth);
+			if (data?.r) {
+				this._isMounted && setBotLog({
+					avatar: `bot/resources/8.png`,
+					name: `Ежедневная награда`,
+					message: this.parseReward(data?.r),
+				}, 'message');
+			} else {
+				this.state.times.vip = null;
+				this.state.hints.vip = 'Премиум награда уже собрана';
+				this._isMounted && this.setBotLog(`Премиум награда уже собрана`, 'text');
+			}
 			this._isMounted && await this.BotResources();
 		}
 
@@ -673,6 +718,30 @@ class PANEL extends React.Component {
 											<div className='ActionCard__body'>Взаимодействие с ежедневной лотереей</div>
 											<div className='ActionCard__bottom'>
 												<Button mode="commerce" loading={this.state.isLoad} disabled={this.state.times.lottery > 0} onClick={() => this.BotResources('lottery', 'collect')}>Собрать</Button>
+											</div>
+										</div>
+									</div>
+									<div className='ActionCard' isdisabled={`${this.state.times.daily == null}`}>
+										{this.state.times.daily == null && <div className='ActionCard__hint'>{this.state.hints.daily || 'Недоступно'}</div>}
+										<div>
+											<div className='ActionCard__head'>
+												<div className='ActionCard__head--title'>Ежедневная награда</div>
+											</div>
+											<div className='ActionCard__body'>Взаимодействие с ежедневной наградой</div>
+											<div className='ActionCard__bottom'>
+												<Button mode="commerce" loading={this.state.isLoad} onClick={() => this.BotResources('daily', 'collect')}>Собрать</Button>
+											</div>
+										</div>
+									</div>
+									<div className='ActionCard' isdisabled={`${this.state.times.vip == null}`}>
+										{this.state.times.vip == null && <div className='ActionCard__hint'>{this.state.hints.vip || 'Недоступно'}</div>}
+										<div>
+											<div className='ActionCard__head'>
+												<div className='ActionCard__head--title'>Премиум сундук</div>
+											</div>
+											<div className='ActionCard__body'>Взаимодействие с премиум наградой</div>
+											<div className='ActionCard__bottom'>
+												<Button mode="commerce" loading={this.state.isLoad} onClick={() => this.BotResources('vip', 'collect')}>Собрать</Button>
 											</div>
 										</div>
 									</div>

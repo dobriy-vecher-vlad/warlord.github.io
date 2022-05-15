@@ -274,7 +274,7 @@ class PANEL extends React.Component {
 		const { setBotLog } = this;
 		const { OpenModal, BotAPI, openSnackbar, numberForm, setActivePanel } = this.props.options;
 		const { state } = this.props;
-		const { getData, server } = this.props.state;
+		const { getGame, server } = this.props.state;
 		if (mode == 'energy') {
 			if (syncBot.raids.point) {
 				let energy = 0;
@@ -310,7 +310,7 @@ class PANEL extends React.Component {
 			return;
 		}
 		let sslt = 0;
-		let api_uid = state.user.vk.id;
+		let api_uid = state.login || state.user.vk.id;
 		let auth_key = state.auth;
 		if (!auth_key) {
 			auth_key = this._isMounted && await BotAPI('getAuth', null, null, null, {stage: 'modal', text: 'Для продолжения работы необходимо указать ключ авторизации'});
@@ -323,6 +323,10 @@ class PANEL extends React.Component {
 				return
 			}
 		}
+		let getGameAuth = {
+			login: api_uid,
+			password: auth_key,
+		};
 		// this.setState({ popout: <ScreenSpinner /> });
 		let data = {
 			chests: [],
@@ -778,10 +782,15 @@ class PANEL extends React.Component {
 			}
 			if (mode == 'move') {
 				if (this._isMounted && await updatePath('boss', null, null, to)) {
-					let dataGame = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&i=77&t=${to}`);
+					let dataGame = this._isMounted && await getGame(this.props.state.server, {
+						i: 77,
+						t: to,
+					}, getGameAuth);
 					// console.log(dataGame);
 					if (Number(dataGame.res._v) == 1) {
-						dataGame = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&i=81`);
+						dataGame = this._isMounted && await getGame(this.props.state.server, {
+							i: 81,
+						}, getGameAuth);
 						// console.log(dataGame);
 						this._isMounted && setBotLog(`Успешно переместились в точку ${to}`, 'text');
 						data.point = to;
@@ -800,7 +809,9 @@ class PANEL extends React.Component {
 					let player = this._isMounted && await BotAPI('getStats', auth_key, api_uid, sslt);
 					if (player) {
 						if (Number(player._en >= 3)) {
-							let dataGame = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&i=82`);
+							let dataGame = this._isMounted && await getGame(this.props.state.server, {
+								i: 82,
+							}, getGameAuth);
 							// console.log(dataGame);
 							barrel.status = 0;
 							// setBotLog(`Успешно открыли бочку {point: ${barrel.point}, status: ${barrel.status}}`);
@@ -830,13 +841,27 @@ class PANEL extends React.Component {
 					let player = this._isMounted && await BotAPI('getStats', auth_key, api_uid, sslt);
 					if (player) {
 						if ((boss.type == 1 && Number(player._en >= 6) || boss.type != 1 && Number(player._en >= 3))) {
-							let dataGame = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&i=11&t=${boss.id}&t2=3&t3=0&t4=0&t5=0`);
+							let dataGame = this._isMounted && await getGame(this.props.state.server, {
+								i: 11,
+								t: boss.id,
+								t2: 3,
+								t3: 0,
+								t4: 0,
+								t5: 0,
+							}, getGameAuth);
 							// console.log(dataGame);
 							if ((dataGame == null) || (dataGame && !dataGame.fight)) {
 								// setBotLog(`Ошибка при создании босса, пробуем снова... {point: ${boss.point}, status: ${boss.status}}`);
 								// setBotLog(`Ошибка при создании босса, пробуем снова...`);
 								await wait(3000);
-								dataGame = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&i=11&t=${boss.id}&t2=3&t3=0&t4=0&t5=0`);
+								dataGame = this._isMounted && await getGame(this.props.state.server, {
+									i: 11,
+									t: boss.id,
+									t2: 3,
+									t3: 0,
+									t4: 0,
+									t5: 0,
+								}, getGameAuth);
 							}
 							if (dataGame && dataGame.fight) {
 								let hp = Number(dataGame.fight._hp);
@@ -906,7 +931,10 @@ class PANEL extends React.Component {
 										dg="${уронПолученный}"
 									/></data>`.replace(/\s+/g,' ')});
 									// console.log(hash);
-									dataGame = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&i=12&t=${hash}`);
+									dataGame = this._isMounted && await getGame(this.props.state.server, {
+										i: 12,
+										t: hash,
+									}, getGameAuth);
 									// console.log(dataGame);
 									if (dataGame && dataGame.fight && Number(dataGame.fight._hp) <= 0) {
 										boss.status = 1;
@@ -924,7 +952,14 @@ class PANEL extends React.Component {
 									this._isMounted && setBotLog(`Невозможно убить босса, вы умрёте`, 'text', 'red');
 									this._isMounted && this.BotRaids('pause');
 									await wait(3000);
-									dataGame = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&i=11&t=${boss.id}&t2=3&t3=0&t4=0&t5=0`);
+									dataGame = this._isMounted && await getGame(this.props.state.server, {
+										i: 11,
+										t: boss.id,
+										t2: 3,
+										t3: 0,
+										t4: 0,
+										t5: 0,
+									}, getGameAuth);
 									return false;
 								}
 							} else {
@@ -963,7 +998,10 @@ class PANEL extends React.Component {
 					let player = this._isMounted && await BotAPI('getStats', auth_key, api_uid, sslt);
 					if (player) {
 						if (Number(player._en >= chests.en)) {
-							let dataGame = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&t1=1&i=79`);
+							let dataGame = this._isMounted && await getGame(this.props.state.server, {
+								i: 79,
+								t1: 1,
+							}, getGameAuth);
 							// console.log(dataGame);
 							chests.status = 0;
 							// setBotLog(`Успешно открыли сундук {point: ${chests.point}, status: ${chests.status}, type: ${chests.type}}`);
@@ -988,15 +1026,16 @@ class PANEL extends React.Component {
 				}
 			}
 		};
-		let dataGame = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}`);
+		let dataGame = this._isMounted && await getGame(this.props.state.server, {}, getGameAuth);
 		// console.log(dataGame);
 		if (!dataGame?.u) {
 			// this.setState({ popout: null });
 			openSnackbar({text: 'Ключ авторизации игры неисправен, введите новый', icon: 'error'});
 			this._isMounted && BotAPI('getAuth', null, null, null, {stage: 'modal', text: 'Ключ авторизации игры неисправен, введите новый'});
 			this._isMounted && setActivePanel('profile');
-			return
+			return;
 		}
+		getGameAuth.id = dataGame?.u?._id || api_uid;
 		data.player = dataGame.u;
 		if (dataGame.rstat && dataGame.rstat.s) {
 			data.rstats = [];
@@ -1022,7 +1061,11 @@ class PANEL extends React.Component {
 		if (mode == 'start') {
 			syncBot.raids = data;
 			if (dataGame == undefined && data.limit < 3) {
-				dataGame = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&t=${botRaidsSettings.selectedRaid}&t1=${botRaidsSettings.selectedMode}&i=76`);
+				dataGame = this._isMounted && await getGame(this.props.state.server, {
+					i: 76,
+					t: botRaidsSettings.selectedRaid,
+					t1: botRaidsSettings.selectedMode,
+				}, getGameAuth);
 				// console.log(dataGame);
 				if (dataGame !== undefined && dataGame.uraid !== undefined) {
 					// this.setState({ popout: null });
@@ -1054,7 +1097,11 @@ class PANEL extends React.Component {
 			// console.log(botRaidsSettings.selectedRaid, botRaidsSettings.selectedMode);
 			syncBot.raids = data;
 			if (dataGame == undefined && data.limit < 3) {
-				dataGame = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&t=${botRaidsSettings.selectedRaid}&t1=${botRaidsSettings.selectedMode}&i=76`);
+				dataGame = this._isMounted && await getGame(this.props.state.server, {
+					i: 76,
+					t: botRaidsSettings.selectedRaid,
+					t1: botRaidsSettings.selectedMode,
+				}, getGameAuth);
 				// console.log(dataGame);
 				if (dataGame !== undefined && dataGame.uraid !== undefined) {
 					// this.setState({ popout: null });
@@ -1095,7 +1142,9 @@ class PANEL extends React.Component {
 				let player = this._isMounted && await BotAPI('getStats', auth_key, api_uid, sslt);
 				if (player) {
 					if (Number(player._en >= 5)) {
-						dataGame = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${data.player._id}&i=80`);
+						dataGame = this._isMounted && await getGame(this.props.state.server, {
+							i: 80,
+						}, getGameAuth);
 						if (Number(dataGame.res._v) == 1) {
 							this._isMounted && setBotLog(`Рейд успешно завершён`, 'text', 'green');
 							this._isMounted && await this.BotRaids('reload');

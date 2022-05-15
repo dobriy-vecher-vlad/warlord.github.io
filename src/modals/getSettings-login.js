@@ -17,7 +17,7 @@ class MODAL extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			key: this.props.state.auth ? this.props.state.auth : ''
+			key: this.props.state.login ? this.props.state.login : ''
 		};
 	};
 	async componentDidMount() {
@@ -32,20 +32,20 @@ class MODAL extends React.Component {
 				id={this.props.id}
 				header={<ModalPageHeader
 					left={<PanelHeaderBack onClick={() => options.BackModal()}/>}
-					right={<PanelHeaderSubmit disabled={String(key).length != 32} onClick={() => setState({ auth: key }, options.BackModal())}/>}
-				>Ключ авторизации</ModalPageHeader>}
+					right={<PanelHeaderSubmit disabled={!(String(key).length > 0)} onClick={() => setState({ login: key }, options.BackModal())}/>}
+				>Логин авторизации</ModalPageHeader>}
 			>
 				<Div>
 					<FormItem
-						top="Ключ авторизации игры" 
-						status={String(key).length == 32 ? 'valid' : 'error'}
-						bottom={String(key).length == 32 ? 'Ключ введён верно!' : 'Пожалуйста, введите ключ'}
+						top="Логин авторизации игры" 
+						status={String(key).length != 0 ? 'valid' : 'error'}
+						bottom={String(key).length != 0 ? 'Логин введён верно!' : 'Пожалуйста, введите логин'}
 					>
 						<Input
 							type="text"
-							name="auth_key"
-							placeholder="auth_key"
-							maxLength={32}
+							name="login_key"
+							placeholder="login_key"
+							maxLength={44}
 							value={key}
 							onChange={e => this.setState({ key: e.target.value })}
 							after={<IconButton hoverMode="opacity" aria-label="Очистить поле" onClick={() => this.setState({ key: '' })}><Icon16Clear/></IconButton>}

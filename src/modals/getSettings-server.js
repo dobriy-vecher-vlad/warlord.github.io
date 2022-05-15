@@ -40,7 +40,7 @@ class MODAL extends React.Component {
 						{this.props.state.serverHub.map(server => <Radio key={server.id} name="type"
 							defaultChecked={key == server.id}
 							onChange={() => this.setState({ key: server.id })}
-						>{server.name}</Radio>)}
+						>{server.name} ({server.site})</Radio>)}
 					</FormItem>
 				</Div>
 			</ModalPage>

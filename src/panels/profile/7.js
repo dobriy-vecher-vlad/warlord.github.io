@@ -166,7 +166,7 @@ class PANEL extends React.Component {
 		const { setBotLog } = this;
 		const { OpenModal, BotAPI, openSnackbar, numberForm, setActivePanel } = this.props.options;
 		const { state } = this.props;
-		const { getData, server } = this.props.state;
+		const { getGame, server } = this.props.state;
 		if (mode == 'pause') {
 			syncBot.isStart = false;
 			this._isMounted && setBotLog(`Бот поставлен на паузу, завершаем последнее действие`, 'text');
@@ -175,7 +175,7 @@ class PANEL extends React.Component {
 			return;
 		}
 		let sslt = 0;
-		let api_uid = state.user.vk.id;
+		let api_uid = state.login || state.user.vk.id;
 		let auth_key = state.auth;
 		if (!auth_key) {
 			auth_key = this._isMounted && await BotAPI('getAuth', null, null, null, {stage: 'modal', text: 'Для продолжения работы необходимо указать ключ авторизации'});
@@ -198,7 +198,15 @@ class PANEL extends React.Component {
 			this._isMounted && setActivePanel('profile');
 			return;
 		}
-		let dataArena = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&i=9&UID=${player._id}&t=1`);
+		let getGameAuth = {
+			login: api_uid,
+			password: auth_key,
+		};
+		getGameAuth.id = player?._id || api_uid;
+		let dataArena = this._isMounted && await getGame(this.props.state.server, {
+			i: 9,
+			t: 1,
+		}, getGameAuth);
 		if (!dataArena || (dataArena && !dataArena.my_rating)) {
 			this._isMounted && setActivePanel('profile');
 			openSnackbar({text: 'Ошибка при получении данных арены', icon: 'error'});
@@ -213,7 +221,10 @@ class PANEL extends React.Component {
 		syncBot.arena = data;
 		const startFight = async(auth_key, api_uid, sslt, id) => {
 			let isAlive = true;
-			let enemy = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&i=9&UID=${player._id}&t=1`);
+			let enemy = this._isMounted && await getGame(this.props.state.server, {
+				i: 9,
+				t: 1,
+			}, getGameAuth);
 			if (!enemy || (enemy && !enemy.my_rating)) {
 				this._isMounted && syncBot.isStart && setBotLog(`Ошибка при получении данных врага`, 'text', 'red');
 				this._isMounted && this.BotArena('pause');
@@ -239,7 +250,9 @@ class PANEL extends React.Component {
 				isAlive = false;
 				if (Number(syncBot.arena.player._en) >= 4) {
 					syncBot.arena.player._en = this._isMounted && syncBot.arena.player._en - 4;
-					this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&i=121&UID=${player._id}`);
+					this._isMounted && await getGame(this.props.state.server, {
+						i: 121,
+					}, getGameAuth);
 					syncBot.arena.try++;
 					this._isMounted && syncBot.isStart && setBotLog(`Успешно пропустили противника ${syncBot.arena.try}/${this.state.tryLimit}`, 'text', 'green');
 				} else {
@@ -258,10 +271,16 @@ class PANEL extends React.Component {
 			syncBot.arena.player._m3 = this._isMounted && Number(syncBot.arena.player._m3) - fightPrice;
 			
 			
-			let fight = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${id}&i=11&t=${enemy._id}`);
+			let fight = this._isMounted && await getGame(this.props.state.server, {
+				i: 11,
+				t: enemy._id,
+			}, getGameAuth);
 			if ((fight == null) || (fight && !fight.fight)) {
 				await wait(3000);
-				fight = this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${id}&i=11&t=${enemy._id}`);
+				fight = this._isMounted && await getGame(this.props.state.server, {
+					i: 11,
+					t: enemy._id,
+				}, getGameAuth);
 			}
 
 
@@ -274,7 +293,7 @@ class PANEL extends React.Component {
 				let mydmg = Number(data.player._dmgi);
 				let навыкПротивника = Number(fight._esk);
 				let hash;
-				if (Number(fight._myr) >= 9) {
+				if (Number(fight._myr) >= 9 && Number(data.player._s3) > 0) {
 					// console.log('INVISIBLE HIT');
 					hash = this._isMounted && await BotAPI('getFightHash', null, null, null, {key: `<data><d 
 						s0="0"
@@ -365,7 +384,10 @@ class PANEL extends React.Component {
 					}
 				}
 
-				fight = await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${id}&i=12&t=${hash}`);
+				fight = this._isMounted && await getGame(this.props.state.server, {
+					i: 12,
+					t: hash,
+				}, getGameAuth);
 				if (fight && fight.fight) {
 					let reward = fight.r;
 					fight = fight.fight;
@@ -405,17 +427,6 @@ class PANEL extends React.Component {
 			}
 
 			if (fight && fight.fight) {
-				// if (!(количествоУдаров <= количествоУдаровВозможных)) {
-				// 	isAlive = false;
-				// 	await wait(3000);
-				// 	this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&UID=${id}&i=11&t=${enemy._id}&t2=3&t3=0&t4=0&t5=0`);
-				// 	this._isMounted && setBotLog(`Противника удалось избежать`, 'text', 'green');
-				// 	return true;
-				// } else {
-				// 	do {
-				// 		this._isMounted && await hit();
-				// 	} while (this._isMounted && isAlive);
-				// }
 				do {
 					this._isMounted && await hit();
 				} while (this._isMounted && isAlive);

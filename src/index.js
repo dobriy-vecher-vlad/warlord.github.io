@@ -80,7 +80,7 @@ import {
 	Icon28KeyOutline,
 	Icon28UserCardOutline,
 	Icon28UserOutline,
-	Icon12OnlineVkmobile
+	Icon12OnlineVkmobile,
 } from '@vkontakte/icons';
 
 // import Tasks from './panels/home/tasks.js';
@@ -117,32 +117,11 @@ let dataDonutUser = [];
 let isDev = false;
 let syncItems = [];
 let syncItemsFull = [];
+let login = null;
 let server = 1;
 let isMask = false;
 let serverStatus = false;
 let serverStatusTime = 0;
-const serverHub = [{
-	id: 1,
-	name: 'Эрмун (vk.com)'
-}, {
-	id: 2,
-	name: 'Антарес (vk.com)'
-}, {
-	id: 3,
-	name: 'Эрмун (ok.ru)'
-}, {
-	id: 4,
-	name: 'Эрмун (yandex.ru)'
-}, {
-	id: 5,
-	name: 'Эрмун (exe.ru)'
-}, {
-	id: 6,
-	name: 'Эрмун (store.my.games)'
-}, {
-	id: 7,
-	name: 'Эрмун (onlineigry.net)'
-}];
 
 const islocalStorage = (() => {
 	try {
@@ -153,10 +132,56 @@ const islocalStorage = (() => {
 		return false;
 	}
 })();
+const parseQueryString = (string = '') => {
+	if (string && string.length) {
+		return string.slice(1).split('&')
+			.map((queryParam) => {
+				let kvp = queryParam.split('=');
+				return {key: kvp[0], value: kvp[1]}
+			})
+			.reduce((query, kvp) => {
+				query[kvp.key] = kvp.value;
+				return query
+			}, {})
+	} else {
+		return null;
+	}
+};
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 const wikiVersion = '1.7.0';
 const pathImages = 'https://dobriy-vecher-vlad.github.io/warlord-helper/media/images/';
+const serverHub = [{
+	id: 1,
+	name: 'Эрмун',
+	api: 'vk1',
+	site: 'vk.com',
+	logo: `${pathImages}/main/logo_vk.svg`,
+}, {
+	id: 2,
+	name: 'Антарес',
+	api: 'vk2',
+	site: 'vk.com',
+	logo: `${pathImages}/main/logo_vk.svg`,
+// }, {
+// 	id: 3,
+// 	name: 'Эрмун',
+// 	api: 'ok1',
+// 	site: 'ok.ru',
+// 	logo: `${pathImages}/main/logo_ok.svg`,
+// }, {
+// 	id: 4,
+// 	name: 'Антарес',
+// 	api: 'ok2',
+// 	site: 'ok.ru',
+// 	logo: `${pathImages}/main/logo_ok.svg`,
+}, {
+	id: 3,
+	name: 'Эрмун',
+	api: 'ya',
+	site: 'yandex.ru',
+	logo: `${pathImages}/main/logo_yandex.svg`,
+}];
 
 
 import MODAL_alert from './modals/alert';
@@ -165,7 +190,8 @@ import MODAL_item from './modals/item';
 import MODAL_description from './modals/description';
 import MODAL_getSettings from './modals/getSettings';
 import MODAL_getSettings__id from './modals/getSettings-id';
-import MODAL_getSettings__auth from './modals/getSettings-auth';
+import MODAL_getSettings__login from './modals/getSettings-login';
+import MODAL_getSettings__password from './modals/getSettings-password';
 import MODAL_getSettings__server from './modals/getSettings-server';
 import MODAL_mediaArenaItems from './modals/mediaArenaItems';
 import MODAL_mediaEventsItems from './modals/mediaEventsItems';
@@ -294,7 +320,12 @@ const App = withAdaptivity(({ viewWidth }) => {
 		if (link == null) link = type;
 		if (type && link) {
 			try {
-				let data = await fetch(link);
+				let data = await fetch(link.replace(/%2B/g, '+').replace(/%3D/g, '='), {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+					},
+				});
 				data = await data.text();
 				if (data == 'Err. More than 1 request per second' || data == 'Too many requests per second.') {
 					await wait(1000);
@@ -314,53 +345,140 @@ const App = withAdaptivity(({ viewWidth }) => {
 			}
 		}
 	}
-	const getGame = async(server = 'vk1', body = {}, auth = {}) => {
-		console.log(server, auth);
+	const getGame = async(server = 'vk1', body = {}, auth = {}, type = 1) => {
+		// console.warn(server, body, auth);
+		/*
+			type = 1, стандартный запрос
+			type = 2, запрос на хаб
+			type = 3, запрос на характеристики
+		*/
 		if (!server) return 'Укажите сервер запроса';
-		if (!body) return 'Укажите тело запроса';
-		if (!auth?.login) return 'Укажите логин запроса';
-		if (!auth?.password) return 'Укажите пароль запроса';
+		if (type == 1) {
+			if (!body) return 'Укажите тело запроса';
+			if (!auth?.login) return 'Укажите логин запроса';
+			if (!auth?.password) return 'Укажите пароль запроса';
+		}
 		let host;
 		let request;
 		if (server == 'vk1' || server == 1) {
-			host = 'tmp1-fb.geronimo.su/warlord_vk/game.php';
+			host = 'tmp1-fb.geronimo.su/';
 			request = {
 				api_type: 'vk',
 				api_id: 5536422,
-				sslt: 0,
-				api_uid: auth.login,
-				auth_key: auth.password,
+			};
+			if (type == 1) {
+				host += 'warlord_vk/game.php';
+				request = {
+					...request,
+					sslt: 0,
+					api_uid: auth.login,
+					auth_key: auth.password,
+				};
+				if (Object.keys(body).length) request.UID = auth.id || auth.login;
+			}
+			if (type == 2) {
+				host += 'gameHub/index.php';
+				request = {
+					...request,
+					api_uid: auth.login,
+				};
+			}
+			request = {
+				...request,
 				...body,
 			};
-			if (Object.keys(body).length) request.UID = auth.id || auth.login;
 		}
 		if (server == 'vk2' || server == 2) {
-			host = 'tmp1-fb.geronimo.su/warlord_vk2/game.php';
+			host = 'tmp1-fb.geronimo.su/';
 			request = {
 				api_type: 'vk',
 				api_id: 5536422,
-				sslt: 0,
-				api_uid: auth.login,
-				auth_key: auth.password,
+			};
+			if (type == 1) {
+				host += 'warlord_vk2/game.php';
+				request = {
+					...request,
+					sslt: 0,
+					api_uid: auth.login,
+					auth_key: auth.password,
+				};
+				if (Object.keys(body).length) request.UID = auth.id || auth.login;
+			}
+			if (type == 2) {
+				host += 'gameHub/index.php';
+				request = {
+					...request,
+					api_uid: auth.login,
+				};
+			}
+			request = {
+				...request,
 				...body,
 			};
-			if (Object.keys(body).length) request.UID = auth.id || auth.login;
 		}
-		if (server == 'yandex' || server == 3) {
-			host = 'gs1.geronimo.su/warlord_ya1/game.php';
+		// if (server == 'ok1' || server == 3) {
+		// 	host = 'tmp1-fb.geronimo.su/';
+		// 	request = {
+		// 		api_type: 'ok',
+		// 	};
+		// 	if (type == 1) {
+		// 		host += 'OK_WARLORD/game.php';
+		// 		request = {
+		// 			...request,
+		// 			sslt: 0,
+		// 			session_key: '-s-a.oWD-vWmWp.j7KXPxm1laRcLzsxFXIbLuKYecMUuvtTcbx5lyK0fWwal2Nyj3KbnzOwf4u-oYNTgWu3r0p.GUa',
+		// 			api_uid: auth.id || auth.login,
+		// 			auth_sig: auth.password,
+		// 		};
+		// 		if (Object.keys(body).length) request.UID = 0;
+		// 	}
+		// 	if (type == 2) {
+		// 		host += 'gameHubOk/index.php';
+		// 		request = {
+		// 			...request,
+		// 			api_uid: auth.login,
+		// 		};
+		// 	}
+		// 	request = {
+		// 		...request,
+		// 		...body,
+		// 	};
+		// }
+		if (server == 'ya' || server == 3) {
+			host = 'gs1.geronimo.su/';
 			request = {
 				api_type: 'ya',
 				api_id: 100430,
-				sslt: 0,
-				UID: auth.login,
-				api_uid: auth.password,
+			};
+			if (type == 1) {
+				host += 'warlord_ya1/game.php';
+				request = {
+					...request,
+					sslt: 0,
+					UID: auth.id || auth.login,
+					api_uid: auth.password,
+					lapi_uid: auth.id || auth.login,
+				};
+			}
+			if (type == 2) {
+				host += 'gameHub/index.php';
+				request = {
+					...request,
+					api_uid: auth.password,
+				};
+			}
+			request = {
+				...request,
 				...body,
 			};
-			if (Object.keys(body).length) request.lapi_uid = auth.id || auth.login;
 		}
 		if (!host) return 'Укажите хост запроса';
 		if (!request) return 'Укажите запрос запроса';
 		let data = await getData(`https://${host}?${new URLSearchParams(request).toString()}`);
+		if (type == 2) {
+			if (data?.s) typeof data?.s?.length == 'undefined' ? data.s = [data?.s] : [];
+			data = data?.s?.find(s => s._n == serverHub[server-1]?.name);
+		}
 		return data;
 	}
 
@@ -409,7 +527,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 	// getParseBosses();
 
 	const getParseXML = async() => {
-		let xml = `<?xml version="1.0" encoding="utf-8"?><data><r  m1="41"  m3="434" /><r item="265" cnt="1" type="6" /><add_ach id="79" val="41" /><add_ach id="78" val="434" /></data>`;
+		let xml = `<?xml version="1.0" encoding="utf-8"?><data><a res="1" /><r  m1="41"  m3="434" /></data>`;
 		let data = await x2js.xml_str2json(xml);
 		if (data && data.data != undefined) data = data.data;
 		console.log(data);
@@ -442,6 +560,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 				checkItems: {null: true, item: true, scroll: true, collection: true, personal: true, stock: true, yesStock: true, noStock: true},
 
 				id: null,
+				login: null,
 				auth: null,
 				server: null,
 				serverHub: serverHub,
@@ -952,7 +1071,8 @@ const App = withAdaptivity(({ viewWidth }) => {
 				// dataModal: {},
 				server: isEmbedded&&serverStatus&&this.state.storeProfilesFull[this.state.storeProfilesIndex].server,
 				id: isEmbedded&&serverStatus&&this.state.storeProfilesFull[this.state.storeProfilesIndex].id,
-				auth: isEmbedded&&serverStatus&&this.state.storeProfilesFull[this.state.storeProfilesIndex].auth
+				login: isEmbedded&&serverStatus&&this.state.storeProfilesFull[this.state.storeProfilesIndex].login,
+				auth: isEmbedded&&serverStatus&&this.state.storeProfilesFull[this.state.storeProfilesIndex].auth,
 			});
 			// document.querySelector('.View__panels').classList.remove('View--modal');
 		};
@@ -964,7 +1084,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 				if (data.stage == 'modal') {
 					auth = await this.BotAPI('getAuth', null, null, null, {stage: 'get', silence: true});
 					auth = auth == 'modal' ? null : auth;
-					this.setState({ auth: auth, id: this.state.storeProfiles[this.state.storeProfilesIndex].id, server: this.state.storeProfiles[this.state.storeProfilesIndex].server });
+					this.setState({ login: this.state.storeProfiles[this.state.storeProfilesIndex].login || this.state.storeProfiles[this.state.storeProfilesIndex].id, auth: auth, id: this.state.storeProfiles[this.state.storeProfilesIndex].id, server: this.state.storeProfiles[this.state.storeProfilesIndex].server });
 					if (data.text) {
 						this.OpenModal(`getSettings`, {header: 'Ошибка авторизации', subheader: data.text, auth: auth});
 					} else {
@@ -972,10 +1092,12 @@ const App = withAdaptivity(({ viewWidth }) => {
 					}
 				} 
 				if (data.stage == 'save') {
+					login = this.state.login || Number(this.state.id);
 					auth = this.state.auth;
 					id = Number(this.state.id);
 					server = Number(this.state.server);
 
+					this.state.storeProfiles[this.state.storeProfilesIndex].login = login || id;
 					this.state.storeProfiles[this.state.storeProfilesIndex].auth = auth;
 					this.state.storeProfiles[this.state.storeProfilesIndex].id = id;
 					this.state.storeProfiles[this.state.storeProfilesIndex].server = server;
@@ -992,6 +1114,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 						auth = 'modal';
 					} else {
 						auth = this.state.storeProfiles[this.state.storeProfilesIndex].auth;
+						login = this.state.storeProfiles[this.state.storeProfilesIndex].login || Number(this.state.storeProfiles[this.state.storeProfilesIndex].id);
 						id = Number(this.state.storeProfiles[this.state.storeProfilesIndex].id);
 						server = Number(this.state.storeProfiles[this.state.storeProfilesIndex].server);
 					}
@@ -1000,7 +1123,10 @@ const App = withAdaptivity(({ viewWidth }) => {
 			}
 			if (mode == 'getStats' && auth_key && id) {
 				try {
-					let data = await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${id}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}`);
+					let data = await getGame(server, {}, {
+						login: id,
+						password: auth_key,
+					});
 					return data.u;
 				} catch (error) {
 					return null;
@@ -1360,6 +1486,8 @@ const App = withAdaptivity(({ viewWidth }) => {
 					isMask = to.id;
 					server = to.server;
 					this.state.id = to.id;
+					if (to.login == 0) to.login = to.id;
+					this.state.login = to.login;
 					this.state.auth = to.auth;
 					this.state.server = to.server;
 					syncUser = null;
@@ -1371,6 +1499,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 				} else {
 					if (isDonut) {
 						this.state.id = null;
+						this.state.login = null;
 						this.state.auth = null;
 						this.state.server = null;
 						this.OpenModal(`getSettings`, {mode: 'add'});
@@ -1387,7 +1516,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 			const { activePanel, activeStory } = this.state;
 			isDev&&console.warn('addProfileInStore', activeStory, activePanel);
 			if (!this.state.storeProfiles.find(user => user.id == Number(this.state.id))) {
-				if (Number(this.state.id) == 0 || String(this.state.auth).length != 32 || this.state.server == null) {
+				if (Number(this.state.id) == 0 || this.state.login == null || this.state.auth == null || this.state.server == null) {
 					this.openSnackbar({text: 'Указаны не все параметры', icon: 'error'});
 				} else {
 					let slot = this.state.storeProfiles.findIndex(profile => profile.id == null);
@@ -1397,7 +1526,8 @@ const App = withAdaptivity(({ viewWidth }) => {
 						this.state.storeProfiles[slot] = {
 							server: Number(this.state.server),
 							id: Number(this.state.id),
-							auth: this.state.auth
+							login: this.state.login,
+							auth: this.state.auth,
 						};
 						await this.Storage({key: 'storeProfiles', value: JSON.stringify(this.state.storeProfiles)});
 						this.CloseModal();
@@ -1466,12 +1596,195 @@ const App = withAdaptivity(({ viewWidth }) => {
 					}]);
 					server = this.state.storeProfiles[this.state.storeProfilesIndex].server;
 					this.state.id = this.state.storeProfiles[this.state.storeProfilesIndex].id;
+					this.state.login = this.state.storeProfiles[this.state.storeProfilesIndex].login;
 					this.state.auth = this.state.storeProfiles[this.state.storeProfilesIndex].auth;
 					this.state.server = server;
 					if ((dataDonut && dataDonut.response && dataDonut.response.items && dataDonut.response.items.indexOf(dataVK.id) != -1) || dev) {
-						let dataGame = await getData('xml', `https://tmp1-fb.geronimo.su/gameHub/index.php?api_uid=${dataVK.id}&api_type=vk`);
-						if (Number(dataGame.s[server-1]._uid) !== 0) {
-							let dataGameItems = await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${clan_id}&api_type=vk&api_id=${api_id}&auth_key=${clan_auth}&UID=${dataVK.id}&t=${dataGame.s[server-1]._uid}&i=39`);
+						let dataGame = await getGame(this.state.server, null, {
+							login: this.state.storeProfiles[this.state.storeProfilesIndex].login || dataVK.id,
+							password: this.state.storeProfiles[this.state.storeProfilesIndex].auth || dataVK.id,
+						}, 2);
+						if (dataGame?._uid && Number(dataGame?._uid) !== 0) {
+							let dataGameItems = await getGame(this.state.server, {
+								i: 39,
+								t: dataGame?._uid,
+							}, {
+								login: clan_id,
+								password: clan_auth,
+							});
+							if (dataGameItems?.u) {
+								syncUserGame = dataGameItems.u;
+								syncItems = dataGameItems.i.map((data, x) => {
+									return Number(data._id);
+								});
+								syncItemsFull = dataGameItems.i.map((data, x) => {
+									// console.log(data);
+									return {
+										id: Number(data._id), // номер
+										lvl: Number(data._u), // уровень
+										stones: [
+											[Number(data._st11), Number(data._st12)], // раздел, уровень
+											[Number(data._st21), Number(data._st22)], // раздел, уровень
+											[Number(data._st31), Number(data._st32)] // раздел, уровень
+										],
+										bonus: [Number(data._st_dmg), Number(data._st_en), Number(data._st_end)]
+									};
+								});
+							} else {
+								syncUserGame = {
+									_a1: "0",
+									_a2: "0",
+									_a3: "0",
+									_a4: "0",
+									_a5: "0",
+									_a_c: "0",
+									_aid: "0",
+									_al: "0",
+									_ap: "0",
+									_bd: "0",
+									_car1_lvl: "0",
+									_clan_d: "0",
+									_clan_id: "0",
+									_clan_r: "0",
+									_d1: "0",
+									_d2: "0",
+									_d3: "0",
+									_d4: "0",
+									_d5: "0",
+									_d6: "0",
+									_d7: "0",
+									_d8: "0",
+									_d9: "0",
+									_d10: "0",
+									_d11: "0",
+									_dmgi: "0",
+									_end: "0",
+									_endi: "0",
+									_exId: "0",
+									_exp: "0",
+									_fbId: "0",
+									_gmId: "0",
+									_hp: "0",
+									_id: "0",
+									_kgId: "0",
+									_l_t: "0",
+									_loc: "0",
+									_loot: "0",
+									_luck: "0",
+									_lucki: "0",
+									_lvl: "0",
+									_mhp: "0",
+									_mmId: "0",
+									_mobId: "0",
+									_name: "0",
+									_okId: "0",
+									_pet: "0",
+									_rbId: "0",
+									_room: "0",
+									_s1: "0",
+									_s2: "0",
+									_s3: "0",
+									_s4: "0",
+									_type: "0",
+									_va: "0",
+									_vet: "0",
+									_vi: "0",
+									_vkId: "0"
+								};
+								syncItems = [];
+								syncItemsFull = [];
+							}
+						} else {
+							syncUserGame = {
+								_a1: "0",
+								_a2: "0",
+								_a3: "0",
+								_a4: "0",
+								_a5: "0",
+								_a_c: "0",
+								_aid: "0",
+								_al: "0",
+								_ap: "0",
+								_bd: "0",
+								_car1_lvl: "0",
+								_clan_d: "0",
+								_clan_id: "0",
+								_clan_r: "0",
+								_d1: "0",
+								_d2: "0",
+								_d3: "0",
+								_d4: "0",
+								_d5: "0",
+								_d6: "0",
+								_d7: "0",
+								_d8: "0",
+								_d9: "0",
+								_d10: "0",
+								_d11: "0",
+								_dmgi: "0",
+								_end: "0",
+								_endi: "0",
+								_exId: "0",
+								_exp: "0",
+								_fbId: "0",
+								_gmId: "0",
+								_hp: "0",
+								_id: "0",
+								_kgId: "0",
+								_l_t: "0",
+								_loc: "0",
+								_loot: "0",
+								_luck: "0",
+								_lucki: "0",
+								_lvl: "0",
+								_mhp: "0",
+								_mmId: "0",
+								_mobId: "0",
+								_name: "0",
+								_okId: "0",
+								_pet: "0",
+								_rbId: "0",
+								_room: "0",
+								_s1: "0",
+								_s2: "0",
+								_s3: "0",
+								_s4: "0",
+								_type: "0",
+								_va: "0",
+								_vet: "0",
+								_vi: "0",
+								_vkId: "0"
+							};
+							syncItems = [];
+							syncItemsFull = [];
+						}
+						isDonut = true;
+					}
+					syncUser = dataVK;
+					this.setState({ user: {vk: dataVK, game: null} });
+					!withParams&&setActivePanel(null);
+					!withParams&&this.setState({ activeStory: 'home', activePanel: 'home' });
+				} else {
+					server = this.state.storeProfiles[this.state.storeProfilesIndex].server;
+					this.state.id = this.state.storeProfiles[this.state.storeProfilesIndex].id;
+					this.state.login = this.state.storeProfiles[this.state.storeProfilesIndex].login;
+					this.state.auth = this.state.storeProfiles[this.state.storeProfilesIndex].auth;
+					this.state.server = server;
+					let dataGame = await getGame(this.state.storeProfiles[this.state.storeProfilesIndex].server, null, {
+						login: this.state.storeProfiles[this.state.storeProfilesIndex].login || dataVK.id,
+						password: this.state.storeProfiles[this.state.storeProfilesIndex].auth || dataVK.id,
+					}, 2);
+					if (dataGame?._uid && Number(dataGame?._uid) !== 0) {
+						// await getBridge('VKWebAppStorageSet', {"key": "server", "value": String(version)});
+						await this.Storage({key: 'storeProfiles', value: JSON.stringify(this.state.storeProfiles)});
+						let dataGameItems = await getGame(server, {
+							i: 39,
+							t: dataGame?._uid,
+						}, {
+							login: clan_id,
+							password: clan_auth,
+						});
+						if (dataGameItems?.u) {
 							syncUserGame = dataGameItems.u;
 							syncItems = dataGameItems.i.map((data, x) => {
 								return Number(data._id);
@@ -1553,40 +1866,6 @@ const App = withAdaptivity(({ viewWidth }) => {
 							syncItems = [];
 							syncItemsFull = [];
 						}
-						isDonut = true;
-					}
-					syncUser = dataVK;
-					this.setState({ user: {vk: dataVK, game: null} });
-					!withParams&&setActivePanel(null);
-					!withParams&&this.setState({ activeStory: 'home', activePanel: 'home' });
-				} else {
-					let dataGame = await getData('xml', `https://tmp1-fb.geronimo.su/gameHub/index.php?api_uid=${dataVK.id}&api_type=vk`);
-					if (Number(dataGame.s[version-1]._uid) !== 0) {
-						this.state.storeProfiles[this.state.storeProfilesIndex].server = version;
-						// await getBridge('VKWebAppStorageSet', {"key": "server", "value": String(version)});
-						await this.Storage({key: 'storeProfiles', value: JSON.stringify(this.state.storeProfiles)});
-						server = version;
-						this.state.id = this.state.storeProfiles[this.state.storeProfilesIndex].id;
-						this.state.auth = this.state.storeProfiles[this.state.storeProfilesIndex].auth;
-						this.state.server = server;
-						let dataGameItems = await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${clan_id}&api_type=vk&api_id=${api_id}&auth_key=${clan_auth}&UID=${dataVK.id}&t=${dataGame.s[server-1]._uid}&i=39`);
-						syncUserGame = dataGameItems.u;
-						syncItems = dataGameItems.i.map((data, x) => {
-							return Number(data._id);
-						});
-						syncItemsFull = dataGameItems.i.map((data, x) => {
-							// console.log(data);
-							return {
-								id: Number(data._id), // номер
-								lvl: Number(data._u), // уровень
-								stones: [
-									[Number(data._st11), Number(data._st12)], // раздел, уровень
-									[Number(data._st21), Number(data._st22)], // раздел, уровень
-									[Number(data._st31), Number(data._st32)] // раздел, уровень
-								],
-								bonus: [Number(data._st_dmg), Number(data._st_en), Number(data._st_end)]
-							};
-						});
 					} else {
 						syncUserGame = {
 							_a1: "0",
@@ -1650,7 +1929,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 						};
 						syncItems = [];
 						syncItemsFull = [];
-						this.openSnackbar({text: `Авторизуйте профиль на сервере ${['Эрмун', 'Антарес'][version-1]} и обновите приложение`, icon: 'error'});
+						this.openSnackbar({text: `Авторизуйте профиль на сервере ${serverHub[server-1]?.name} и обновите приложение`, icon: 'error'});
 						// OpenModal(`alert`, {header: 'Ошибка получения данных персонажа', subheader: `Авторизуйтесь на ${version} сервере и обновите приложение`}, null, 'card');
 					}
 					syncUser = dataVK;
@@ -1688,23 +1967,8 @@ const App = withAdaptivity(({ viewWidth }) => {
 			if (mode == 'set') {
 			}
 		};
-		parseQueryString = (string = '') => {
-			if (string && string.length) {
-				return string.slice(1).split('&')
-					.map((queryParam) => {
-						let kvp = queryParam.split('=');
-						return {key: kvp[0], value: kvp[1]}
-					})
-					.reduce((query, kvp) => {
-						query[kvp.key] = kvp.value;
-						return query
-					}, {})
-			} else {
-				return null;
-			}
-		};
 		startApp = async(resize = false) => {
-			const { loadProfile, setTheme, checkServer, setActivePanel, parseQueryString } = this;
+			const { loadProfile, setTheme, checkServer, setActivePanel } = this;
 			queryParams = parseQueryString(window.location.search);
 			hashParams = parseQueryString(window.location.hash);
 			logger('[APP] Params', [{
@@ -1734,6 +1998,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 				let storeProfiles = await this.Storage({key: 'storeProfiles', defaultValue: JSON.stringify([{
 					server: 1,
 					id: Number(queryParams.vk_user_id),
+					login: Number(queryParams.vk_user_id),
 					auth: null,
 					main: true
 				}, {
@@ -1798,7 +2063,8 @@ const App = withAdaptivity(({ viewWidth }) => {
 				<MODAL_item id='item' onClose={() => this.BackModal()} state={this.state} options={this} data={this.state.dataModal} />
 				<MODAL_getSettings id='getSettings' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} data={this.state.dataModal} isDonut={isDonut} />
 				<MODAL_getSettings__id id='getSettings-id' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} />
-				<MODAL_getSettings__auth id='getSettings-auth' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} />
+				<MODAL_getSettings__login id='getSettings-login' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} />
+				<MODAL_getSettings__password id='getSettings-password' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} />
 				<MODAL_getSettings__server id='getSettings-server' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} />
 				<MODAL_mediaArenaItems id='mediaArenaItems' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} clan_id={clan_id} api_id={api_id} clan_auth={clan_auth} />
 				<MODAL_mediaEventsItems id='mediaEventsItems' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} clan_id={clan_id} api_id={api_id} clan_auth={clan_auth} />
@@ -1852,8 +2118,8 @@ const App = withAdaptivity(({ viewWidth }) => {
 									<RichCell
 										disabled
 										className="RichCell--Header"
-										before={<Avatar size={36} src={user && user.vk ? user.vk.photo_200 : 'https://vk.com/images/camera_200.png'}/>}
-										caption={`${server == 1 ? 'Эрмун' : 'Антарес'}, ${isDev ? 'режим разработчика' : isDonut ? 'полный доступ' : 'обычный доступ'}`}
+										before={<Avatar badge={<div style={{ backgroundImage: `url(${serverHub[server-1]?.logo})`, backgroundSize: 'cover', backgroundPosition: 'center', width: 16, height: 16, }}/>} size={36} src={user && user.vk ? user.vk.photo_200 : 'https://vk.com/images/camera_200.png'}/>}
+										caption={`${serverHub[server-1]?.name}, ${isDev ? 'режим разработчика' : isDonut ? 'полный доступ' : 'обычный доступ'}`}
 									>{user && user.vk ? `${user.vk.first_name} ${user.vk.last_name}` : 'Пользователь'}</RichCell>
 									<Spacing size={16} />	
 									</React.Fragment>}
@@ -1873,14 +2139,14 @@ const App = withAdaptivity(({ viewWidth }) => {
 										before={<Icon28UserOutline />}
 										// after={<Counter size="s" mode="prominent">НОВОЕ</Counter>}
 									>Мой профиль</RichCell>}
-									<RichCell
+									{(this.state.storeProfiles[this.state.storeProfilesIndex]?.server == 1 || this.state.storeProfiles[this.state.storeProfilesIndex]?.server == 2)&&<RichCell
 										className="RichCell--Context"
 										disabled={activeStory === 'rating'}
 										data-story="rating"
 										onClick={onStoryChange}
 										before={<Icon28UserCardOutline />}
 										after={<Counter size="s" mode="prominent">НОВОЕ</Counter>}
-									>Рейтинг</RichCell>
+									>Рейтинг</RichCell>}
 									{/* {isEmbedded && <RichCell
 										className="RichCell--Context"
 										disabled={activePanel === 'tasks'}
@@ -2109,10 +2375,10 @@ const App = withAdaptivity(({ viewWidth }) => {
 												align="center"
 											>
 												{isDonut?this.state.storeProfiles.map((item, x) => item.id?<div className={x == this.state.storeProfilesIndex ? "selected" : ""} key={x}>
-														<Avatar size={96} src={this.state.storeProfilesFull[x].photo_200 ? this.state.storeProfilesFull[x].photo_200 : 'https://vk.com/images/camera_200.png'} />
+														<Avatar badge={<div style={{ backgroundImage: `url(${serverHub[item.server-1]?.logo})`, backgroundSize: 'cover', backgroundPosition: 'center', width: 24, height: 24, }}/>} size={96} src={this.state.storeProfilesFull[x].photo_200 ? this.state.storeProfilesFull[x].photo_200 : 'https://vk.com/images/camera_200.png'} />
 														<Spacing size={8} />
 														<Title level="2" weight="2" style={{whiteSpace: "pre-wrap"}}>{this.state.storeProfilesFull[x].first_name ? `${this.state.storeProfilesFull[x].first_name}\n${this.state.storeProfilesFull[x].last_name}` : `Player\n${item.id}`}</Title>
-														<Text style={{ marginTop: 8, color: 'var(--text_secondary)' }}>королевство {['Эрмун', 'Антарес'][item.server-1]}</Text>
+														<Text style={{ marginTop: 8, color: 'var(--text_secondary)' }}>королевство {serverHub[item.server-1]?.name}</Text>
 													</div>:<div key={x}>
 														<Avatar size={96} shadow={false}><Icon56FaceIdOutline/></Avatar>
 														<Spacing size={8} />
@@ -2120,10 +2386,10 @@ const App = withAdaptivity(({ viewWidth }) => {
 														<Link style={{ marginTop: 8, color: 'var(--text_secondary)' }}>Свободный слот</Link>
 													</div>
 												):<div className="selected">
-													<Avatar size={96} src={this.state.storeProfilesFull[0].photo_200 ? this.state.storeProfilesFull[0].photo_200 : 'https://vk.com/images/camera_200.png'} />
+													<Avatar badge={<div style={{ backgroundImage: `url(${serverHub[this.state.storeProfilesFull[0].server-1]?.logo})`, backgroundSize: 'cover', backgroundPosition: 'center', width: 24, height: 24, }}/>} size={96} src={this.state.storeProfilesFull[0].photo_200 ? this.state.storeProfilesFull[0].photo_200 : 'https://vk.com/images/camera_200.png'} />
 													<Spacing size={8} />
 													<Title level="2" weight="2" style={{whiteSpace: "pre-wrap"}}>{this.state.storeProfilesFull[0].first_name ? `${this.state.storeProfilesFull[0].first_name}\n${this.state.storeProfilesFull[0].last_name}` : `Player\n${this.state.storeProfilesFull[0].id}`}</Title>
-													<Text style={{ marginTop: 8, color: 'var(--text_secondary)' }}>королевство {['Эрмун', 'Антарес'][this.state.storeProfilesFull[0].server-1]}</Text>
+													<Text style={{ marginTop: 8, color: 'var(--text_secondary)' }}>королевство {serverHub[this.state.storeProfilesFull[0].server-1]?.name}</Text>
 												</div>}
 											</Gallery>
 											<div>
@@ -2157,10 +2423,10 @@ const App = withAdaptivity(({ viewWidth }) => {
 													{!isDonut ? <span className="Text"><Icon28DonateCircleFillYellow width={24} height={24}/></span> : <React.Fragment><span className="Text">{syncItems.length}</span>
 													<span className="Subhead">{numberForm(syncItems.length, ['вещь', 'вещи', 'вещей'])}</span></React.Fragment>}
 												</React.Fragment>}>Инкрустация</SimpleCell>
-												<SimpleCell onClick={() => setActivePanel('5', true)} before={<Avatar mode="app" src={`${pathImages}labels/23.png`} />} description="Друзья и характеристики" expandable indicator={<React.Fragment>
+												{(this.state.storeProfiles[this.state.storeProfilesIndex]?.server == 1 || this.state.storeProfiles[this.state.storeProfilesIndex]?.server == 2)&&<SimpleCell onClick={() => setActivePanel('5', true)} before={<Avatar mode="app" src={`${pathImages}labels/23.png`} />} description="Друзья и характеристики" expandable indicator={<React.Fragment>
 													<span className="Text">{!isDonut&&<Icon28DonateCircleFillYellow width={24} height={24}/>}</span>
-												</React.Fragment>}>Друзья</SimpleCell>
-												{user?.vk?.id == 153968505&&<SimpleCell onClick={() => setActivePanel('4', true)} before={<Avatar mode="app" src={`${pathImages}labels/28.png`} />} description="Список донов" expandable indicator={<React.Fragment>
+												</React.Fragment>}>Друзья</SimpleCell>}
+												{this.state.id == 153968505&&<SimpleCell onClick={() => setActivePanel('4', true)} before={<Avatar mode="app" src={`${pathImages}labels/28.png`} />} description="Список донов" expandable indicator={<React.Fragment>
 													{!isDonut ? <span className="Text"><Icon28DonateCircleFillYellow width={24} height={24}/></span> : <React.Fragment><span className="Text">{dataDonutUser.response.count}</span>
 													<span className="Subhead">{numberForm(dataDonutUser.response.count, ['дон', 'дона', 'донов'])}</span></React.Fragment>}
 												</React.Fragment>}>Доны</SimpleCell>}
@@ -2298,7 +2564,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 										</Gallery>
 										<React.Fragment>
 											<Spacing size={6} />
-											{isEmbedded&&serverStatus&&<React.Fragment>
+											{isEmbedded&&serverStatus&&(this.state.storeProfiles[this.state.storeProfilesIndex]?.server == 1 || this.state.storeProfiles[this.state.storeProfilesIndex]?.server == 2)&&<React.Fragment>
 												<SimpleCell onClick={() => this.OpenModal('mediaArenaItems')} before={<Icon28GraphOutline/>} expandable>Анализ сезонов</SimpleCell>
 												<Spacing separator size={12} />
 											</React.Fragment>}
@@ -2458,7 +2724,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 										</Gallery>
 										<React.Fragment>
 											<Spacing size={6} />
-											{isEmbedded&&serverStatus&&<React.Fragment>
+											{isEmbedded&&serverStatus&&(this.state.storeProfiles[this.state.storeProfilesIndex]?.server == 1 || this.state.storeProfiles[this.state.storeProfilesIndex]?.server == 2)&&<React.Fragment>
 												<SimpleCell onClick={() => this.OpenModal('mediaEventsItems')} before={<Icon28GraphOutline/>} expandable>Анализ ивентов</SimpleCell>
 												<Spacing separator size={12} />
 											</React.Fragment>}
