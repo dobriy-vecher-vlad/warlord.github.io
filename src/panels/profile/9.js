@@ -290,6 +290,7 @@ class PANEL extends React.Component {
 			this.state.times.chest = null;
 			this.state.hints.chest = 'Нет доступных сундуков';
 		}
+		this.state.times.lottery = Number(dataProfile?.u?._lott) || 0;
 		if (Number(dataProfile?.u?._pet) == 0) {
 			this.state.times.pet = null;
 			this.state.hints.pet = 'Нет активного питомца';
