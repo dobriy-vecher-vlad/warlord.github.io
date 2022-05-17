@@ -541,11 +541,15 @@ class PANEL extends React.Component {
 				this.state.times.guildReward = null;
 				this.state.hints.guildReward = data?.msg.replace(/\./gm, '');
 				this._isMounted && this.setBotLog(data?.msg.replace(/\./gm, ''), 'text');
-			} else this._isMounted && setBotLog({
-				avatar: `bot/resources/2.png`,
-				name: `Дань гильдии`,
-				message: this.parseReward(data?.r),
-			}, 'message');
+			} else {
+				this._isMounted && setBotLog({
+					avatar: `bot/resources/2.png`,
+					name: `Дань гильдии`,
+					message: this.parseReward(data?.r),
+				}, 'message');
+				this.state.times.guildReward = null;
+				this.state.hints.guildReward = 'Вы уже забрали свою долю на сегодня';
+			}
 			this._isMounted && await this.BotResources();
 		}
 		if (mode == 'guildWars' && action == 'collect') {
