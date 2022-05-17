@@ -209,7 +209,6 @@ class PANEL extends React.Component {
 				let dataRating;
 				if (!ratingGuildsTime) {
 					dataRating = this._isMounted && await getData(`https://dobriy-vecher-vlad.github.io/warlord/data/guilds/${['ermun', 'antares'][this.state.server-1]}/${time}.json`);
-					console.warn(dataRating);
 					if (dataRating) {
 						for (let guild of dataRating) {
 							guild.leader = guild?.users?.find(user => user.id == guild.leader)?.vkId || guild.leader;
