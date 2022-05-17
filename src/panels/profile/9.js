@@ -38,6 +38,7 @@ class PANEL extends React.Component {
 				guildBuilds: 0,
 				guildReward: 0,
 				guildWars: 0,
+				search: 0,
 			},
 			hints: {
 				map: null,
@@ -49,6 +50,7 @@ class PANEL extends React.Component {
 				guildBuilds: null,
 				guildReward: null,
 				guildWars: null,
+				search: null,
 			},
 			data: {
 				guildWars: {
@@ -66,6 +68,33 @@ class PANEL extends React.Component {
 			</Placeholder>
 		};
 		this._isMounted = false;
+	};
+	joinReward = (rewards) => {
+		let returnData = {
+			i: []
+		};
+		for (let reward of rewards) {
+			if (Array.isArray(reward)) {
+				let newReward = {
+					i: []
+				};
+				for (let item of reward) {
+					if (item.hasOwnProperty('_type')) {
+						newReward.i.push({...item, _id: item._item});
+					} else {
+						newReward = {...newReward, ...item};
+					}
+				}
+				reward = newReward;
+			}
+			if (reward.i) {
+				typeof reward.i.length == 'undefined' ? reward.i = [reward.i] : [];
+				for (let item of reward.i) returnData.i.push(item);
+				delete reward.i;
+			}
+			for (let key of Object.keys(reward)) returnData[key] = (Number(returnData[key]) || 0) + Number(reward[key]);
+		}
+		return returnData;
 	};
 	parseReward = (reward) => {
 		let returnData = [];
@@ -338,6 +367,7 @@ class PANEL extends React.Component {
 
 		if (mode == 'map' && action == 'collect') {
 			let data;
+			let reward = [];
 			let count = 0;
 			for (let build of dataProfile?.j || []) {
 				data = this._isMounted && await getGame(this.props.state.server, {
@@ -345,21 +375,18 @@ class PANEL extends React.Component {
 					t1: build._r,
 					t2: build._rn,
 				}, getGameAuth);
-				if (dataGuild?.clan) {
-					dataGuild = dataGuild?.clan;
-				} else {
-					dataGuild = null;
-				}
-				if (data?.j) {
+				if (data?.j && data?.r) {
 					count++;
-					this._isMounted && setBotLog({
-						avatar: `bot/resources/${build._r}_${build._rn}.png`,
-						name: data?.j?._n,
-						message: this.parseReward(data?.r),
-					}, 'message');
+					reward.push(data?.r);
 				}
 			}
-			if (count == 0) this._isMounted && this.setBotLog(`Нет доступных зданий для обыска`, 'text');
+			if (count != 0) {
+				this._isMounted && setBotLog({
+					avatar: `bot/resources/9_1.png`,
+					name: `Обыск зданий`,
+					message: this.parseReward(this.joinReward(reward)),
+				}, 'message');
+			} else this._isMounted && this.setBotLog(`Лимит обыска зданий`, 'text');
 			this._isMounted && await this.BotResources();
 		}
 		if (mode == 'map' && action == 'upgrade') {
@@ -593,11 +620,9 @@ class PANEL extends React.Component {
 					name: `Ежедневная награда`,
 					message: 'Ежедневная награда собрана',
 				}, 'message');
-			} else {
-				this.state.times.daily = null;
-				this.state.hints.daily = 'Ежедневная награда уже собрана';
-				this._isMounted && this.setBotLog(`Ежедневная награда уже собрана`, 'text');
-			}
+			} else this._isMounted && this.setBotLog(`Ежедневная награда уже собрана`, 'text');
+			this.state.times.daily = null;
+			this.state.hints.daily = 'Ежедневная награда уже собрана';
 			this._isMounted && await this.BotResources();
 		}
 		if (mode == 'vip' && action == 'collect') {
@@ -612,11 +637,35 @@ class PANEL extends React.Component {
 					name: `Ежедневная награда`,
 					message: this.parseReward(data?.r),
 				}, 'message');
-			} else {
-				this.state.times.vip = null;
-				this.state.hints.vip = 'Премиум награда уже собрана';
-				this._isMounted && this.setBotLog(`Премиум награда уже собрана`, 'text');
+			} else this._isMounted && this.setBotLog(`Премиум награда уже собрана`, 'text');
+			this.state.times.vip = null;
+			this.state.hints.vip = 'Премиум награда уже собрана';
+			this._isMounted && await this.BotResources();
+		}
+		if (mode == 'search' && action == 'collect') {
+			let data;
+			let reward = [];
+			let count = 0;
+			for (let user of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]) {
+				data = this._isMounted && await getGame(this.props.state.server, {
+					i: 8,
+					t: user,
+				}, getGameAuth);
+				if (data?.msg == 'На сегодня хватит! Можно продолжить завтра.') break;
+				if (data?.r) {
+					count++;
+					reward.push(data?.r);
+				}
 			}
+			if (count != 0) {
+				this._isMounted && setBotLog({
+					avatar: `bot/resources/9.png`,
+					name: `Обыск друзей`,
+					message: this.parseReward(this.joinReward(reward)),
+				}, 'message');
+			} else this._isMounted && this.setBotLog(`Лимит обыска друзей`, 'text');
+			this.state.times.search = null;
+			this.state.hints.search = 'Лимит обыска друзей';
 			this._isMounted && await this.BotResources();
 		}
 
@@ -716,9 +765,21 @@ class PANEL extends React.Component {
 												<div className='ActionCard__head--title'>Лотерея</div>
 												<div className='ActionCard__head--after'>{this.props.options.getTime(this.state.times.lottery)}</div>
 											</div>
-											<div className='ActionCard__body'>Взаимодействие с ежедневной лотереей</div>
+											<div className='ActionCard__body'>Получение награды за лотерею</div>
 											<div className='ActionCard__bottom'>
 												<Button mode="commerce" loading={this.state.isLoad} disabled={this.state.times.lottery > 0} onClick={() => this.BotResources('lottery', 'collect')}>Собрать</Button>
+											</div>
+										</div>
+									</div>
+									<div className='ActionCard' isdisabled={`${this.state.times.search == null}`}>
+										{this.state.times.search == null && <div className='ActionCard__hint'>{this.state.hints.search || 'Недоступно'}</div>}
+										<div>
+											<div className='ActionCard__head'>
+												<div className='ActionCard__head--title'>Обыск друзей</div>
+											</div>
+											<div className='ActionCard__body'>Получение награды за обыск друзей</div>
+											<div className='ActionCard__bottom'>
+												<Button mode="commerce" loading={this.state.isLoad} onClick={() => this.BotResources('search', 'collect')}>Собрать</Button>
 											</div>
 										</div>
 									</div>
@@ -728,7 +789,7 @@ class PANEL extends React.Component {
 											<div className='ActionCard__head'>
 												<div className='ActionCard__head--title'>Ежедневная награда</div>
 											</div>
-											<div className='ActionCard__body'>Взаимодействие с ежедневной наградой</div>
+											<div className='ActionCard__body'>Получение награды за вход в игру</div>
 											<div className='ActionCard__bottom'>
 												<Button mode="commerce" loading={this.state.isLoad} onClick={() => this.BotResources('daily', 'collect')}>Собрать</Button>
 											</div>
@@ -740,7 +801,7 @@ class PANEL extends React.Component {
 											<div className='ActionCard__head'>
 												<div className='ActionCard__head--title'>Премиум сундук</div>
 											</div>
-											<div className='ActionCard__body'>Взаимодействие с премиум наградой</div>
+											<div className='ActionCard__body'>Получение награды за премиум статус</div>
 											<div className='ActionCard__bottom'>
 												<Button mode="commerce" loading={this.state.isLoad} onClick={() => this.BotResources('vip', 'collect')}>Собрать</Button>
 											</div>
@@ -753,7 +814,7 @@ class PANEL extends React.Component {
 												<div className='ActionCard__head--title'>Здания гильдии</div>
 												<div className='ActionCard__head--after'>{this.props.options.getTime(this.state.times.guildBuilds)}</div>
 											</div>
-											<div className='ActionCard__body'>Взаимодействие с наградой гильдии</div>
+											<div className='ActionCard__body'>Получение награды за обыск зданий</div>
 											<div className='ActionCard__bottom'>
 												<Button mode="commerce" loading={this.state.isLoad} disabled={this.state.times.guildBuilds > 0} onClick={() => this.BotResources('guildBuild', 'collect')}>Собрать</Button>
 											</div>
@@ -765,7 +826,7 @@ class PANEL extends React.Component {
 											<div className='ActionCard__head'>
 												<div className='ActionCard__head--title'>Дань гильдии</div>
 											</div>
-											<div className='ActionCard__body'>Взаимодействие с наградой гильдии</div>
+											<div className='ActionCard__body'>Получение награды за захваченные районы</div>
 											<div className='ActionCard__bottom'>
 												<Button mode="commerce" loading={this.state.isLoad} onClick={() => this.BotResources('guildReward', 'collect')}>Собрать</Button>
 											</div>
@@ -777,7 +838,7 @@ class PANEL extends React.Component {
 											<div className='ActionCard__head'>
 												<div className='ActionCard__head--title'>Набеги гильдии</div>
 											</div>
-											<div className='ActionCard__body'>Взаимодействие с набегами гильдии</div>
+											<div className='ActionCard__body'>Получение награды за побеждённых врагов</div>
 											<div className='ActionCard__bottom'>
 												<Button mode="commerce" loading={this.state.isLoad} onClick={() => this.BotResources('guildWars', 'collect')}>Собрать</Button>
 												<Input disabled={this.state.isLoad} placeholder='Начало' value={String(this.state.data.guildWars.start || '')} onChange={(e) => (this.state.data.guildWars.start = Number(e.target.value), this.setState({ data: this.state.data }))} type="number"/>
