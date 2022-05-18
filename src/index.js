@@ -1594,7 +1594,28 @@ const App = withAdaptivity(({ viewWidth }) => {
 					this.state.login = this.state.storeProfiles[this.state.storeProfilesIndex].login;
 					this.state.auth = this.state.storeProfiles[this.state.storeProfilesIndex].auth;
 					this.state.server = server;
-					if ((dataDonut && dataDonut.response && dataDonut.response.items && dataDonut.response.items.indexOf(dataVK.id) != -1) || dev) {
+					if ((dataDonut?.response?.items && dataDonut.response.items.indexOf(dataVK.id) != -1 && dataDonutUser?.response?.items) || dev) {
+						let isUserFromService = dataDonutUser.response.items.find(user => user.id == dataVK.id && user.hasOwnProperty('sex'));
+						if (!isUserFromService) {
+							let access = await getBridge("VKWebAppGetAuthToken", {"app_id": 7787242, "scope": "friends,groups"});
+							if (access?.access_token) {
+								let myDonut = await getBridge('VKWebAppCallAPIMethod', {"method": "donut.getSubscription", "params": {"v": '5.131', "owner_id": -138604865, "access_token": access?.access_token}});
+								if (myDonut?.response?.status == 'active' || myDonut?.response?.status == 'expiring') {
+									let stage = Number(myDonut.response.period);
+									let price = Number(myDonut.response.amount);
+									let size = (price-50)/5+5;
+									this.state.storeProfiles = this.state.storeProfiles.slice(0, size);
+									this.state.storeProfilesFull = this.state.storeProfilesFull.slice(0, size);
+									for (let i of new Array(size-this.state.storeProfiles.length < 0 ? 0 : size-this.state.storeProfiles.length)) this.state.storeProfiles.push({ id: null });
+								} else {
+									this.state.storeProfiles.slice(0, 5);
+									this.state.storeProfilesFull = this.state.storeProfilesFull.slice(0, 5);
+								}
+							} else {
+								this.state.storeProfiles.slice(0, 5);
+								this.state.storeProfilesFull = this.state.storeProfilesFull.slice(0, 5);
+							}
+						}
 						let dataGame = await getGame(this.state.server, null, {
 							login: this.state.storeProfiles[this.state.storeProfilesIndex].login || dataVK.id,
 							password: this.state.storeProfiles[this.state.storeProfilesIndex].auth || dataVK.id,
@@ -2008,9 +2029,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 				// await this.Storage({key: 'storeProfiles', delete: true});
 				if (storeProfiles && storeProfiles.value) {
 					this.state.storeProfiles = JSON.parse(storeProfiles.value);
-				} else {
-					return
-				}
+				} else return;
 				this.state.storeProfilesFull = this.state.storeProfiles.slice();
 				logger('[APP] storeProfiles', this.state.storeProfiles);
 				await loadProfile(Object.keys(hashParams).indexOf('dev') != -1, resize, 1, Object.keys(hashParams).indexOf('view') != -1);

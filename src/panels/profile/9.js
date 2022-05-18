@@ -509,7 +509,7 @@ class PANEL extends React.Component {
 						message: this.parseReward(data),
 					}, 'message');
 				} else this._isMounted && this.setBotLog(`Нет бесплатных попыток лотереи`, 'text');
-			}
+			} else this._isMounted && this.setBotLog(`Нет бесплатных попыток лотереи`, 'text');
 			this._isMounted && await this.BotResources();
 		}
 		if (mode == 'guildBuild' && action == 'collect') {
@@ -672,6 +672,18 @@ class PANEL extends React.Component {
 			this.state.hints.search = 'Лимит обыска друзей';
 			this._isMounted && await this.BotResources();
 		}
+		if (mode == 'all') {
+			this._isMounted && await this.BotResources('map', 'collect');
+			this._isMounted && await this.BotResources('chest', 'collect');
+			this._isMounted && await this.BotResources('pet', 'collect');
+			this._isMounted && await this.BotResources('lottery', 'collect');
+			this._isMounted && await this.BotResources('search', 'collect');
+			this._isMounted && await this.BotResources('daily', 'collect');
+			this._isMounted && await this.BotResources('vip', 'collect');
+			this._isMounted && await this.BotResources('guildBuild', 'collect');
+			this._isMounted && await this.BotResources('guildReward', 'collect');
+			this._isMounted && await this.BotResources('guildWars', 'collect');
+		}
 
 		this._isMounted && clearInterval(globalTimer);
 		globalTimer = this._isMounted && setInterval(() => {
@@ -717,7 +729,7 @@ class PANEL extends React.Component {
 				<Group>
 					{state.isDesktop && options.getPanelHeader(title, description, avatar, this.props.id, parent)}
 					{syncBot?<React.Fragment>
-						<PullToRefresh onRefresh={() => !this.state.isLoad&&this.BotResources()} isFetching={this.state.isLoad}>
+						<PullToRefresh onRefresh={() => !this.state.isLoad&&this.BotResources().then(() => this.setBotLog(`данные обновлены`, 'text'))} isFetching={this.state.isLoad}>
 							<div className="Scroll" style={{maxHeight: state.isDesktop ? '314px' : 'unset'}}>
 								<div className='ActionCards'>
 									<div className='ActionCard' isdisabled={`${this.state.times.map == null}`}>
@@ -885,8 +897,24 @@ class PANEL extends React.Component {
 								marginRight: state.isDesktop ? 0 : 8,
 								marginLeft: state.isDesktop ? 0 : 8
 							}}>
-								<Button size="m" mode="tertiary" onClick={() => this._isMounted && this.setBotLog('clear')} stretched>Отчистить лог действий</Button>
+								<Button size="m" mode="tertiary" onClick={() => this.setBotLog('clear')} stretched>Отчистить лог действий</Button>
 							</div>
+							<Spacing size={8} />
+							{state.isDesktop?<div style={{
+								display: 'flex',
+								marginRight: 0,
+								marginLeft: 0
+							}}>
+								<Button size="m" onClick={() => this.BotResources('all').then(() => this.setBotLog(`все ресурсы собраны`, 'text'))} disabled={this.state.isLoad} loading={this.state.isLoad} stretched mode="commerce" style={{ marginRight: 8 }}>Собрать всё</Button>
+								<Button size="m" onClick={() => this.BotResources().then(() => this.setBotLog(`данные обновлены`, 'text'))} disabled={this.state.isLoad} loading={this.state.isLoad} stretched mode="secondary">Обновить</Button>
+							</div>:<div style={{
+								display: 'flex',
+								marginRight: 8,
+								marginLeft: 8
+							}}>
+								<Button size="m" onClick={() => this.BotResources('all').then(() => this.setBotLog(`все ресурсы собраны`, 'text'))} disabled={this.state.isLoad} loading={this.state.isLoad} stretched mode="commerce" style={{ marginRight: 8 }}>Собрать всё</Button>
+								<Button size="m" onClick={() => this.BotResources().then(() => this.setBotLog(`данные обновлены`, 'text'))} disabled={this.state.isLoad} loading={this.state.isLoad} stretched mode="secondary">Обновить</Button>
+							</div>}
 						</div>
 					</React.Fragment>:<React.Fragment>
 						<div className='ActionCards'>
@@ -925,6 +953,22 @@ class PANEL extends React.Component {
 							}}>
 								<Skeleton height={state.isDesktop?32:36}/>
 							</div>
+							<Spacing size={8} />
+							{state.isDesktop?<div style={{
+								display: 'flex',
+								marginRight: 0,
+								marginLeft: 0
+							}}>
+								<Skeleton height={32} width="100%" marginRight={8}/>
+								<Skeleton height={32} width="100%"/>
+							</div>:<div style={{
+								display: 'flex',
+								marginRight: 8,
+								marginLeft: 8
+							}}>
+								<Skeleton height={36} width="100%" marginRight={8}/>
+								<Skeleton height={36} width="100%"/>
+							</div>}
 					</div>
 					</React.Fragment>}
 				</Group>
