@@ -10,7 +10,7 @@ class Component extends React.Component {
 			<div className="TableCell__content" style={{...this.props.style}}>
 				{this.props.count&&<div className="TableCell__row TableCell__row--count"><span>{this.props.count}</span></div>}
 				{this.props.avatar&&<div className="TableCell__row TableCell__row--avatar">{this.props.avatar}</div>}
-				{this.props.rows&&this.props.rows.map((row, x) => <div key={x} className="TableCell__row"><span>{row.title}</span></div>)}
+				{this.props.rows&&this.props.rows.map((row, x) => <div key={x} className="TableCell__row" style={{justifyContent: row.right ? 'flex-end' : 'space-between'}}><span>{row.title}</span></div>)}
 			</div>
 		</SimpleCell>)
 	};
