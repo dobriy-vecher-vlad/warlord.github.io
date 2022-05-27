@@ -58,6 +58,21 @@ class PANEL extends React.Component {
 					end: null,
 				}
 			},
+			resources: {
+				m1: 0,
+				m2: 0,
+				m3: 0,
+				m4: 0,
+				m5: 0,
+				m6: 0,
+				m7: 0,
+				i2: 0,
+				i1: 0,
+				i3: 0,
+				pf1: 0,
+				en: 0,
+				exp: 0,
+			},
 			
 			botLog: <Placeholder
 				style={{overflow: "hidden"}}
@@ -250,7 +265,7 @@ class PANEL extends React.Component {
 			this._isMounted && this.setState({ botLog: log }, () => this._isMounted && document.querySelector('.BotLog.Scroll')&&document.querySelector('.BotLog.Scroll').scrollTo({ top: document.querySelector('.BotLog.Scroll').scrollHeight }))
 		}
 	};
-	BotResources = async(mode = '', action = '') => {
+	BotResources = async(mode = '', action = '', needReload = true) => {
 		const { setBotLog } = this;
 		const { BotAPI, openSnackbar, setActivePanel, numberForm } = this.props.options;
 		const { state } = this.props;
@@ -387,7 +402,7 @@ class PANEL extends React.Component {
 					message: this.parseReward(this.joinReward(reward)),
 				}, 'message');
 			} else this._isMounted && this.setBotLog(`Лимит обыска зданий`, 'text');
-			this._isMounted && await this.BotResources();
+			this._isMounted && needReload && await this.BotResources();
 		}
 		if (mode == 'map' && action == 'upgrade') {
 			let data;
@@ -410,7 +425,7 @@ class PANEL extends React.Component {
 				}
 			}
 			if (count == 0) this._isMounted && this.setBotLog(`Нет доступных зданий для улучшения`, 'text');
-			this._isMounted && await this.BotResources();
+			this._isMounted && needReload && await this.BotResources();
 		}
 		if (mode == 'chest' && action == 'collect') {
 			let data;
@@ -433,7 +448,7 @@ class PANEL extends React.Component {
 				this.state.times.chest = null;
 				this.state.hints.chest = 'Нет доступных сундуков';
 			}
-			this._isMounted && await this.BotResources();
+			this._isMounted && needReload && await this.BotResources();
 		}
 		if (mode == 'chest' && action == 'open') {
 			let data;
@@ -456,41 +471,45 @@ class PANEL extends React.Component {
 				this.state.times.chest = null;
 				this.state.hints.chest = 'Нет доступных сундуков';
 			}
-			this._isMounted && await this.BotResources();
+			this._isMounted && needReload && await this.BotResources();
 		}
 		if (mode == 'pet' && action == 'collect') {
-			let data;
-			data = this._isMounted && await getGame(this.props.state.server, {
-				i: 136,
-				t: dataProfile?.u?._pet,
-			}, getGameAuth);
-			if (data?.r) {
-				this._isMounted && setBotLog({
-					avatar: `bot/resources/4_${dataProfile?.u?._pet}.png`,
-					name: ['', 'Полярный Тигр', 'Северный Волк', 'Дух Воды', 'Панда', 'Грабоид'][dataProfile?.u?._pet],
-					message: this.parseReward(data?.r),
-				}, 'message');
-			} else this._isMounted && this.setBotLog(`Питомец ещё в пути`, 'text');
-			this._isMounted && await this.BotResources();
+			if (Number(dataProfile?.u?._pet) != 0) {
+				let data;
+				data = this._isMounted && await getGame(this.props.state.server, {
+					i: 136,
+					t: dataProfile?.u?._pet,
+				}, getGameAuth);
+				if (data?.r) {
+					this._isMounted && setBotLog({
+						avatar: `bot/resources/4_${dataProfile?.u?._pet}.png`,
+						name: ['', 'Полярный Тигр', 'Северный Волк', 'Дух Воды', 'Панда', 'Грабоид'][dataProfile?.u?._pet],
+						message: this.parseReward(data?.r),
+					}, 'message');
+				} else this._isMounted && this.setBotLog(`Питомец ещё в пути`, 'text');
+				this._isMounted && needReload && await this.BotResources();
+			}
 		}
 		if (mode == 'pet' && action == 'send') {
-			let data;
-			data = this._isMounted && await getGame(this.props.state.server, {
-				i: 135,
-				t: dataProfile?.u?._pet,
-			}, getGameAuth);
-			if (data?.petloot) {
-				this._isMounted && setBotLog({
-					avatar: `bot/resources/4_${dataProfile?.u?._pet}.png`,
-					name: ['', 'Полярный Тигр', 'Северный Волк', 'Дух Воды', 'Панда', 'Грабоид'][dataProfile?.u?._pet],
-					message: `Прибудет через ${this.props.options.getTime(data?.petloot?._end_time)}`,
-				}, 'message');
-			} else {
-				if (Number(dataProfile?.pets?.p?.find(pet => Number(pet._id) == Number(dataProfile?.u?._pet))?._lp) > Number(dataProfile?.u?._pf1)) {
-					this._isMounted && this.setBotLog(`На отправку питомца не хватает еды`, 'text');
-				} else this._isMounted && this.setBotLog(`Питомец ещё не прибыл`, 'text');
+			if (Number(dataProfile?.u?._pet) != 0) {
+				let data;
+				data = this._isMounted && await getGame(this.props.state.server, {
+					i: 135,
+					t: dataProfile?.u?._pet,
+				}, getGameAuth);
+				if (data?.petloot) {
+					this._isMounted && setBotLog({
+						avatar: `bot/resources/4_${dataProfile?.u?._pet}.png`,
+						name: ['', 'Полярный Тигр', 'Северный Волк', 'Дух Воды', 'Панда', 'Грабоид'][dataProfile?.u?._pet],
+						message: `Прибудет через ${this.props.options.getTime(data?.petloot?._end_time)}`,
+					}, 'message');
+				} else {
+					if (Number(dataProfile?.pets?.p?.find(pet => Number(pet._id) == Number(dataProfile?.u?._pet))?._lp) > Number(dataProfile?.u?._pf1)) {
+						this._isMounted && this.setBotLog(`На отправку питомца не хватает еды`, 'text');
+					} else this._isMounted && this.setBotLog(`Питомец ещё не прибыл`, 'text');
+				}
+				this._isMounted && needReload && await this.BotResources();
 			}
-			this._isMounted && await this.BotResources();
 		}
 		if (mode == 'lottery' && action == 'collect') {
 			let data;
@@ -510,108 +529,114 @@ class PANEL extends React.Component {
 					}, 'message');
 				} else this._isMounted && this.setBotLog(`Нет бесплатных попыток лотереи`, 'text');
 			} else this._isMounted && this.setBotLog(`Нет бесплатных попыток лотереи`, 'text');
-			this._isMounted && await this.BotResources();
+			this._isMounted && needReload && await this.BotResources();
 		}
 		if (mode == 'guildBuild' && action == 'collect') {
-			let data;
-			let count = 0;
-			for (let build of [5, 6]) {
-				data = this._isMounted && await getGame(this.props.state.server, {
-					i: 112,
-					t: build,
-				}, getGameAuth);
-				if (data?.r) {
-					count++;
-					this._isMounted && setBotLog({
-						avatar: `bot/resources/1.png`,
-						name: `Здание гильдии`,
-						message: this.parseReward(data?.r),
-					}, 'message');
+			if (Number(dataProfile?.u?._clan_id) != 0) {
+				let data;
+				let count = 0;
+				for (let build of [5, 6]) {
+					data = this._isMounted && await getGame(this.props.state.server, {
+						i: 112,
+						t: build,
+					}, getGameAuth);
+					if (data?.r) {
+						count++;
+						this._isMounted && setBotLog({
+							avatar: `bot/resources/1.png`,
+							name: `Здание гильдии`,
+							message: this.parseReward(data?.r),
+						}, 'message');
+					}
 				}
+				if (count == 0) this._isMounted && this.setBotLog(`Нет доступных зданий для обыска`, 'text');
+				this._isMounted && needReload && await this.BotResources();
 			}
-			if (count == 0) this._isMounted && this.setBotLog(`Нет доступных зданий для обыска`, 'text');
-			this._isMounted && await this.BotResources();
 		}
 		if (mode == 'guildReward' && action == 'collect') {
-			let data;
-			data = this._isMounted && await getGame(this.props.state.server, {
-				i: 155,
-			}, getGameAuth);
-			if (data?.msg == 'Необходимо состоять в Гильдии.' || data?.msg == 'Ваша гильдия не имеет захваченных территорий.' || data?.msg == 'Вы уже забрали свою долю на сегодня.') {
-				this.state.times.guildReward = null;
-				this.state.hints.guildReward = data?.msg.replace(/\./gm, '');
-				this._isMounted && this.setBotLog(data?.msg.replace(/\./gm, ''), 'text');
-			} else {
-				this._isMounted && setBotLog({
-					avatar: `bot/resources/2.png`,
-					name: `Дань гильдии`,
-					message: this.parseReward(data?.r),
-				}, 'message');
-				this.state.times.guildReward = null;
-				this.state.hints.guildReward = 'Вы уже забрали свою долю на сегодня';
+			if (Number(dataProfile?.u?._clan_id) != 0) {
+				let data;
+				data = this._isMounted && await getGame(this.props.state.server, {
+					i: 155,
+				}, getGameAuth);
+				if (data?.msg == 'Необходимо состоять в Гильдии.' || data?.msg == 'Ваша гильдия не имеет захваченных территорий.' || data?.msg == 'Вы уже забрали свою долю на сегодня.') {
+					this.state.times.guildReward = null;
+					this.state.hints.guildReward = data?.msg.replace(/\./gm, '');
+					this._isMounted && this.setBotLog(data?.msg.replace(/\./gm, ''), 'text');
+				} else {
+					this._isMounted && setBotLog({
+						avatar: `bot/resources/2.png`,
+						name: `Дань гильдии`,
+						message: this.parseReward(data?.r),
+					}, 'message');
+					this.state.times.guildReward = null;
+					this.state.hints.guildReward = 'Вы уже забрали свою долю на сегодня';
+				}
+				this._isMounted && needReload && await this.BotResources();
 			}
-			this._isMounted && await this.BotResources();
 		}
 		if (mode == 'guildWars' && action == 'collect') {
-			let data;
-			let count = 0;
-			if (this.state.data.guildWars.start && this.state.data.guildWars.end) {
-				this.state.times.guildWars = [];
-				for (let i = this.state.data.guildWars.start; i <= this.state.data.guildWars.end; i++) this.state.times.guildWars.push({ id: i, name: `Набег #${i}`, date: null });
-			}
-			for (let war of this.state.times.guildWars || []) {
-				data = this._isMounted && await getGame(this.props.state.server, {
-					i: 106,
-					t: war.id,
-				}, getGameAuth);
-				if (data?.cwar?.u) {
-					war.name = data?.cwar?._en || `Набег #${war.id}`;
-					typeof data?.cwar?.u?.length == 'undefined' ? data.cwar.u = [data?.cwar?.u] : [];
-					let reward = data?.cwar?.u?.find(user => user.hasOwnProperty('r'));
-					if (reward?.r && Number(reward?._rtn) == 0) {
-						data = this._isMounted && await getGame(this.props.state.server, {
-							i: 125,
-							t: war.id,
-						}, getGameAuth);
-						if (data?.r) {
-							count++;
-							this._isMounted && setBotLog({
-								avatar: `bot/resources/6_${['', 'бандитскийлагерь', 'логовогоблинов', 'фортнежити'].indexOf(war.name.toLowerCase().replace(/ /gm, ''))}.png`,
-								name: `${war.name} ${war.date}`,
-								message: this.parseReward(data?.r),
-							}, 'message');
-						} else if (data) {
+			if (Number(dataProfile?.u?._clan_id) != 0) {
+				let data;
+				let count = 0;
+				if (this.state.data.guildWars.start && this.state.data.guildWars.end) {
+					this.state.times.guildWars = [];
+					for (let i = this.state.data.guildWars.start; i <= this.state.data.guildWars.end; i++) this.state.times.guildWars.push({ id: i, name: `Набег #${i}`, date: null });
+				}
+				for (let war of this.state.times.guildWars || []) {
+					data = this._isMounted && await getGame(this.props.state.server, {
+						i: 106,
+						t: war.id,
+					}, getGameAuth);
+					if (data?.cwar?.u) {
+						war.name = data?.cwar?._en || `Набег #${war.id}`;
+						typeof data?.cwar?.u?.length == 'undefined' ? data.cwar.u = [data?.cwar?.u] : [];
+						let reward = data?.cwar?.u?.find(user => user.hasOwnProperty('r'));
+						if (reward?.r && Number(reward?._rtn) == 0) {
+							data = this._isMounted && await getGame(this.props.state.server, {
+								i: 125,
+								t: war.id,
+							}, getGameAuth);
+							if (data?.r) {
+								count++;
+								this._isMounted && setBotLog({
+									avatar: `bot/resources/6_${['', 'бандитскийлагерь', 'логовогоблинов', 'фортнежити'].indexOf(war.name.toLowerCase().replace(/ /gm, ''))}.png`,
+									name: `${war.name} ${war.date}`,
+									message: this.parseReward(data?.r),
+								}, 'message');
+							} else if (data) {
+								if (!war.date) {
+									this._isMounted && setBotLog({
+										avatar: `bot/resources/6_${['', 'бандитскийлагерь', 'логовогоблинов', 'фортнежити'].indexOf(war.name.toLowerCase().replace(/ /gm, ''))}.png`,
+										name: `${war.name}`,
+										message: `Обнаружен набег #${war.id} с неизвестным состоянием`,
+									}, 'message');
+								}
+							}
+						} else if (reward) {
 							if (!war.date) {
 								this._isMounted && setBotLog({
 									avatar: `bot/resources/6_${['', 'бандитскийлагерь', 'логовогоблинов', 'фортнежити'].indexOf(war.name.toLowerCase().replace(/ /gm, ''))}.png`,
 									name: `${war.name}`,
-									message: `Обнаружен набег #${war.id} с неизвестным состоянием`,
+									message: `Обнаружен набег #${war.id} с собранной наградой`,
 								}, 'message');
 							}
 						}
-					} else if (reward) {
+					} else if (data?.cwar) {
 						if (!war.date) {
 							this._isMounted && setBotLog({
 								avatar: `bot/resources/6_${['', 'бандитскийлагерь', 'логовогоблинов', 'фортнежити'].indexOf(war.name.toLowerCase().replace(/ /gm, ''))}.png`,
 								name: `${war.name}`,
-								message: `Обнаружен набег #${war.id} с собранной наградой`,
+								message: `Обнаружен набег #${war.id} без вашего участия`,
 							}, 'message');
 						}
+					} else {
+						this._isMounted && this.setBotLog(`Набег #${war.id} не найден`, 'text');
 					}
-				} else if (data?.cwar) {
-					if (!war.date) {
-						this._isMounted && setBotLog({
-							avatar: `bot/resources/6_${['', 'бандитскийлагерь', 'логовогоблинов', 'фортнежити'].indexOf(war.name.toLowerCase().replace(/ /gm, ''))}.png`,
-							name: `${war.name}`,
-							message: `Обнаружен набег #${war.id} без вашего участия`,
-						}, 'message');
-					}
-				} else {
-					this._isMounted && this.setBotLog(`Набег #${war.id} не найден`, 'text');
 				}
+				if (count == 0) this._isMounted && this.setBotLog(`Нет доступных набегов для сбора`, 'text');
+				this._isMounted && needReload && await this.BotResources();
 			}
-			if (count == 0) this._isMounted && this.setBotLog(`Нет доступных набегов для сбора`, 'text');
-			this._isMounted && await this.BotResources();
 		}
 		if (mode == 'daily' && action == 'collect') {
 			let data;
@@ -627,24 +652,26 @@ class PANEL extends React.Component {
 			} else this._isMounted && this.setBotLog(`Ежедневная награда уже собрана`, 'text');
 			this.state.times.daily = null;
 			this.state.hints.daily = 'Ежедневная награда уже собрана';
-			this._isMounted && await this.BotResources();
+			this._isMounted && needReload && await this.BotResources();
 		}
 		if (mode == 'vip' && action == 'collect') {
-			let data;
-			data = this._isMounted && await getGame(this.props.state.server, {
-				i: 146,
-				t: 1,
-			}, getGameAuth);
-			if (data?.r) {
-				this._isMounted && setBotLog({
-					avatar: `bot/resources/8.png`,
-					name: `Ежедневная награда`,
-					message: this.parseReward(data?.r),
-				}, 'message');
-			} else this._isMounted && this.setBotLog(`Премиум награда уже собрана`, 'text');
-			this.state.times.vip = null;
-			this.state.hints.vip = 'Премиум награда уже собрана';
-			this._isMounted && await this.BotResources();
+			if (Number(dataProfile?.u?._va) != 0) {
+				let data;
+				data = this._isMounted && await getGame(this.props.state.server, {
+					i: 146,
+					t: 1,
+				}, getGameAuth);
+				if (data?.r) {
+					this._isMounted && setBotLog({
+						avatar: `bot/resources/8.png`,
+						name: `Ежедневная награда`,
+						message: this.parseReward(data?.r),
+					}, 'message');
+				} else this._isMounted && this.setBotLog(`Премиум награда уже собрана`, 'text');
+				this.state.times.vip = null;
+				this.state.hints.vip = 'Премиум награда уже собрана';
+				this._isMounted && needReload && await this.BotResources();
+			}
 		}
 		if (mode == 'search' && action == 'collect') {
 			let data;
@@ -670,19 +697,19 @@ class PANEL extends React.Component {
 			} else this._isMounted && this.setBotLog(`Лимит обыска друзей`, 'text');
 			this.state.times.search = null;
 			this.state.hints.search = 'Лимит обыска друзей';
-			this._isMounted && await this.BotResources();
+			this._isMounted && needReload && await this.BotResources();
 		}
 		if (mode == 'all') {
-			this._isMounted && await this.BotResources('map', 'collect');
-			this._isMounted && await this.BotResources('chest', 'collect');
-			this._isMounted && await this.BotResources('pet', 'collect');
-			this._isMounted && await this.BotResources('lottery', 'collect');
-			this._isMounted && await this.BotResources('search', 'collect');
-			this._isMounted && await this.BotResources('daily', 'collect');
-			this._isMounted && await this.BotResources('vip', 'collect');
-			this._isMounted && await this.BotResources('guildBuild', 'collect');
-			this._isMounted && await this.BotResources('guildReward', 'collect');
-			this._isMounted && await this.BotResources('guildWars', 'collect');
+			this._isMounted && await this.BotResources('map', 'collect', false);
+			this._isMounted && await this.BotResources('chest', 'collect', false);
+			this._isMounted && await this.BotResources('pet', 'collect', false);
+			this._isMounted && await this.BotResources('lottery', 'collect', false);
+			this._isMounted && await this.BotResources('search', 'collect', false);
+			this._isMounted && await this.BotResources('daily', 'collect', false);
+			this._isMounted && await this.BotResources('vip', 'collect', false);
+			this._isMounted && await this.BotResources('guildBuild', 'collect', false);
+			this._isMounted && await this.BotResources('guildReward', 'collect', false);
+			this._isMounted && await this.BotResources('guildWars', 'collect', false);
 		}
 
 		this._isMounted && clearInterval(globalTimer);
@@ -727,7 +754,11 @@ class PANEL extends React.Component {
 			<Panel id={this.props.id}>
 				{!state.isDesktop && options.getPanelHeader(title, description, avatar, this.props.id, parent)}
 				<Group>
-					{state.isDesktop && options.getPanelHeader(title, description, avatar, this.props.id, parent)}
+					<div className='Sticky Sticky__top withSeparator'>
+						{state.isDesktop && options.getPanelHeader(title, description, avatar, this.props.id, parent)}
+						еуые
+						<Spacing size={8} style={{padding: 0, marginTop: !state.isDesktop ? '-8px' : ''}}/>
+					</div>
 					{syncBot?<React.Fragment>
 						<PullToRefresh onRefresh={() => !this.state.isLoad&&this.BotResources().then(() => this.setBotLog(`данные обновлены`, 'text'))} isFetching={this.state.isLoad}>
 							<div className="Scroll" style={{maxHeight: state.isDesktop ? '314px' : 'unset'}}>

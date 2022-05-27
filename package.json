@@ -17,15 +17,15 @@
   "devDependencies": {
     "@vkontakte/vk-miniapps-deploy": "^0.0.26",
     "cross-env": "^7.0.3",
-    "gh-pages": "^3.2.3",
+    "gh-pages": "^4.0.0",
     "react-hot-loader": "^4.13.0",
     "react-scripts": "^5.0.1"
   },
   "dependencies": {
-    "@vkontakte/icons": "^1.160.0",
+    "@vkontakte/icons": "^1.162.0",
     "@vkontakte/vk-bridge": "^2.6.1",
     "@vkontakte/vk-tunnel": "^0.1.0",
-    "@vkontakte/vkui": "^4.30.0",
+    "@vkontakte/vkui": "^4.31.0",
     "babel-eslint": "^10.1.0",
     "chalk": "^5.0.1",
     "core-js": "^3.22.5",
