@@ -1031,7 +1031,7 @@ class PANEL extends React.Component {
 		if (!dataGame?.u) {
 			// this.setState({ popout: null });
 			openSnackbar({text: 'Ключ авторизации игры неисправен, введите новый', icon: 'error'});
-			this._isMounted && BotAPI('getAuth', null, null, null, {stage: 'modal', text: 'Ключ авторизации игры неисправен, введите новый'});
+			this._isMounted && BotAPI('getAuth', null, null, null, {stage: 'modal', text: 'Ключ авторизации игры неисправен, введите новый', error: typeof dataGame == 'string' ? dataGame : dataGame?.err_msg ? dataGame?.err_msg : JSON.stringify(dataGame)});
 			this._isMounted && setActivePanel('profile');
 			return;
 		}

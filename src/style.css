@@ -3363,6 +3363,11 @@ body[scheme=space_gray] .ActionCard::after {
 	.PanelHeader > .Separator {
 		display: none;
 	}
+
+	.ResourcesGrid {
+		margin: 0;
+		padding: 0!important;
+	}
 }
 
 

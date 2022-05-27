@@ -194,7 +194,7 @@ class PANEL extends React.Component {
 		let player = this._isMounted && await BotAPI('getStats', auth_key, api_uid, sslt);
 		if (!player) {
 			openSnackbar({text: 'Ключ авторизации игры неисправен, введите новый', icon: 'error'});
-			this._isMounted && BotAPI('getAuth', null, null, null, {stage: 'modal', text: 'Ключ авторизации игры неисправен, введите новый'});
+			this._isMounted && BotAPI('getAuth', null, null, null, {stage: 'modal', text: 'Ключ авторизации игры неисправен, введите новый', error: typeof player == 'string' ? player : player?.err_msg ? player?.err_msg : JSON.stringify(player)});
 			this._isMounted && setActivePanel('profile');
 			return;
 		}

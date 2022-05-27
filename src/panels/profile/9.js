@@ -19,7 +19,6 @@ import Stones from '../../data/stones.json';
 import Resources from '../../data/resources.json';
 
 let syncBot = null;
-let api_id = 5536422;
 let globalTimer;
 
 class PANEL extends React.Component {
@@ -61,16 +60,20 @@ class PANEL extends React.Component {
 				}
 			},
 			resources: [{
+				id: 'en',
+				name: 'Энергия',
+				count: 0,
+			}, {
+				id: 'm3',
+				name: 'Золото',
+				count: 0,
+			}, {
 				id: 'm1',
 				name: 'Серебро',
 				count: 0,
 			}, {
 				id: 'm2',
 				name: 'Рубины',
-				count: 0,
-			}, {
-				id: 'm3',
-				name: 'Золото',
 				count: 0,
 			}, {
 				id: 'm4',
@@ -83,6 +86,14 @@ class PANEL extends React.Component {
 			}, {
 				id: 'm6',
 				name: 'Турмалины',
+				count: 0,
+			}, {
+				id: 'pf1',
+				name: 'Еда',
+				count: 0,
+			}, {
+				id: 'm9',
+				name: 'Редкие жемчужины',
 				count: 0,
 			}, {
 				id: 'm7',
@@ -99,14 +110,6 @@ class PANEL extends React.Component {
 			}, {
 				id: 'item3',
 				name: 'Свитки огня',
-				count: 0,
-			}, {
-				id: 'pf1',
-				name: 'Еда',
-				count: 0,
-			}, {
-				id: 'en',
-				name: 'Энергия',
 				count: 0,
 			}, {
 				id: 'exp',
@@ -248,6 +251,11 @@ class PANEL extends React.Component {
 			title: 'Пергаменты',
 			message: `${this.props.options.numberSpaces(Number(reward._m7))} ед.`
 		});
+		reward.hasOwnProperty('_m9')&&Number(reward._m9)!=0&&returnData.push({
+			avatar: 'bot/raids/112.png',
+			title: 'Редкие жемчужины',
+			message: `${this.props.options.numberSpaces(Number(reward._m9))} ед.`
+		});
 		reward.hasOwnProperty('_i2')&&Number(reward._i2)!=0&&returnData.push({
 			avatar: 'bot/raids/18.png',
 			title: 'Целебные зелья',
@@ -346,7 +354,7 @@ class PANEL extends React.Component {
 			}
 		}
 		syncBot = true;
-		// console.warn(dataProfile);
+		console.warn(dataProfile);
 		// console.warn(dataGuild);
 		if (!dataProfile?.u || dataGuild == null) {
 			openSnackbar({text: 'Ключ авторизации игры неисправен, введите новый', icon: 'error'});
@@ -808,7 +816,7 @@ class PANEL extends React.Component {
 								</>}
 							</Card>)}
 						</CardScroll>
-						<Spacing size={8} style={{padding: 0, marginTop: !state.isDesktop ? '-8px' : ''}}/>
+						<Spacing size={8} style={{padding: 0}}/>
 					</div>
 					{syncBot?<React.Fragment>
 						<PullToRefresh onRefresh={() => !this.state.isLoad&&this.BotResources().then(() => this.setBotLog(`данные обновлены`, 'text'))} isFetching={this.state.isLoad}>
