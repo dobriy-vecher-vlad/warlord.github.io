@@ -799,7 +799,7 @@ class PANEL extends React.Component {
 						{state.isDesktop && options.getPanelHeader(title, description, avatar, this.props.id, parent)}
 						<CardScroll className='ResourcesGrid'>
 							{this.state.resources.map((resource, x) => <Card key={x}>
-								<Avatar size={18} mode="image" src={`${pathImages}${resource.id}`} />
+								<Avatar size={18} mode="image" src={`${pathImages}bot/resources/${resource.id}.png`} />
 								<div>{options.numberSpaces(resource.count)}</div>
 							</Card>)}
 						</CardScroll>
