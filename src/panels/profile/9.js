@@ -8,6 +8,8 @@ import {
 	Placeholder,
 	PullToRefresh,
 	Input,
+	CardScroll,
+	Card,
 } from '@vkontakte/vkui';
 import { Icon28ListOutline } from '@vkontakte/icons';
 import Skeleton from '../../components/skeleton';
@@ -58,21 +60,59 @@ class PANEL extends React.Component {
 					end: null,
 				}
 			},
-			resources: {
-				m1: 0,
-				m2: 0,
-				m3: 0,
-				m4: 0,
-				m5: 0,
-				m6: 0,
-				m7: 0,
-				i2: 0,
-				i1: 0,
-				i3: 0,
-				pf1: 0,
-				en: 0,
-				exp: 0,
-			},
+			resources: [{
+				id: 'm1',
+				name: 'Серебро',
+				count: 0,
+			}, {
+				id: 'm2',
+				name: 'Рубины',
+				count: 0,
+			}, {
+				id: 'm3',
+				name: 'Золото',
+				count: 0,
+			}, {
+				id: 'm4',
+				name: 'Аметисты',
+				count: 0,
+			}, {
+				id: 'm5',
+				name: 'Топазы',
+				count: 0,
+			}, {
+				id: 'm6',
+				name: 'Турмалины',
+				count: 0,
+			}, {
+				id: 'm7',
+				name: 'Пергаменты',
+				count: 0,
+			}, {
+				id: 'item2',
+				name: 'Целебные зелья',
+				count: 0,
+			}, {
+				id: 'item1',
+				name: 'Свитки молнии',
+				count: 0,
+			}, {
+				id: 'item3',
+				name: 'Свитки огня',
+				count: 0,
+			}, {
+				id: 'pf1',
+				name: 'Еда',
+				count: 0,
+			}, {
+				id: 'en',
+				name: 'Энергия',
+				count: 0,
+			}, {
+				id: 'exp',
+				name: 'Опыт',
+				count: 0,
+			}],
 			
 			botLog: <Placeholder
 				style={{overflow: "hidden"}}
@@ -314,6 +354,7 @@ class PANEL extends React.Component {
 			this._isMounted && setActivePanel('profile');
 			return;
 		}
+		for (let resource of this.state.resources) resource.count = Number(dataProfile?.u?.[`_${resource.id}`]);
 		if (Number(dataProfile?.u?._va) == 0) {
 			this.state.times.vip = null;
 			this.state.hints.vip = 'Нет премиум статуса';
@@ -756,7 +797,12 @@ class PANEL extends React.Component {
 				<Group>
 					<div className='Sticky Sticky__top withSeparator'>
 						{state.isDesktop && options.getPanelHeader(title, description, avatar, this.props.id, parent)}
-						еуые
+						<CardScroll className='ResourcesGrid'>
+							{this.state.resources.map((resource, x) => <Card key={x}>
+								<Avatar size={18} mode="image" src={`${pathImages}${resource.id}`} />
+								<div>{options.numberSpaces(resource.count)}</div>
+							</Card>)}
+						</CardScroll>
 						<Spacing size={8} style={{padding: 0, marginTop: !state.isDesktop ? '-8px' : ''}}/>
 					</div>
 					{syncBot?<React.Fragment>
