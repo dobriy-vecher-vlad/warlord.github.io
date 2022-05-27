@@ -1081,7 +1081,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 					auth = auth == 'modal' ? null : auth;
 					this.setState({ login: this.state.storeProfiles[this.state.storeProfilesIndex].login || this.state.storeProfiles[this.state.storeProfilesIndex].id, auth: auth, id: this.state.storeProfiles[this.state.storeProfilesIndex].id, server: this.state.storeProfiles[this.state.storeProfilesIndex].server });
 					if (data.text) {
-						this.OpenModal(`getSettings`, {header: 'Ошибка авторизации', subheader: data.text, auth: auth});
+						this.OpenModal(`getSettings`, {header: 'Ошибка авторизации', subheader: data.text, error: data.error || '', auth: auth});
 					} else {
 						this.OpenModal(`getSettings`);
 					}

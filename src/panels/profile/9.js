@@ -350,7 +350,7 @@ class PANEL extends React.Component {
 		// console.warn(dataGuild);
 		if (!dataProfile?.u || dataGuild == null) {
 			openSnackbar({text: 'Ключ авторизации игры неисправен, введите новый', icon: 'error'});
-			this._isMounted && BotAPI('getAuth', null, null, null, {stage: 'modal', text: 'Ключ авторизации игры неисправен, введите новый'});
+			this._isMounted && BotAPI('getAuth', null, null, null, {stage: 'modal', text: 'Ключ авторизации игры неисправен, введите новый', error: typeof dataProfile == 'string' ? dataProfile : dataProfile?.err_msg ? dataProfile?.err_msg : JSON.stringify(dataProfile)});
 			this._isMounted && setActivePanel('profile');
 			return;
 		}
@@ -799,8 +799,13 @@ class PANEL extends React.Component {
 						{state.isDesktop && options.getPanelHeader(title, description, avatar, this.props.id, parent)}
 						<CardScroll className='ResourcesGrid'>
 							{this.state.resources.map((resource, x) => <Card key={x}>
-								<Avatar size={18} mode="image" src={`${pathImages}bot/resources/${resource.id}.png`} />
-								<div>{options.numberSpaces(resource.count)}</div>
+								{!this.state.isLoad?<>
+									<Avatar size={18} mode="image" src={`${pathImages}bot/resources/${resource.id}.png`} />
+									<div>{options.numberSpaces(resource.count)}</div>
+								</>:<>
+									<Skeleton height={18} width={18} flexShrink={0}/>
+									<Skeleton height={12} width={36} flexShrink={0}/>
+								</>}
 							</Card>)}
 						</CardScroll>
 						<Spacing size={8} style={{padding: 0, marginTop: !state.isDesktop ? '-8px' : ''}}/>

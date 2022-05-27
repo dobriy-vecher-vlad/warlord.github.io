@@ -43,6 +43,8 @@ class MODAL extends React.Component {
 					{data.header&&data.subheader&&<React.Fragment>
 						<FormStatus style={{margin: !state.isDesktop&&'0 12px'}} header={data.header} mode="error">{data.subheader}</FormStatus>
 						<Spacing size={12} />
+						{data.error&&<><FormStatus style={{margin: !state.isDesktop&&'0 12px'}} header={'Ответ сервера'} mode="default">{data.error}</FormStatus>
+						<Spacing size={12} /></>}
 					</React.Fragment>}
 					<SimpleCell disabled={!(Number(state.id) == 0) && data.mode != 'add'} onClick={() => options.OpenModal('getSettings-id')} description={data.mode == 'add' && state.storeProfiles.find(user => user.id == Number(state.id))&&<span style={{color: "var(--dynamic_red)"}}>Уже существует</span>} before={<Icon28FaceIdOutline/>} expandable indicator={<React.Fragment>
 						<span className="Subhead">{state.id ? String(state.id).substring(0, 9) : `установить`}</span>
