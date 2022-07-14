@@ -52,8 +52,8 @@
 }
 
 .vkuiSimpleCell--sizeY-compact .vkuiSimpleCell__description, .vkuiSimpleCell--sizeY-compact>.vkuiAvatar--sz-32~.vkuiSimpleCell__main .vkuiSimpleCell__description, .vkuiSimpleCell--sizeY-compact>.vkuiAvatar--sz-28~.vkuiSimpleCell__main .vkuiSimpleCell__description {
-    margin-top: 3px;
-    display: block;
+	margin-top: 3px;
+	display: block;
 }
 .Spacing--separator {
 	margin-bottom: 1px;
@@ -144,7 +144,7 @@ div.Scroll {
 .CardWithAvatar.Card--android .Avatar--shadow.Avatar::after {
 	border-radius: 8px 0 0 8px;
 }
-.CardWithAvatar.Card--ios .Avatar--shadow.Avatar::after {
+.CardWithAvatar.Card .Avatar--shadow.Avatar::after {
 	border-radius: 10px 0 0 10px;
 }
 .CardWithAvatar .vkuiText {
@@ -208,7 +208,7 @@ div.Scroll {
 	margin-left: 5px;
 	margin-bottom: -2px;
 }
-.vkuiPanelHeader__right {
+.vkuiPanelHeader__after {
 	min-width: auto!important;
 }
 .ModalWiki .vkuiModalPageHeader__content {
@@ -584,8 +584,8 @@ div.Scroll::-webkit-scrollbar-track {
 }
 .CardsNews .Avatar__img, .CardsNews .Avatar {
 	border-radius: 10px!important;
-    background-size: cover;
-    background-position: center;
+	background-size: cover;
+	background-position: center;
 }
 .CardsNews .HorizontalCell__content {
 	padding: 8px;
@@ -595,9 +595,15 @@ div.Scroll::-webkit-scrollbar-track {
 }
 .CardsNews .HorizontalCell__title, .CardsNews .HorizontalCell__subtitle {
 	text-overflow: ellipsis;
-    overflow: hidden;
+	overflow: hidden;
 	-webkit-transform: translate3d(0, 0, 0);
-    white-space: nowrap;
+	white-space: nowrap;
+}
+.CardsNews .HorizontalCell__title {
+	color: #e1e3e6;
+}
+.CardsNews .HorizontalCell__subtitle {
+	color: #76787a;
 }
 
 .GalleryBanners .Gallery__slide:not(:last-child) {
@@ -607,17 +613,17 @@ div.Scroll::-webkit-scrollbar-track {
 .BannerWiki .Text span, .BannerWiki .Title span {
 	display: block;
 	text-overflow: ellipsis;
-    overflow: hidden;
+	overflow: hidden;
 	-webkit-transform: translate3d(0, 0, 0);
 	font-size: 12px;
 	opacity: .5;
 }
 
-.CardsNews .Avatar--ios {
+.CardsNews .Avatar {
 	border-radius: 10px!important;
 }
 .CardsNews.withIcon .Card {
-    background: transparent;
+	background: transparent;
 }
 .CardsNews.withIcon .HorizontalCell__body {
 	display: flex;
@@ -741,12 +747,26 @@ div.Scroll::-webkit-scrollbar-track {
 	justify-content: space-between;
 }
 
+.Checkbox {
+	min-height: 36px!important;
+}
 .Checkbox__content,
 .Checkbox__children {
 	text-overflow: ellipsis;
 	overflow: hidden;
 	-webkit-transform: translate3d(0, 0, 0);
 	white-space: nowrap;
+}
+.Checkbox__icon .Icon,
+.Checkbox__icon .Icon svg {
+	width: 20px!important;
+	height: 20px!important;
+}
+.Checkbox__children {
+	margin-top: 8px;
+}
+.Checkbox__children:last-child {
+	margin-bottom: 8px;
 }
 
 
@@ -758,7 +778,7 @@ div.Scroll::-webkit-scrollbar-track {
 .ModalCard#mediaSales .Cell .Icon,
 .ModalCard#mediaSales .Cell svg {
 	width: 32px!important;
-    height: 32px!important;
+	height: 32px!important;
 	padding-top: 0;
 	padding-bottom: 0;
 }
@@ -774,26 +794,26 @@ div.Scroll::-webkit-scrollbar-track {
 .ModalCard#mediaSales .Cell .Tappable {
 	border-radius: var(--vkui--size_border_radius--regular)!important;
 	display: flex;
-    align-items: center;
+	align-items: center;
 	padding: 8px;
 	min-height: 34px;
 }
 .ModalCard#donut .Cell .Counter,
 .ModalCard#mediaSales .Cell .Counter {
-    border-radius: 4px;
+	border-radius: 4px;
 	background: var(--vkui--color_background_accent);
 	color: var(--vkui--color_text_contrast);
 }
 .ModalCard#donut .SimpleCell,
 .ModalCard#mediaSales .SimpleCell {
 	padding-left: 8px;
-    padding-right: 8px;
+	padding-right: 8px;
 }
 .ModalCard#donut .Cell .SimpleCell__after,
 .ModalCard#mediaSales .Cell .SimpleCell__after {
 	padding-top: 0;
 	padding-bottom: 0;
-    padding-left: 12px;
+	padding-left: 12px;
 }
 .ModalCard#donut .Cell .SimpleCell__main,
 .ModalCard#mediaSales .Cell .SimpleCell__main {
@@ -803,8 +823,8 @@ div.Scroll::-webkit-scrollbar-track {
 .ModalCard#donut .Cell .Subhead,
 .ModalCard#mediaSales .Cell .Subhead {
 	margin: 0;
-    font-size: 14px;
-    line-height: 17px;
+	font-size: 14px;
+	line-height: 17px;
 }
 .ModalCard#donut .Button,
 .ModalCard#mediaSales .Button {
@@ -812,8 +832,8 @@ div.Scroll::-webkit-scrollbar-track {
 }
 .ModalCard#donut .Button .Text,
 .ModalCard#mediaSales .Button .Text {
-    font-size: 15px;
-    line-height: 20px;
+	font-size: 15px;
+	line-height: 20px;
 }
 .ModalCard#donut .Cell.onlyIcons .Cell__content,
 .ModalCard#mediaSales .Cell.onlyIcons .Cell__content {
@@ -867,10 +887,10 @@ div.Scroll::-webkit-scrollbar-track {
 	margin-right: 0;
 }
 .CardGrid--xs .Card:nth-child(n+4) {
-    margin-top: 0;
+	margin-top: 0;
 }
 .CardGrid--xs .Card:nth-child(n+5) {
-    margin-top: 8px;
+	margin-top: 8px;
 }
 
 * {
@@ -1033,12 +1053,12 @@ div.Scroll::-webkit-scrollbar-track {
 .Gallery__banners .Gallery__banner .Banner__content {
 	justify-content: flex-end;
 	--button_primary_background: #e1e3e6;
-    --button_primary_foreground: #19191a;
+	--button_primary_foreground: #19191a;
 }
 .Gallery__banners .Gallery__banner .Gallery__bannerImage {
-    background-size: cover;
-    background-position: center;
-    position: relative;
+	background-size: cover;
+	background-position: center;
+	position: relative;
 }
 .Gallery__banners .Gallery__banner .Gallery__bannerPreload {
 	position: absolute;
@@ -1199,10 +1219,10 @@ div.Scroll::-webkit-scrollbar-track {
 }
 .Card__Item .RichCell::after {
 	content: '';
-    width: 28px;
-    height: 24px;
-    min-width: 28px;
-    min-height: 24px;
+	width: 28px;
+	height: 24px;
+	min-width: 28px;
+	min-height: 24px;
 	display: block;
 }
 .Card__Item .RichCell__in {
@@ -1237,13 +1257,17 @@ div.Scroll::-webkit-scrollbar-track {
 .UsersStack--size-m .UsersStack__photo:not(:first-child) {
 	mask: url('data:image/svg+xml,<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(%23clip0)"><path d="M2.13430019,23.9892466 C3.32858917,21.5820026 4,18.8694095 4,16 C4,13.1305905 3.32858917,10.4179974 2.13430019,8.0107534 C4.89924175,3.22241289 10.0733034,-2.30926389e-14 16,-2.30926389e-14 C24.836556,-2.30926389e-14 32,7.163444 32,16 C32,24.836556 24.836556,32 16,32 C10.0733034,32 4.89924175,28.7775871 2.13430019,23.9892466 L2.13430019,23.9892466 Z" fill="black"/></g><defs><clipPath id="clip0"><rect width="32" height="32" fill="white"/></clipPath></defs></svg>');
 }
-.Card__Item .UsersStack__photo {
-	background-size: calc(100% + 6px);
-	background-color: rgba(80,80,80,0.075);
+.Card__Item .UsersStack__photo image {
+	width: calc(100% + 6px);
+	height: calc(100% + 6px);
+	transform: translate(-3px, -3px);
+}
+.Card__Item .UsersStack__photo .vkuiUsersStack__fill {
+	fill: rgba(80,80,80,0.075);
 }
 .Card__Item .Card__imageTitle {
 	left: -4px;
-    top: -4px;
+	top: -4px;
 	top: 10px;
 	border-radius: 6px;
 	font-size: 10px;
@@ -1400,7 +1424,7 @@ div.Scroll::-webkit-scrollbar-track {
 .beautifulCard .InfoRow {
 	font-weight: 500;
 	display: flex;
-    flex-direction: column-reverse;
+	flex-direction: column-reverse;
 }
 .beautifulCard .InfoRow__header {
 	margin: 0;
@@ -1638,13 +1662,13 @@ body[scheme=space_gray] {
 }
 .ItemCell::after {
 	content: '';
-    box-shadow: inset 0 0 0 var(--thin-border) var(--itemCell_shadow);
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    border-radius: inherit;
+	box-shadow: inset 0 0 0 var(--thin-border) var(--itemCell_shadow);
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	border-radius: inherit;
 	pointer-events: none;
 }
 .ItemCell,
@@ -1858,7 +1882,7 @@ body[scheme=space_gray] {
 	align-items: center;
 	white-space: nowrap;
 	overflow: hidden;
-    text-overflow: ellipsis;
+	text-overflow: ellipsis;
 }
 .TableCell__row > span {
 	text-overflow: ellipsis;
@@ -1873,10 +1897,17 @@ body[scheme=space_gray] {
 }
 
 .ButtonIcon {
-	padding: 0;
+	padding: 0!important;
+	min-width: unset;
+	min-height: unset;
+}
+.ButtonIcon .Button__in {
+	min-width: unset;
+	min-height: unset;
+	padding: 1px 16px;
 }
 .ButtonIcon .Button__content {
-	padding: 0;
+	padding: 0!important;
 }
 
 
@@ -1919,7 +1950,7 @@ body[scheme=space_gray] {
 	align-items: center;
 }
 .CustomRadioForm .Tappable {
-    /* border-radius: 24px; */
+	/* border-radius: 24px; */
 }
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Slab&display=swap');
 .CustomRadioForm .Avatar {
@@ -1978,7 +2009,7 @@ body[scheme=space_gray] {
 	overflow: overlay;
 	display: flex;
 	flex-direction: column;
-    align-items: center;
+	align-items: center;
 }
 .BotLog > * + * {
 	margin-top: 18px;
@@ -2165,7 +2196,7 @@ body[scheme=space_gray] {
 }
 
 
-.DescriptionCardWiki .Radio--ios.Radio--sizeY-compact .Radio__icon {
+.DescriptionCardWiki .Radio.Radio--sizeY-compact .Radio__icon {
 	margin-right: 13px;
 }
 .DescriptionCardWiki .Radio__children {
@@ -2266,7 +2297,7 @@ input::-webkit-inner-spin-button {
 	padding: 0px 8px;
 }
 .HorizontalRating .Header__main {
-    margin: 6px 0 16px;
+	margin: 6px 0 16px;
 }
 .HorizontalRating .HorizontalScroll__in {
 	margin: 0;
@@ -2296,7 +2327,7 @@ input::-webkit-inner-spin-button {
 }
 .HorizontalRating .HorizontalCell__title {
 	font-size: 14px;
-    line-height: 16px;
+	line-height: 16px;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -2311,7 +2342,7 @@ input::-webkit-inner-spin-button {
 	margin: 16px 0 4px 0;
 }
 .HorizontalRatings .Header__main {
-    margin: 0 0 16px;
+	margin: 0 0 16px;
 }
 .HorizontalRatings .HorizontalScroll {
 	background: unset;
@@ -2444,16 +2475,16 @@ body[scheme=space_gray] .ActionCard::after {
 	height: fit-content;
 }
 .ActionCard__bottom .Input {
-    box-sizing: border-box;
+	box-sizing: border-box;
 	min-height: 28px;
-    min-height: var(--vkui--size_button_small_height--compact);
+	min-height: var(--vkui--size_button_small_height--compact);
 }
 .ActionCard__bottom .Input__el {
 	font-size: 13px;
 	font-size: var(--vkui--font_subhead--font_size--compact);
 	line-height: 16px;
 	line-height: var(--vkui--font_subhead--line_height--compact);
-    padding: 1px 11px;
+	padding: 1px 11px;
 	height: fit-content;
 }
 .ActionCard__hint {
@@ -2464,33 +2495,33 @@ body[scheme=space_gray] .ActionCard::after {
 	left: 0;
 	right: 0;
 	display: flex;
-    align-items: center;
-    justify-content: center;
+	align-items: center;
+	justify-content: center;
 	color: var(--text_primary);
 	background-color: rgb(245 245 245 / 75%);
 	padding: 12px 16px;
-    text-align: center;
+	text-align: center;
 	font-size: var(--vkui--font_subhead--font_size--compact);
-    line-height: var(--vkui--font_subhead--line_height--compact);
-    font-weight: var(--vkui--font_subhead--font_weight--regular);
+	line-height: var(--vkui--font_subhead--line_height--compact);
+	font-weight: var(--vkui--font_subhead--font_weight--regular);
 	text-transform: lowercase;
 }
 [scheme=space_gray] .ActionCard__hint {
 	background-color: rgba(35 35 36 / 75%);
 }
 .ActionCard__hint::before {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    content: "";
-    display: block;
-    border: 1px solid #e1e3e6;
-    border: var(--thin-border) solid var(--input_border, var(--vkui--color_image_border_alpha));
-    z-index: 1;
-    box-sizing: border-box;
-    border-radius: inherit;
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	content: "";
+	display: block;
+	border: 1px solid #e1e3e6;
+	border: var(--thin-border) solid var(--input_border, var(--vkui--color_image_border_alpha));
+	z-index: 1;
+	box-sizing: border-box;
+	border-radius: inherit;
 }
 
 
@@ -2575,10 +2606,14 @@ body[scheme=space_gray] .ActionCard::after {
 	}
 	.SplitCol--spaced {
 		margin: 0;
+		padding: 0;
 	}
 	.SplitCol__fixedInner .Group__inner .Spacing--separator {
 		mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 20%, rgba(0, 0, 0, 1) 80%, rgba(0, 0, 0, 0) 100%);
 		-webkit-mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 20%, rgba(0, 0, 0, 1) 80%, rgba(0, 0, 0, 0) 100%);
+	}
+	.SplitCol__fixedInner .Group__inner::after {
+		display: none;
 	}
 
 	.RichCell--Header,
@@ -2676,7 +2711,7 @@ body[scheme=space_gray] .ActionCard::after {
 		margin-left: -16px;
 		padding-right: 12px;
 	}
-	.CardWithAvatar.Card--ios:not(.ForInput) .cardAvatar {
+	.CardWithAvatar.Card:not(.ForInput) .cardAvatar {
 		margin-left: -12px;
 		padding-right: 12px;
 	}
@@ -2716,10 +2751,10 @@ body[scheme=space_gray] .ActionCard::after {
 	.vkuiFormItem {
 		padding: 12px;
 	}
-	.PanelHeader__left {
+	.PanelHeader__before {
 		margin-left: -7px;
 	}
-	.vkuiPanelHeader__right {
+	.vkuiPanelHeader__after {
 		margin-right: -7px;
 	}
 	.View .Group__inner .Card.DescriptionCardWiki .vkuiSimpleCell>.vkuiAvatar {
@@ -2746,6 +2781,16 @@ body[scheme=space_gray] .ActionCard::after {
 		height: 1px;
 		background: currentColor;
 		margin: 7px -7px!important;
+	}
+	.HeaderFix .Spacing {
+		margin: 0 -7px!important;
+	}
+	.HeaderFix .Spacing::after {
+		content: '';
+		height: 1px;
+		height: var(--thin-border);
+		background-color: #fff;
+		background-color: var(--separator_common);
 	}
 	.Gallery__banners {
 		margin: 0 -7px;
@@ -2807,7 +2852,7 @@ body[scheme=space_gray] .ActionCard::after {
 		border-radius: 12px;
 	}
 
-	.PanelHeader .PanelHeader__left, .PanelHeader .PanelHeader__right {
+	.PanelHeader .PanelHeader__before, .PanelHeader .PanelHeader__after {
 		padding: 4px;
 	}
 
@@ -2864,8 +2909,8 @@ body[scheme=space_gray] .ActionCard::after {
 	}
 
 	
-	.HeaderWithTabs .PanelHeader__left,
-	.HeaderWithTabs .PanelHeader__right {
+	.HeaderWithTabs .PanelHeader__before,
+	.HeaderWithTabs .PanelHeader__after {
 		min-width: 52px!important;
 		width: 52px!important;
 	}
@@ -2956,7 +3001,7 @@ body[scheme=space_gray] .ActionCard::after {
 	.CardWithAvatar .vkuiAvatar:not(.withPreload) {
 		margin-left: -16px;
 	}
-	.CardWithAvatar:not(.ForInput) .vkuiSimpleCell--ios .cardAvatar {
+	.CardWithAvatar:not(.ForInput) .vkuiSimpleCell .cardAvatar {
 		margin-left: -12px;
 		padding-right: 12px;
 	}
@@ -3194,7 +3239,7 @@ body[scheme=space_gray] .ActionCard::after {
 		margin-left: 6px;
 	}
 
-	.SimpleCell--ios>.Avatar--sz-28, .SimpleCell--ios>.Avatar--sz-32 {
+	.SimpleCell>.Avatar--sz-28, .SimpleCell>.Avatar--sz-32 {
 		margin-left: 0;
 	}
 
@@ -3204,7 +3249,7 @@ body[scheme=space_gray] .ActionCard::after {
 		position: relative;
 		background: linear-gradient(360deg, rgba(0, 0, 0, .8) 0%, rgba(0, 0, 0, .6) 50%, rgba(0, 0, 0, 0) 100%);
 	}
-	.CardsNews:not(.withIcon) .Avatar--ios {
+	.CardsNews:not(.withIcon) .Avatar {
 		height: 256px!important;
 	}
 	.CardsNews:not(.withIcon) .vkuiCard {
@@ -3288,7 +3333,7 @@ body[scheme=space_gray] .ActionCard::after {
 		min-height: var(--panelheader_height_ios);
 		height: fit-content;
 	}
-	.ModalPageHeader--content .PanelHeader__left {
+	.ModalPageHeader--content .PanelHeader__before {
 		padding: 12px 0 12px 12px;
 	}
 	.ModalPageHeader--content .RichCell .Avatar {
@@ -3325,18 +3370,18 @@ body[scheme=space_gray] .ActionCard::after {
 		}
 	}
 
-	.HeaderWithTabs .PanelHeader__left,
-	.HeaderWithTabs .PanelHeader__right {
+	.HeaderWithTabs .PanelHeader__before,
+	.HeaderWithTabs .PanelHeader__after {
 		min-width: 52px!important;
 		width: 52px!important;
 	}
 	.HeaderWithTabs .PanelHeader__content {
 		padding: 0!important;
 	}
-	.HeaderWithTabs .PanelHeader__left {
+	.HeaderWithTabs .PanelHeader__before {
 		margin-right: 24px;
 	}
-	.HeaderWithTabs .PanelHeader__right {
+	.HeaderWithTabs .PanelHeader__after {
 		margin-left: 24px;
 	}
 	.HeaderWithTabs .PanelHeader__separator {

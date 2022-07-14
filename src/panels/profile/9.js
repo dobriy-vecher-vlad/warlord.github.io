@@ -60,6 +60,10 @@ class PANEL extends React.Component {
 				}
 			},
 			resources: [{
+				id: 'chest',
+				name: 'Сундуки',
+				count: 0,
+			}, {
 				id: 'en',
 				name: 'Энергия',
 				count: 0,
@@ -354,7 +358,7 @@ class PANEL extends React.Component {
 			}
 		}
 		syncBot = true;
-		console.warn(dataProfile);
+		// console.warn(dataProfile);
 		// console.warn(dataGuild);
 		if (!dataProfile?.u || dataGuild == null) {
 			openSnackbar({text: 'Ключ авторизации игры неисправен, введите новый', icon: 'error'});
@@ -362,7 +366,6 @@ class PANEL extends React.Component {
 			this._isMounted && setActivePanel('profile');
 			return;
 		}
-		for (let resource of this.state.resources) resource.count = Number(dataProfile?.u?.[`_${resource.id}`]);
 		if (Number(dataProfile?.u?._va) == 0) {
 			this.state.times.vip = null;
 			this.state.hints.vip = 'Нет премиум статуса';
@@ -428,6 +431,8 @@ class PANEL extends React.Component {
 			this.state.data.guildWars.start = null;
 			this.state.data.guildWars.end = null;
 		}
+		for (let resource of this.state.resources) resource.count = Number(dataProfile?.u?.[`_${resource.id}`]);
+		this.state.resources.find(resource => resource.id == 'chest').count = Number(dataProfile?.chests?.ch?.length);
 
 		if (mode == 'map' && action == 'collect') {
 			let data;

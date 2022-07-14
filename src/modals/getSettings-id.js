@@ -31,8 +31,8 @@ class MODAL extends React.Component {
 				className="ModalPage--classic"
 				id={this.props.id}
 				header={<ModalPageHeader
-					left={<PanelHeaderBack onClick={() => options.BackModal()}/>}
-					right={<PanelHeaderSubmit disabled={!(Number(key) > 0)} onClick={() => setState({ id: key }, options.BackModal())}/>}
+					before={<PanelHeaderBack onClick={() => options.BackModal()}/>}
+					after={<PanelHeaderSubmit disabled={!(Number(key) > 0)} onClick={() => setState({ id: key }, options.BackModal())}/>}
 				>Идентификатор</ModalPageHeader>}
 			>
 				<Div>

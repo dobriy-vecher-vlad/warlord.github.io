@@ -337,14 +337,14 @@ class PANEL extends React.Component {
 		return (
 			<View id="rating" activePanel={!state.activePanel ? 'rating' : state.activePanel}>
 				<Panel id={this.props.id}>
-					{!state.isDesktop && <PanelHeader className='HeaderWithTabs' right={!state.isEmbedded&&options.getCopy(parent)} left={<PanelHeaderBack onClick={() => setState({ activeStory: 'home', activePanel: 'home' })}/>}>
+					{!state.isDesktop && <PanelHeader className='HeaderWithTabs' after={!state.isEmbedded&&options.getCopy(parent)} before={<PanelHeaderBack onClick={() => setState({ activeStory: 'home', activePanel: 'home' })}/>}>
 						<Tabs>
 							<TabsItem onClick={() => this.setState({ rating: null, tab: 1 }, () => this.loadRating())} selected={this.state.tab == 1}>Профили</TabsItem>
 							<TabsItem onClick={() => this.setState({ rating: null, tab: 2 }, () => this.loadRating())} selected={this.state.tab == 2}>Гильдии</TabsItem>
 						</Tabs>
 					</PanelHeader>}
 					{state.isDesktop && <Group>
-						<PanelHeader className='HeaderFix HeaderWithTabs' fixed={false} separator={false} right={options.getCopy(parent)}>
+						<PanelHeader className='HeaderFix HeaderWithTabs' fixed={false} separator={false} after={options.getCopy(parent)}>
 							<Tabs>
 								<TabsItem onClick={() => this.setState({ rating: null, tab: 1 }, () => this.loadRating())} selected={this.state.tab == 1}>Профили</TabsItem>
 								<TabsItem onClick={() => this.setState({ rating: null, tab: 2 }, () => this.loadRating())} selected={this.state.tab == 2}>Гильдии</TabsItem>
@@ -368,7 +368,8 @@ class PANEL extends React.Component {
 													rows={[{
 														title: user.name?user.name:`Player\n${user.id}`
 													}, {
-														title: Number.isInteger(user.title) ? options.numberSpaces(user.title, ' ') : user.title
+														title: Number.isInteger(user.title) ? options.numberSpaces(user.title, ' ') : user.title,
+														right: true
 													}]}
 												/>)}
 												<Spacing size={16} separator />
@@ -381,7 +382,8 @@ class PANEL extends React.Component {
 													rows={[{
 														title: user.name?user.name:`Player\n${user.id}`
 													}, {
-														title: Number.isInteger(user.title) ? options.numberSpaces(user.title, ' ') : user.title
+														title: Number.isInteger(user.title) ? options.numberSpaces(user.title, ' ') : user.title,
+														right: true
 													}]}
 												/>)}
 											</div>
@@ -449,7 +451,8 @@ class PANEL extends React.Component {
 													rows={[{
 														title: guild.name?guild.name:`Guild\n${guild.id}`
 													}, {
-														title: Number.isInteger(guild.title) ? options.numberSpaces(guild.title, ' ') : guild.title
+														title: Number.isInteger(guild.title) ? options.numberSpaces(guild.title, ' ') : guild.title,
+														right: true
 													}]}
 												/>)}
 												<Spacing size={16} separator />
@@ -462,7 +465,8 @@ class PANEL extends React.Component {
 													rows={[{
 														title: guild.name?guild.name:`Guild\n${guild.id}`
 													}, {
-														title: Number.isInteger(guild.title) ? options.numberSpaces(guild.title, ' ') : guild.title
+														title: Number.isInteger(guild.title) ? options.numberSpaces(guild.title, ' ') : guild.title,
+														right: true
 													}]}
 												/>)}
 											</div>

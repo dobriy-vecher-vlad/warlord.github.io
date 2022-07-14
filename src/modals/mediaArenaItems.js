@@ -44,7 +44,6 @@ class MODAL extends React.Component {
 					password: this.props.clan_auth,
 					id: this.props.clan_id,
 				});
-				console.warn(game);
 				if (game && game.i && game.i.length) {
 					let syncItems = game.i.map((data, x) => {
 						return Number(data._id);

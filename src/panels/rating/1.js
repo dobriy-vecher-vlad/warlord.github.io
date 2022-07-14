@@ -82,7 +82,8 @@ class PANEL extends React.Component {
 								rows={[{
 									title: user.name?user.name:ratingTab.tab==2?`Guild\n${user.id}`:`Player\n${user.id}`
 								}, {
-									title: Number.isInteger(user.title) ? options.numberSpaces(user.title, ' ') : user.title
+									title: Number.isInteger(user.title) ? options.numberSpaces(user.title, ' ') : user.title,
+									right: true
 								}]}
 							/>)}
 						</div>
@@ -98,7 +99,8 @@ class PANEL extends React.Component {
 									rows={[{
 										title: user.name?user.name:ratingTab.tab==2?`Guild\n${user.id}`:`Player\n${user.id}`
 									}, {
-										title: Number.isInteger(user.title) ? options.numberSpaces(user.title, ' ') : user.title
+										title: Number.isInteger(user.title) ? options.numberSpaces(user.title, ' ') : user.title,
+										right: true
 									}]}
 								/>)}
 							</div>:<div className="HorizontalRating" style={{height: 32, color: 'var(--text_secondary)', fontSize: '13px', lineHeight: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', width: !state.isDesktop&&'75%', textAlign: 'center', margin: 'auto'}}>Авторизуйте профиль на сервере Эрмун и обновите приложение</div>:<div className="HorizontalRating" style={{height: 32, color: 'var(--text_secondary)', fontSize: '13px', lineHeight: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', width: !state.isDesktop&&'75%', textAlign: 'center', margin: 'auto'}}>Авторизуйтесь для отображения {ratingTab.tab==2?'вашей гильдии':'вашего профиля'} в рейтинге</div>}

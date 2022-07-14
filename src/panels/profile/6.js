@@ -1299,6 +1299,12 @@ class PANEL extends React.Component {
 									>
 										Попытки
 									</SimpleCell>
+									<SimpleCell
+										before={<Avatar size={32} mode="app" src={`${pathImages}bot/raids/34.png`} />}
+										description={`${options.numberSpaces(syncBot.raids.player._dmgi)}`}
+									>
+										Атака
+									</SimpleCell>
 								</Card> */}
 								<Card className='DescriptionCardWiki' onClick={() => this.setState({ isDevLog: !this.state.isDevLog }, this.props.options.openSnackbar({text: `Режим разработчика ${this.state.isDevLog?'выключен':'включен'}`, icon: 'done'}))}>
 									<SimpleCell
@@ -1310,10 +1316,10 @@ class PANEL extends React.Component {
 								</Card>
 								<Card className='DescriptionCardWiki'>
 									<SimpleCell
-										before={<Avatar size={32} mode="app" src={`${pathImages}bot/raids/34.png`} />}
-										description={`${options.numberSpaces(syncBot.raids.player._dmgi)}`}
+										before={<Avatar size={32} mode="app" src={`${pathImages}bot/raids/9.png`} />}
+										description={`${syncBot.raids.limit} из 3`}
 									>
-										Атака
+										Попытки
 									</SimpleCell>
 								</Card>
 								<Card className='DescriptionCardWiki'>

@@ -174,6 +174,8 @@ class PANEL extends React.Component {
 			this._isMounted && this.setState({ isPause: false, isLoad: true });
 			return;
 		}
+
+		
 		let sslt = 0;
 		let api_uid = state.login || state.user.vk.id;
 		let auth_key = state.auth;
@@ -181,28 +183,29 @@ class PANEL extends React.Component {
 			auth_key = this._isMounted && await BotAPI('getAuth', null, null, null, {stage: 'modal', text: 'Для продолжения работы необходимо указать ключ авторизации'});
 			if (auth_key == 'modal') {
 				this._isMounted && setActivePanel('profile');
-				return
+				return;
 			} else if (!auth_key) {
 				this._isMounted && setActivePanel('profile');
-				return
+				return;
 			}
-		}
-		let data = {
-			player: null,
-			try: 0
-		};
-		let player = this._isMounted && await BotAPI('getStats', auth_key, api_uid, sslt);
-		if (!player) {
-			openSnackbar({text: 'Ключ авторизации игры неисправен, введите новый', icon: 'error'});
-			this._isMounted && BotAPI('getAuth', null, null, null, {stage: 'modal', text: 'Ключ авторизации игры неисправен, введите новый', error: typeof player == 'string' ? player : player?.err_msg ? player?.err_msg : JSON.stringify(player)});
-			this._isMounted && setActivePanel('profile');
-			return;
 		}
 		let getGameAuth = {
 			login: api_uid,
 			password: auth_key,
 		};
-		getGameAuth.id = player?._id || api_uid;
+		let dataProfile = this._isMounted && await getGame(this.props.state.server, {}, getGameAuth);
+		getGameAuth.id = dataProfile?.u?._id || api_uid;
+		// console.warn(dataProfile);
+		if (!dataProfile?.u) {
+			openSnackbar({text: 'Ключ авторизации игры неисправен, введите новый', icon: 'error'});
+			this._isMounted && BotAPI('getAuth', null, null, null, {stage: 'modal', text: 'Ключ авторизации игры неисправен, введите новый', error: typeof dataProfile == 'string' ? dataProfile : dataProfile?.err_msg ? dataProfile?.err_msg : JSON.stringify(dataProfile)});
+			this._isMounted && setActivePanel('profile');
+			return;
+		}
+		let data = {
+			player: null,
+			try: 0
+		};
 		let dataArena = this._isMounted && await getGame(this.props.state.server, {
 			i: 9,
 			t: 1,
@@ -213,10 +216,15 @@ class PANEL extends React.Component {
 			return;
 		}
 		data.player = {
-			...player,
+			...dataProfile?.u,
 			enemy: dataArena.u,
 			rating: dataArena.my_rating
 		}
+		if (dataProfile?.chests?.ch) {
+			typeof dataProfile?.chests?.ch?.length == 'undefined' ? dataProfile.chests.ch = [dataProfile?.chests?.ch] : [];
+			data.player.chests = Number(dataProfile?.chests?.ch.length);
+		}
+		// console.log('Data', data);
 		// console.log('Player', data.player);
 		syncBot.arena = data;
 		const startFight = async(auth_key, api_uid, sslt, id) => {
@@ -500,10 +508,10 @@ class PANEL extends React.Component {
 							{!this.state.isLoad?<CardGrid size={state.isDesktop ? "s" : "m"}>
 								<Card className='DescriptionCardWiki'>
 									<SimpleCell
-										before={<Avatar size={32} mode="app" src={`${pathImages}bot/arena/10.png`} />}
-										description={options.numberSpaces(syncBot.arena.player._exp)}
+										before={<Avatar size={32} mode="app" src={`${pathImages}bot/arena/2.png`} />}
+										description={options.numberSpaces(syncBot.arena.player.chests)}
 									>
-										Опыт
+										Сундуки
 									</SimpleCell>
 								</Card>
 								<Card className='DescriptionCardWiki'>

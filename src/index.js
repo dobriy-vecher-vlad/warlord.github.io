@@ -149,7 +149,7 @@ const parseQueryString = (string = '') => {
 };
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
-const wikiVersion = '1.7.1';
+const wikiVersion = '1.7.2';
 const pathImages = 'https://dobriy-vecher-vlad.github.io/warlord-helper/media/images/';
 const serverHub = [{
 	id: 1,
@@ -749,8 +749,8 @@ const App = withAdaptivity(({ viewWidth }) => {
 					className='HeaderFix'
 					fixed={!isDesktop}
 					separator={isDesktop}
-					left={parent&&<PanelHeaderBack onClick={() => this.setActivePanel(parent)}/>}
-					right={!(isEmbedded&&!isDesktop)&&this.getCopy(parent, child)}
+					before={parent&&<PanelHeaderBack onClick={() => this.setActivePanel(parent)}/>}
+					after={!(isEmbedded&&!isDesktop)&&this.getCopy(parent, child)}
 				>
 					<PanelHeaderContent before={avatar&&<Avatar size={36} src={`${pathImages}${avatar}`} />} status={description}>{title}</PanelHeaderContent>
 				</PanelHeader>
@@ -2355,9 +2355,9 @@ const App = withAdaptivity(({ viewWidth }) => {
 									params={{hashParams: hashParams, queryParams: queryParams}}
 								/> */}
 								<Panel id="referals">
-									{!isDesktop && <PanelHeader right={!isEmbedded&&this.getCopy(this.state.activeStory)} left={<PanelHeaderBack onClick={() => setActivePanel('home')}/>}>Рефералы</PanelHeader>}
+									{!isDesktop && <PanelHeader after={!isEmbedded&&this.getCopy(this.state.activeStory)} before={<PanelHeaderBack onClick={() => setActivePanel('home')}/>}>Рефералы</PanelHeader>}
 									<Group>
-										{isDesktop && <PanelHeader className='HeaderFix' fixed={false} separator={true} left={<PanelHeaderBack onClick={() => setActivePanel('home')}/>} right={isEmbedded&&<PanelHeaderButton onClick={() => bridge.send("VKWebAppCopyText", {"text": `https://vk.com/app7787242#view=${this.state.activeStory}&panel=${this.state.activePanel}`}, this.openSnackbar({text: 'Ссылка на подраздел скопирована', icon: 'done'}))}><Icon28CopyOutline/></PanelHeaderButton>}>Рефералы</PanelHeader>}
+										{isDesktop && <PanelHeader className='HeaderFix' fixed={false} separator={true} before={<PanelHeaderBack onClick={() => setActivePanel('home')}/>} after={isEmbedded&&<PanelHeaderButton onClick={() => bridge.send("VKWebAppCopyText", {"text": `https://vk.com/app7787242#view=${this.state.activeStory}&panel=${this.state.activePanel}`}, this.openSnackbar({text: 'Ссылка на подраздел скопирована', icon: 'done'}))}><Icon28CopyOutline/></PanelHeaderButton>}>Рефералы</PanelHeader>}
 										<Placeholder 
 											icon={<Icon56LikeOutline width="56" height="56" style={{color: 'var(--systemRed)'}}/>}
 											header="В разработке"
@@ -2375,7 +2375,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 								<Panel id="profile">
 									{!isDesktop && <PanelHeader>Мой профиль</PanelHeader>}
 									{user.vk && <Group>
-										{isDesktop && <PanelHeader className='HeaderFix' fixed={false} separator={true} right={this.getCopy(this.state.activeStory)}>Мой профиль</PanelHeader>}
+										{isDesktop && <PanelHeader className='HeaderFix' fixed={false} separator={true} after={this.getCopy(this.state.activeStory)}>Мой профиль</PanelHeader>}
 										<PullToRefresh onRefresh={() => this.storeProfilesRefresh()} isFetching={this.state.fetching}>
 											<Spacing size={6} />
 											<Gallery
@@ -2468,9 +2468,9 @@ const App = withAdaptivity(({ viewWidth }) => {
 
 							<View id="map" activePanel={!activePanel ? 'map' : activePanel}>
 								<Panel id="map">
-									{!isDesktop && <PanelHeader right={!isEmbedded&&this.getCopy(this.state.activeStory)} left={<PanelHeaderBack onClick={() => this.setState({ activeStory: 'home', activePanel: 'home' })}/>}>Карта</PanelHeader>}
+									{!isDesktop && <PanelHeader after={!isEmbedded&&this.getCopy(this.state.activeStory)} before={<PanelHeaderBack onClick={() => this.setState({ activeStory: 'home', activePanel: 'home' })}/>}>Карта</PanelHeader>}
 									<Group>
-										{isDesktop && <PanelHeader className='HeaderFix' fixed={false} separator={true} right={this.getCopy(this.state.activeStory)}>Карта</PanelHeader>}
+										{isDesktop && <PanelHeader className='HeaderFix' fixed={false} separator={true} after={this.getCopy(this.state.activeStory)}>Карта</PanelHeader>}
 										<Gallery bullets={false} showArrows className="Gallery__banners" style={{'--offset': isDesktop?'14px':'24px'}} slideWidth='100%' align="center" timeout="5000">
 											{dataMap.images.map((data, x) => <Banner key={x} className="Gallery__banner --shadow" mode="image" size="m" 
 												header="Информация карты"
@@ -2528,9 +2528,9 @@ const App = withAdaptivity(({ viewWidth }) => {
 
 							<View id="bosses" activePanel={!activePanel ? 'bosses' : activePanel}>
 								<Panel id="bosses">
-									{!isDesktop && <PanelHeader right={!isEmbedded&&this.getCopy(this.state.activeStory)} left={<PanelHeaderBack onClick={() => this.setState({ activeStory: 'home', activePanel: 'home' })}/>}>Боссы</PanelHeader>}
+									{!isDesktop && <PanelHeader after={!isEmbedded&&this.getCopy(this.state.activeStory)} before={<PanelHeaderBack onClick={() => this.setState({ activeStory: 'home', activePanel: 'home' })}/>}>Боссы</PanelHeader>}
 									<Group>
-										{isDesktop && <PanelHeader className='HeaderFix' fixed={false} separator={true} right={this.getCopy(this.state.activeStory)}>Боссы</PanelHeader>}
+										{isDesktop && <PanelHeader className='HeaderFix' fixed={false} separator={true} after={this.getCopy(this.state.activeStory)}>Боссы</PanelHeader>}
 										<Gallery bullets={false} showArrows className="Gallery__banners" style={{'--offset': isDesktop?'14px':'24px'}} slideWidth='100%' align="center" timeout="5000">
 											{dataBosses.images.map((data, x) => <Banner key={x} className="Gallery__banner --shadow" mode="image" size="m" 
 												header="Информация боссов"
@@ -2563,9 +2563,9 @@ const App = withAdaptivity(({ viewWidth }) => {
 
 							<View id="arena" activePanel={!activePanel ? 'arena' : activePanel}>
 								<Panel id="arena">
-									{!isDesktop && <PanelHeader right={!isEmbedded&&this.getCopy(this.state.activeStory)} left={<PanelHeaderBack onClick={() => this.setState({ activeStory: 'home', activePanel: 'home' })}/>}>Арена</PanelHeader>}
+									{!isDesktop && <PanelHeader after={!isEmbedded&&this.getCopy(this.state.activeStory)} before={<PanelHeaderBack onClick={() => this.setState({ activeStory: 'home', activePanel: 'home' })}/>}>Арена</PanelHeader>}
 									<Group>
-										{isDesktop && <PanelHeader className='HeaderFix' fixed={false} separator={true} right={this.getCopy(this.state.activeStory)}>Арена</PanelHeader>}
+										{isDesktop && <PanelHeader className='HeaderFix' fixed={false} separator={true} after={this.getCopy(this.state.activeStory)}>Арена</PanelHeader>}
 										<Gallery bullets={false} showArrows className="Gallery__banners" style={{'--offset': isDesktop?'14px':'24px'}} slideWidth='100%' align="center" timeout="5000">
 											{dataArena.images.map((data, x) => <Banner key={x} className="Gallery__banner --shadow" mode="image" size="m" 
 												header="Информация арены"
@@ -2612,9 +2612,9 @@ const App = withAdaptivity(({ viewWidth }) => {
 
 							<View id="character" activePanel={!activePanel ? 'character' : activePanel}>
 								<Panel id="character">
-									{!isDesktop && <PanelHeader right={!isEmbedded&&this.getCopy(this.state.activeStory)} left={<PanelHeaderBack onClick={() => this.setState({ activeStory: 'home', activePanel: 'home' })}/>}>Персонаж</PanelHeader>}
+									{!isDesktop && <PanelHeader after={!isEmbedded&&this.getCopy(this.state.activeStory)} before={<PanelHeaderBack onClick={() => this.setState({ activeStory: 'home', activePanel: 'home' })}/>}>Персонаж</PanelHeader>}
 									<Group>
-										{isDesktop && <PanelHeader className='HeaderFix' fixed={false} separator={true} right={this.getCopy(this.state.activeStory)}>Персонаж</PanelHeader>}
+										{isDesktop && <PanelHeader className='HeaderFix' fixed={false} separator={true} after={this.getCopy(this.state.activeStory)}>Персонаж</PanelHeader>}
 										<Gallery bullets={false} showArrows className="Gallery__banners" style={{'--offset': isDesktop?'14px':'24px'}} slideWidth='100%' align="center" timeout="5000">
 											{dataCharacter.images.map((data, x) => <Banner key={x} className="Gallery__banner --shadow" mode="image" size="m" 
 												header="Информация персонажа"
@@ -2668,9 +2668,9 @@ const App = withAdaptivity(({ viewWidth }) => {
 
 							<View id="guild" activePanel={!activePanel ? 'guild' : activePanel}>
 								<Panel id="guild">
-								{!isDesktop && <PanelHeader right={!isEmbedded&&this.getCopy(this.state.activeStory)} left={<PanelHeaderBack onClick={() => this.setState({ activeStory: 'home', activePanel: 'home' })}/>}>Гильдия</PanelHeader>}
+								{!isDesktop && <PanelHeader after={!isEmbedded&&this.getCopy(this.state.activeStory)} before={<PanelHeaderBack onClick={() => this.setState({ activeStory: 'home', activePanel: 'home' })}/>}>Гильдия</PanelHeader>}
 									<Group>
-										{isDesktop && <PanelHeader className='HeaderFix' fixed={false} separator={true} right={this.getCopy(this.state.activeStory)}>Гильдия</PanelHeader>}
+										{isDesktop && <PanelHeader className='HeaderFix' fixed={false} separator={true} after={this.getCopy(this.state.activeStory)}>Гильдия</PanelHeader>}
 										<Gallery bullets={false} showArrows className="Gallery__banners" style={{'--offset': isDesktop?'14px':'24px'}} slideWidth='100%' align="center" timeout="5000">
 											{dataGuild.images.map((data, x) => <Banner key={x} className="Gallery__banner --shadow" mode="image" size="m" 
 												header="Информация гильдии"
@@ -2723,9 +2723,9 @@ const App = withAdaptivity(({ viewWidth }) => {
 							
 							<View id="other" activePanel={!activePanel ? 'other' : activePanel}>
 								<Panel id="other">
-								{!isDesktop && <PanelHeader right={!isEmbedded&&this.getCopy(this.state.activeStory)} left={<PanelHeaderBack onClick={() => this.setState({ activeStory: 'home', activePanel: 'home' })}/>}>Разное</PanelHeader>}
+								{!isDesktop && <PanelHeader after={!isEmbedded&&this.getCopy(this.state.activeStory)} before={<PanelHeaderBack onClick={() => this.setState({ activeStory: 'home', activePanel: 'home' })}/>}>Разное</PanelHeader>}
 									<Group>
-										{isDesktop && <PanelHeader className='HeaderFix' fixed={false} separator={true} right={this.getCopy(this.state.activeStory)}>Разное</PanelHeader>}
+										{isDesktop && <PanelHeader className='HeaderFix' fixed={false} separator={true} after={this.getCopy(this.state.activeStory)}>Разное</PanelHeader>}
 										<Gallery bullets={false} showArrows className="Gallery__banners" style={{'--offset': isDesktop?'14px':'24px'}} slideWidth='100%' align="center" timeout="5000">
 											{dataOther.images.map((data, x) => <Banner key={x} className="Gallery__banner --shadow" mode="image" size="m" 
 												header="Прочая информация"

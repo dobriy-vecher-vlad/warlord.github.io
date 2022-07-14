@@ -31,8 +31,8 @@ class MODAL extends React.Component {
 				className="ModalPage--classic"
 				id={this.props.id}
 				header={<ModalPageHeader
-					left={<PanelHeaderBack onClick={() => options.BackModal()}/>}
-					right={<PanelHeaderSubmit disabled={!(String(key).length > 0)} onClick={() => setState({ auth: key }, options.BackModal())}/>}
+					before={<PanelHeaderBack onClick={() => options.BackModal()}/>}
+					after={<PanelHeaderSubmit disabled={!(String(key).length > 0)} onClick={() => setState({ auth: key }, options.BackModal())}/>}
 				>Пароль авторизации</ModalPageHeader>}
 			>
 				<Div>

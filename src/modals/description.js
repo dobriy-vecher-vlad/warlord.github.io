@@ -34,8 +34,8 @@ class DescriptionHeader extends React.Component {
 		return (<React.Fragment>
 			<ModalPageHeader
 				className="ModalPageHeader--preview"
-				left={!this.props.state.isDesktop&&<PanelHeaderButton aria-label="back" onClick={() => this.props.options.BackModal()}><Icon28ChevronBack/></PanelHeaderButton>}
-				right={this.props.state.isDesktop&&this.props.options.getCopy(this.props.state.activeStory, this.props.state.activePanel, this.props.data.modal)}
+				before={!this.props.state.isDesktop&&<PanelHeaderButton aria-label="back" onClick={() => this.props.options.BackModal()}><Icon28ChevronBack/></PanelHeaderButton>}
+				after={this.props.state.isDesktop&&this.props.options.getCopy(this.props.state.activeStory, this.props.state.activePanel, this.props.data.modal)}
 			/>
 			<Spacing size={24} />
 			{this.props.background?<Avatar mode="image" size={128} className="Avatar--preview"><div style={{background: this.props.background}}/><Avatar mode="image" size={128*2} style={{background: this.props.background}}/></Avatar>:<Avatar mode="image" size={128} src={this.props.avatar} className="Avatar--preview"><Avatar mode="image" size={128*2} src={this.props.avatar}/></Avatar>}
@@ -54,11 +54,11 @@ class ModalHeader extends React.Component {
 	render() {
 		return (<React.Fragment>
 			{this.props.state.isDesktop?<ModalPageHeader
-				right={this.props.options.getCopy(this.props.state.activeStory, this.props.state.activePanel, this.props.data.modal)}
+				after={this.props.options.getCopy(this.props.state.activeStory, this.props.state.activePanel, this.props.data.modal)}
 			>{this.props.header}</ModalPageHeader>:<ModalPageHeader
 				className="ModalPageHeader--content"
-				left={<RichCell disabled before={(this.props.background||this.props.avatar)&&(this.props.background?<Avatar size={36} mode="app" className="Avatar--content"><div style={{background: this.props.background}}/></Avatar>:<Avatar size={36} mode="app" src={this.props.avatar} className="Avatar--content"/>)} caption={this.props.description}>{this.props.header}</RichCell>}
-				right={<PanelHeaderButton aria-label="back" onClick={() => this.props.options.BackModal()}><Icon24Dismiss/></PanelHeaderButton>}
+				before={<RichCell disabled before={(this.props.background||this.props.avatar)&&(this.props.background?<Avatar size={36} mode="app" className="Avatar--content"><div style={{background: this.props.background}}/></Avatar>:<Avatar size={36} mode="app" src={this.props.avatar} className="Avatar--content"/>)} caption={this.props.description}>{this.props.header}</RichCell>}
+				after={<PanelHeaderButton aria-label="back" onClick={() => this.props.options.BackModal()}><Icon24Dismiss/></PanelHeaderButton>}
 			>
 			</ModalPageHeader>}
 		</React.Fragment>)
