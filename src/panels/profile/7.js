@@ -448,7 +448,7 @@ class PANEL extends React.Component {
 			syncBot.isStart = true;
 			this._isMounted && setBotLog(`Бот успешно запущен`, 'text', 'green');
 			do {
-				this._isMounted && await startFight(auth_key, api_uid, sslt, Number(player._id));
+				this._isMounted && await startFight(auth_key, api_uid, sslt, Number(data.player._id));
 			} while (this._isMounted && syncBot.isStart && syncBot.arena.try < this.state.tryLimit);
 			this._isMounted && syncBot.isStart && this.BotArena('pause');
 		}
