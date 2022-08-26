@@ -22,10 +22,10 @@
     "react-scripts": "^5.0.1"
   },
   "dependencies": {
-    "@vkontakte/icons": "^1.176.0",
-    "@vkontakte/vk-bridge": "^2.6.4",
+    "@vkontakte/icons": "^1.177.0",
+    "@vkontakte/vk-bridge": "^2.7.0",
     "@vkontakte/vk-tunnel": "^0.1.0",
-    "@vkontakte/vkui": "^4.33.3",
+    "@vkontakte/vkui": "^4.33.4",
     "babel-eslint": "^10.1.0",
     "chalk": "^5.0.1",
     "core-js": "^3.23.4",

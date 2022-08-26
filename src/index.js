@@ -149,7 +149,7 @@ const parseQueryString = (string = '') => {
 };
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
-const wikiVersion = '1.7.2';
+const wikiVersion = '1.7.3';
 const pathImages = 'https://dobriy-vecher-vlad.github.io/warlord-helper/media/images/';
 const serverHub = [{
 	id: 1,
@@ -552,6 +552,20 @@ const App = withAdaptivity(({ viewWidth }) => {
 				storeProfilesFull: [],
 				storeProfilesIndex: 0,
 
+				settings: {
+					theme: 'bright_light',
+					visibleSections: {
+						rating: true,
+						map: true,
+						bosses: true,
+						arena: true,
+						character: true,
+						guild: true,
+						other: true,
+					},
+					orderProfiles: [0]
+				},
+
 				checkItems: {null: true, item: true, scroll: true, collection: true, personal: true, stock: true, yesStock: true, noStock: true},
 
 				id: null,
@@ -601,39 +615,46 @@ const App = withAdaptivity(({ viewWidth }) => {
 			const { OpenModal } = this;
 			isDev&&console.warn('setTheme', activeStory, activePanel);
 			let theme = 'bright_light';
-			if (islocalStorage) {
-				try {
-					theme = localStorage.getItem('VKWikiTheme');
-					if (!theme) {
-						localStorage.setItem('VKWikiTheme', 'bright_light');
+			console.warn(this.state.settings);
+			if (this.state.settings == 'auto') {
+				if (islocalStorage) {
+					try {
+						theme = localStorage.getItem('VKWikiTheme');
+						if (!theme) {
+							localStorage.setItem('VKWikiTheme', 'bright_light');
+							theme = 'bright_light';
+						}
+						if (update) {
+							theme = theme == 'bright_light' ? 'space_gray' : 'bright_light';
+							localStorage.setItem('VKWikiTheme', theme);
+						}
+					} catch (error) {
+						OpenModal(`alert`, {header: 'Ошибка при обновлении темы', subheader: `Разрешите доступ к cookies на этом сайте`}, null, 'card');
 						theme = 'bright_light';
 					}
-					if (update) {
-						theme = theme == 'bright_light' ? 'space_gray' : 'bright_light';
-						localStorage.setItem('VKWikiTheme', theme);
-					}
-				} catch (error) {
-					OpenModal(`alert`, {header: 'Ошибка при обновлении темы', subheader: `Разрешите доступ к cookies на этом сайте`}, null, 'card');
-					theme = 'bright_light';
-				}
-			} else if (isEmbedded) {
-				try {
-					theme = await this.Storage({key: 'VKWikiTheme', defaultValue: theme});
-					if (theme) theme = theme.value;
-					if (theme && update) {
-						theme = theme == 'bright_light' ? 'space_gray' : 'bright_light';
-						theme = await this.Storage({key: 'VKWikiTheme', value: theme});
+				} else if (isEmbedded) {
+					try {
+						theme = await this.Storage({key: 'VKWikiTheme', defaultValue: theme});
 						if (theme) theme = theme.value;
+						if (theme && update) {
+							theme = theme == 'bright_light' ? 'space_gray' : 'bright_light';
+							theme = await this.Storage({key: 'VKWikiTheme', value: theme});
+							if (theme) theme = theme.value;
+						}
+					} catch (error) {
+						OpenModal(`alert`, {header: 'Ошибка при обновлении темы', subheader: `Разрешите доступ к cookies на этом сайте`}, null, 'card');
+						theme = 'bright_light';
 					}
-				} catch (error) {
+				} else {
 					OpenModal(`alert`, {header: 'Ошибка при обновлении темы', subheader: `Разрешите доступ к cookies на этом сайте`}, null, 'card');
 					theme = 'bright_light';
 				}
+				this.setState({ settings: {...this.state.settings, theme: 'auto' } }, () => console.warn(this.state.settings));
 			} else {
-				OpenModal(`alert`, {header: 'Ошибка при обновлении темы', subheader: `Разрешите доступ к cookies на этом сайте`}, null, 'card');
-				theme = 'bright_light';
+				theme = this.state.settings.theme;
+				console.warn(theme);
+				this.setState({ settings: {...this.state.settings, theme: theme } }, () => console.warn(this.state.settings));
 			}
-			this.setState({theme});
 			document.body.setAttribute('scheme', theme);
 		};
 		Storage = async(data = {key: 'key', defaultValue: 'defaultValue', value: 'value', delete: false}) => {
@@ -1085,7 +1106,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 					} else {
 						this.OpenModal(`getSettings`);
 					}
-				} 
+				}
 				if (data.stage == 'save') {
 					login = this.state.login || Number(this.state.id);
 					auth = this.state.auth;
@@ -1115,6 +1136,25 @@ const App = withAdaptivity(({ viewWidth }) => {
 					}
 				}
 				return auth;
+			}
+			if (mode == 'getGlobalSettings' && data && data.stage) {
+				if (data.stage == 'modal') {
+					this.OpenModal(`getGlobalSettings`);
+				}
+				if (data.stage == 'save') {
+					await this.Storage({key: 'globalSettings', value: JSON.stringify(this.state.settings)});
+					this.CloseModal();
+					this.openSnackbar({text: 'Настройки сохранены', icon: 'done'});
+				}
+				if (data.stage == 'get') {
+					let settings = await this.Storage({key: 'globalSettings', defaultValue: JSON.stringify(this.state.settings)});
+					if (settings?.value) {
+						settings = JSON.parse(settings.value);
+					} else settings = this.state.settings;
+					this.setState({ settings });
+					console.warn(settings);
+				}
+				return;
 			}
 			if (mode == 'getStats' && auth_key && id) {
 				try {
@@ -1994,7 +2034,8 @@ const App = withAdaptivity(({ viewWidth }) => {
 				label: 'hashParams',
 				message: hashParams
 			}]);
-			await (!isEmbedded) && setTheme();
+			if (isEmbedded) await this.BotAPI('getGlobalSettings', null, null, null, {stage: 'get'});
+			setTheme();
 			if (isEmbedded) await checkServer();
 			if (isEmbedded && serverStatus) {
 				if (!hashParams) hashParams = {"": undefined};
@@ -2120,7 +2161,8 @@ const App = withAdaptivity(({ viewWidth }) => {
 			}
 		};
 		render() {
-			const { activeStory, activePanel, popout, user, theme } = this.state;
+			const { activeStory, activePanel, popout, user } = this.state;
+			const { theme } = this.state.settings;
 			const { onStoryChange, numberForm, numberSpaces, setActivePanel, modal } = this;
 			return (
 				<SplitLayout style={{ justifyContent: "center" }} popout={popout} modal={modal()}>
@@ -2408,6 +2450,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 											</Gallery>
 											<div>
 												<Button stretched size="m" mode="tertiary" onClick={() => this.BotAPI('getAuth', null, null, null, {stage: 'modal'})}>Настройки профиля</Button>
+												<Button stretched size="m" mode="tertiary" onClick={() => this.BotAPI('getGlobalSettings', null, null, null, {stage: 'modal'})}>Общие настройки</Button>
 											</div>
 											<Spacing separator size={12} />
 											<React.Fragment>
