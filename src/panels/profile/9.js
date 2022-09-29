@@ -293,19 +293,17 @@ class PANEL extends React.Component {
 		return returnData;
 	};
 	setBotLog = async(message = 'update...', type = 'text', color = null) => {
+		let log = this.state.botLog;
 		if (message == 'clear') {
-			this._isMounted && this.setState({ botLog: <Placeholder
+			log = (<Placeholder
 				style={{overflow: "hidden"}}
 				icon={<Icon28ListOutline width={56} height={56} />}
 				stretched
 			>
 				Нет новых<br />действий
-			</Placeholder>}, () => this._isMounted && document.querySelector('.BotLog.Scroll')&&document.querySelector('.BotLog.Scroll').scrollTo({ top: document.querySelector('.BotLog.Scroll').scrollHeight }))
+			</Placeholder>);
 		} else {
-			let log = this.state.botLog;
-			if (!Array.isArray(this.state.botLog)) {
-				log = [];
-			}
+			if (!Array.isArray(this.state.botLog)) log = [];
 			if (type == 'text') {
 				log.push({ type: 'text', message: message, color: color });
 			} else log.push({ type: 'message', message: {
@@ -314,8 +312,8 @@ class PANEL extends React.Component {
 				time: this.props.options.getRealTime(),
 				message: message.message
 			} });
-			this._isMounted && this.setState({ botLog: log }, () => this._isMounted && document.querySelector('.BotLog.Scroll')&&document.querySelector('.BotLog.Scroll').scrollTo({ top: document.querySelector('.BotLog.Scroll').scrollHeight }))
 		}
+		this._isMounted && this.setState({ botLog: log }, () => this._isMounted && document.querySelector('.BotLog.Scroll')&&document.querySelector('.BotLog.Scroll').scrollTo({ top: document.querySelector('.BotLog.Scroll').scrollHeight }));
 	};
 	BotResources = async(mode = '', action = '', needReload = true) => {
 		const { setBotLog } = this;
@@ -455,7 +453,7 @@ class PANEL extends React.Component {
 					name: `Обыск зданий`,
 					message: this.parseReward(this.joinReward(reward)),
 				}, 'message');
-			} else this._isMounted && this.setBotLog(`Лимит обыска зданий`, 'text');
+			} else this._isMounted && needReload && this.setBotLog(`Лимит обыска зданий`, 'text');
 			this._isMounted && needReload && await this.BotResources();
 		}
 		if (mode == 'map' && action == 'upgrade') {
@@ -478,7 +476,7 @@ class PANEL extends React.Component {
 					}, 'message');
 				}
 			}
-			if (count == 0) this._isMounted && this.setBotLog(`Нет доступных зданий для улучшения`, 'text');
+			if (count == 0) this._isMounted && needReload && this.setBotLog(`Нет доступных зданий для улучшения`, 'text');
 			this._isMounted && needReload && await this.BotResources();
 		}
 		if (mode == 'chest' && action == 'collect') {
@@ -496,8 +494,8 @@ class PANEL extends React.Component {
 							name: ['', 'Деревянный сундук', 'Серебряный сундук', 'Золотой сундук', 'Магический сундук', 'Трофейный сундук', 'Сундук', 'Пиратский сундук'][chest._ci],
 							message: this.parseReward(data?.r),
 						}, 'message');
-					} else this._isMounted && this.setBotLog(`Сундук ещё взламывается`, 'text');
-				} else this._isMounted && this.setBotLog(`Нет доступных сундуков для открытия`, 'text');
+					} else this._isMounted && needReload && this.setBotLog(`Сундук ещё взламывается`, 'text');
+				} else this._isMounted && needReload && this.setBotLog(`Нет доступных сундуков для открытия`, 'text');
 			} else {
 				this.state.times.chest = null;
 				this.state.hints.chest = 'Нет доступных сундуков';
@@ -519,8 +517,8 @@ class PANEL extends React.Component {
 							name: ['', 'Деревянный сундук', 'Серебряный сундук', 'Золотой сундук', 'Магический сундук', 'Трофейный сундук', 'Сундук', 'Пиратский сундук'][chest._ci],
 							message: `Откроется через ${this.props.options.getTime(data?.ch?._ot)}`,
 						}, 'message');
-					} else this._isMounted && this.setBotLog(`Нет доступных мест для взлома`, 'text');
-				} else this._isMounted && this.setBotLog(`Нет доступных сундуков для взлома`, 'text');
+					} else this._isMounted && needReload && this.setBotLog(`Нет доступных мест для взлома`, 'text');
+				} else this._isMounted && needReload && this.setBotLog(`Нет доступных сундуков для взлома`, 'text');
 			} else {
 				this.state.times.chest = null;
 				this.state.hints.chest = 'Нет доступных сундуков';
@@ -540,7 +538,7 @@ class PANEL extends React.Component {
 						name: ['', 'Полярный Тигр', 'Северный Волк', 'Дух Воды', 'Панда', 'Грабоид'][dataProfile?.u?._pet],
 						message: this.parseReward(data?.r),
 					}, 'message');
-				} else this._isMounted && this.setBotLog(`Питомец ещё в пути`, 'text');
+				} else this._isMounted && needReload && this.setBotLog(`Питомец ещё в пути`, 'text');
 				this._isMounted && needReload && await this.BotResources();
 			}
 		}
@@ -559,8 +557,8 @@ class PANEL extends React.Component {
 					}, 'message');
 				} else {
 					if (Number(dataProfile?.pets?.p?.find(pet => Number(pet._id) == Number(dataProfile?.u?._pet))?._lp) > Number(dataProfile?.u?._pf1)) {
-						this._isMounted && this.setBotLog(`На отправку питомца не хватает еды`, 'text');
-					} else this._isMounted && this.setBotLog(`Питомец ещё не прибыл`, 'text');
+						this._isMounted && needReload && this.setBotLog(`На отправку питомца не хватает еды`, 'text');
+					} else this._isMounted && needReload && this.setBotLog(`Питомец ещё не прибыл`, 'text');
 				}
 				this._isMounted && needReload && await this.BotResources();
 			}
@@ -581,8 +579,8 @@ class PANEL extends React.Component {
 						name: `Лотерея`,
 						message: this.parseReward(data),
 					}, 'message');
-				} else this._isMounted && this.setBotLog(`Нет бесплатных попыток лотереи`, 'text');
-			} else this._isMounted && this.setBotLog(`Нет бесплатных попыток лотереи`, 'text');
+				} else this._isMounted && needReload && this.setBotLog(`Нет бесплатных попыток лотереи`, 'text');
+			} else this._isMounted && needReload && this.setBotLog(`Нет бесплатных попыток лотереи`, 'text');
 			this._isMounted && needReload && await this.BotResources();
 		}
 		if (mode == 'guildBuild' && action == 'collect') {
@@ -603,7 +601,7 @@ class PANEL extends React.Component {
 						}, 'message');
 					}
 				}
-				if (count == 0) this._isMounted && this.setBotLog(`Нет доступных зданий для обыска`, 'text');
+				if (count == 0) this._isMounted && needReload && this.setBotLog(`Нет доступных зданий для обыска`, 'text');
 				this._isMounted && needReload && await this.BotResources();
 			}
 		}
@@ -616,7 +614,7 @@ class PANEL extends React.Component {
 				if (data?.msg == 'Необходимо состоять в Гильдии.' || data?.msg == 'Ваша гильдия не имеет захваченных территорий.' || data?.msg == 'Вы уже забрали свою долю на сегодня.') {
 					this.state.times.guildReward = null;
 					this.state.hints.guildReward = data?.msg.replace(/\./gm, '');
-					this._isMounted && this.setBotLog(data?.msg.replace(/\./gm, ''), 'text');
+					this._isMounted && needReload && this.setBotLog(data?.msg.replace(/\./gm, ''), 'text');
 				} else {
 					this._isMounted && setBotLog({
 						avatar: `bot/resources/2.png`,
@@ -688,7 +686,7 @@ class PANEL extends React.Component {
 						this._isMounted && this.setBotLog(`Набег #${war.id} не найден`, 'text');
 					}
 				}
-				if (count == 0) this._isMounted && this.setBotLog(`Нет доступных набегов для сбора`, 'text');
+				if (count == 0) this._isMounted && needReload && this.setBotLog(`Нет доступных набегов для сбора`, 'text');
 				this._isMounted && needReload && await this.BotResources();
 			}
 		}
@@ -703,7 +701,7 @@ class PANEL extends React.Component {
 					name: `Ежедневная награда`,
 					message: 'Ежедневная награда собрана',
 				}, 'message');
-			} else this._isMounted && this.setBotLog(`Ежедневная награда уже собрана`, 'text');
+			} else this._isMounted && needReload && this.setBotLog(`Ежедневная награда уже собрана`, 'text');
 			this.state.times.daily = null;
 			this.state.hints.daily = 'Ежедневная награда уже собрана';
 			this._isMounted && needReload && await this.BotResources();
@@ -721,7 +719,7 @@ class PANEL extends React.Component {
 						name: `Ежедневная награда`,
 						message: this.parseReward(data?.r),
 					}, 'message');
-				} else this._isMounted && this.setBotLog(`Премиум награда уже собрана`, 'text');
+				} else this._isMounted && needReload && this.setBotLog(`Премиум награда уже собрана`, 'text');
 				this.state.times.vip = null;
 				this.state.hints.vip = 'Премиум награда уже собрана';
 				this._isMounted && needReload && await this.BotResources();
@@ -748,7 +746,7 @@ class PANEL extends React.Component {
 					name: `Обыск друзей`,
 					message: this.parseReward(this.joinReward(reward)),
 				}, 'message');
-			} else this._isMounted && this.setBotLog(`Лимит обыска друзей`, 'text');
+			} else this._isMounted && needReload && this.setBotLog(`Лимит обыска друзей`, 'text');
 			this.state.times.search = null;
 			this.state.hints.search = 'Лимит обыска друзей';
 			this._isMounted && needReload && await this.BotResources();
@@ -756,7 +754,9 @@ class PANEL extends React.Component {
 		if (mode == 'all') {
 			this._isMounted && await this.BotResources('map', 'collect', false);
 			this._isMounted && await this.BotResources('chest', 'collect', false);
+			this._isMounted && await this.BotResources('chest', 'open', false);
 			this._isMounted && await this.BotResources('pet', 'collect', false);
+			this._isMounted && await this.BotResources('pet', 'send', false);
 			this._isMounted && await this.BotResources('lottery', 'collect', false);
 			this._isMounted && await this.BotResources('search', 'collect', false);
 			this._isMounted && await this.BotResources('daily', 'collect', false);
@@ -814,7 +814,7 @@ class PANEL extends React.Component {
 							{this.state.resources.map((resource, x) => <Card key={x}>
 								{!this.state.isLoad?<>
 									<Avatar size={18} mode="image" src={`${pathImages}bot/resources/${resource.id}.png`} />
-									<div>{options.numberSpaces(resource.count)}</div>
+									<div>{options.numberSpaces(resource.count || 0)}</div>
 								</>:<>
 									<Skeleton height={18} width={18} flexShrink={0}/>
 									<Skeleton height={12} width={36} flexShrink={0}/>

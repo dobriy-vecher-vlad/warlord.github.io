@@ -43,7 +43,7 @@ class PANEL extends React.Component {
 				<Group>
 					<div className='Sticky Sticky__top withSeparator'>
 						{state.isDesktop && options.getPanelHeader(title, description, avatar, this.props.id, parent)}
-						{options.getRichCellDescription(<React.Fragment>Из сундуков могут выпасть вещи, заточки, а также ценные ресурсы<br/>Трофейные сундуки могут выпасть только с противника, который состоит в гильдии</React.Fragment>)}
+						{options.getRichCellDescription(<React.Fragment>Из сундуков могут выпасть предметы, заточки, а также ценные ресурсы<br/>Трофейные сундуки могут выпасть только с противника, который состоит в гильдии</React.Fragment>)}
 						<Spacing size={8} />
 					</div>
 					<CardGrid size="s" className={`Horizontal__Cells ${state.isDesktop&&"size-x4 auto"}`}>

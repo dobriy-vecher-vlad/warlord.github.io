@@ -27,7 +27,7 @@ class PANEL extends React.Component {
 			snackbar: null,
 			tabs: 1,
 			mode: { yesStock: true, noStock: true },
-			items: this.props.syncItems,
+			items: this.props.syncItems || [],
 			currentItems: null,
 			allItems: null,
 			hasItems: 0,
@@ -128,10 +128,10 @@ class PANEL extends React.Component {
 						<Spacing size={8} />
 						<CardGrid size="m">
 							<Card className="DescriptionCardWiki">
-								<Cell mode="selectable" checked={this.state.mode.yesStock} after={<Icon28CheckCircleOutline width={24} height={24} style={{color: this.state.mode.yesStock ? 'var(--dynamic_green)' : 'var(--icon_secondary)'}}/>} description="Отображение в списке" onChange={(e) => this.setState({ mode: { ...this.state.mode, yesStock: e.target.checked } }, this.updateItems)}>Собранные вещи</Cell>
+								<Cell mode="selectable" checked={this.state.mode.yesStock} after={<Icon28CheckCircleOutline width={24} height={24} style={{color: this.state.mode.yesStock ? 'var(--dynamic_green)' : 'var(--icon_secondary)'}}/>} description="Отображение в списке" onChange={(e) => this.setState({ mode: { ...this.state.mode, yesStock: e.target.checked } }, this.updateItems)}>Собранные предметы</Cell>
 							</Card>
 							<Card className="DescriptionCardWiki">
-								<Cell mode="selectable" checked={this.state.mode.noStock} after={<Icon28CancelCircleOutline width={24} height={24} style={{color: this.state.mode.noStock ? 'var(--destructive)' : 'var(--icon_secondary)'}}/>} description="Отображение в списке" onChange={(e) =>this.setState({ mode: { ...this.state.mode, noStock: e.target.checked } }, this.updateItems)}>Не собранные вещи</Cell>
+								<Cell mode="selectable" checked={this.state.mode.noStock} after={<Icon28CancelCircleOutline width={24} height={24} style={{color: this.state.mode.noStock ? 'var(--destructive)' : 'var(--icon_secondary)'}}/>} description="Отображение в списке" onChange={(e) =>this.setState({ mode: { ...this.state.mode, noStock: e.target.checked } }, this.updateItems)}>Не собранные предметы</Cell>
 							</Card>
 						</CardGrid>
 					</div>

@@ -245,6 +245,7 @@ class MODAL extends React.Component {
 				<Div>
 					{!state.isDesktop?<Spacing size={8} />:<DescriptionHeader avatar={`${pathImages}${data.icon}`} state={state} options={options} data={data} header={data.title} description="Карта — Районы"/>}
 					<DescriptionCell label={`Описание`} text={data.description}/>
+					<DescriptionCell label={`Номер района`} text={`${data.id} номер`}/>
 					{typeof data.lvl != 'boolean' && <DescriptionCell label={`Требуемый уровень`} text={`${data.lvl} уровень`}/>}
 					{typeof data.boss != 'boolean' && <DescriptionCell label={`Необходимо убить босса`} text={Bosses[data.boss].name}/>}
 					{data.bosses.length !== 0 && <React.Fragment>
@@ -321,7 +322,16 @@ class MODAL extends React.Component {
 					{data.energy != 0 && <DescriptionCell label={`Стоимость нападения`} text={`${data.energy} ${options.numberForm(data.energy, ['энергия', 'энергии', 'энергии'])}`}/>}
 					<DescriptionCell label={`Лимит убийств`} text={`${data.tries} ${options.numberForm(data.tries, ['попытка', 'попытки', 'попыток'])}, ${options.getTime(data.time)}`}/>
 					<DescriptionCell label={`Тип боя`} text={data.type === 1 ? 'Одиночный бой' : 'Общий бой'}/>
-					{data.region != 0 && <DescriptionCell label={`Местоположение`} text={dataMap.regions.find(region => region.items.find(location => location.id == data.region)).items.find(location => location.id == data.region).title}/>}
+					{data.region != 0 && (<>
+						<Spacing separator size={16} />
+						{[0].map((y, x) => {
+							let region = dataMap.regions.find(region => region.items.find(location => location.id == data.region)).items.find(location => location.id == data.region);
+							return (<React.Fragment key={x}>
+								<DescriptionCell label={`Местоположение`} text={`${region.title} [${region.id}]`}/>
+								<DescriptionCell label={`Уровень нападения`} text={`${region.lvl || 0} уровень`}/>
+							</React.Fragment>);
+						})}
+					</>)}
 					{(data.rewards.m1 != 0 || data.rewards.m2 != 0 || data.rewards.m6 && data.rewards.m6 != 0 || data.rewards.exp != 0) && <React.Fragment>
 						<Spacing separator size={16} />
 						<CardGrid size="m">

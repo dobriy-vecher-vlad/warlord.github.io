@@ -156,12 +156,14 @@ const serverHub = [{
 	name: 'Эрмун',
 	api: 'vk1',
 	site: 'vk.com',
+	company: 'ВКонтакте',
 	logo: `${pathImages}/main/logo_vk.svg`,
 }, {
 	id: 2,
 	name: 'Антарес',
 	api: 'vk2',
 	site: 'vk.com',
+	company: 'ВКонтакте',
 	logo: `${pathImages}/main/logo_vk.svg`,
 // }, {
 // 	id: 3,
@@ -180,6 +182,7 @@ const serverHub = [{
 	name: 'Эрмун',
 	api: 'ya',
 	site: 'yandex.ru',
+	company: 'Яндекс',
 	logo: `${pathImages}/main/logo_yandex.svg`,
 }];
 
@@ -193,6 +196,7 @@ import MODAL_getSettings__id from './modals/getSettings-id';
 import MODAL_getSettings__login from './modals/getSettings-login';
 import MODAL_getSettings__password from './modals/getSettings-password';
 import MODAL_getSettings__server from './modals/getSettings-server';
+import MODAL_getSettings__order from './modals/getSettings-order';
 import MODAL_mediaArenaItems from './modals/mediaArenaItems';
 import MODAL_mediaEventsItems from './modals/mediaEventsItems';
 import MODAL_mediaSales from './modals/mediaSales';
@@ -207,6 +211,7 @@ import PANEL_profile__6 from './panels/profile/6';
 import PANEL_profile__7 from './panels/profile/7';
 // import PANEL_profile__8 from './panels/profile/8';
 import PANEL_profile__9 from './panels/profile/9';
+import PANEL_profile__10 from './panels/profile/10';
 
 import VIEW_rating from './panels/rating/rating';
 
@@ -252,10 +257,10 @@ const logger = async(label, array) => {
 	if (label && array) {
 		let startGroup, endGroup;
 		if (console.groupCollapsed) {
-			startGroup = function (label) { return console.groupCollapsed(label); };
+			startGroup = function (label) { return console.groupCollapsed(...label); };
 			endGroup = function () { return console.groupEnd(); };
 		} else if (console.group) {
-			startGroup = function (label) { return console.group(label); };
+			startGroup = function (label) { return console.group(...label); };
 			endGroup = function () { return console.groupEnd(); };
 		} else {
 			startGroup = async() => {};
@@ -284,7 +289,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 	const isIframe = bridge.isIframe();
 	const isStandalone = bridge.isStandalone();
 	const isDesktop = viewWidth >= ViewWidth.SMALL_TABLET;
-	logger('[APP] Navigator', [{
+	logger(['%c[Warlord Helper] Navigator', 'background: #182b3c; color: #fafeff; padding: 5px; border-radius: 4px;'], [{
 		label: 'platform',
 		message: platform
 	}, {
@@ -551,20 +556,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 				storeProfiles: [],
 				storeProfilesFull: [],
 				storeProfilesIndex: 0,
-
-				settings: {
-					theme: 'bright_light',
-					visibleSections: {
-						rating: true,
-						map: true,
-						bosses: true,
-						arena: true,
-						character: true,
-						guild: true,
-						other: true,
-					},
-					orderProfiles: [0]
-				},
+				storeProfilesSize: 5,
 
 				checkItems: {null: true, item: true, scroll: true, collection: true, personal: true, stock: true, yesStock: true, noStock: true},
 
@@ -607,7 +599,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 				serverStatus = false;
 			});
 			serverStatusTime = +new Date - serverStatusTime;
-			console.log(`[APP] serverStatus`, serverStatus, serverStatusTime);
+			console.log('%c[Warlord Helper] serverStatus', 'background: #182b3c; color: #fafeff; padding: 5px; border-radius: 4px;', serverStatus, serverStatusTime);
 			this.forceUpdate();
 		};
 		setTheme = async(update = false) => {
@@ -615,46 +607,39 @@ const App = withAdaptivity(({ viewWidth }) => {
 			const { OpenModal } = this;
 			isDev&&console.warn('setTheme', activeStory, activePanel);
 			let theme = 'bright_light';
-			console.warn(this.state.settings);
-			if (this.state.settings == 'auto') {
-				if (islocalStorage) {
-					try {
-						theme = localStorage.getItem('VKWikiTheme');
-						if (!theme) {
-							localStorage.setItem('VKWikiTheme', 'bright_light');
-							theme = 'bright_light';
-						}
-						if (update) {
-							theme = theme == 'bright_light' ? 'space_gray' : 'bright_light';
-							localStorage.setItem('VKWikiTheme', theme);
-						}
-					} catch (error) {
-						OpenModal(`alert`, {header: 'Ошибка при обновлении темы', subheader: `Разрешите доступ к cookies на этом сайте`}, null, 'card');
+			if (islocalStorage) {
+				try {
+					theme = localStorage.getItem('VKWikiTheme');
+					if (!theme) {
+						localStorage.setItem('VKWikiTheme', 'bright_light');
 						theme = 'bright_light';
 					}
-				} else if (isEmbedded) {
-					try {
-						theme = await this.Storage({key: 'VKWikiTheme', defaultValue: theme});
-						if (theme) theme = theme.value;
-						if (theme && update) {
-							theme = theme == 'bright_light' ? 'space_gray' : 'bright_light';
-							theme = await this.Storage({key: 'VKWikiTheme', value: theme});
-							if (theme) theme = theme.value;
-						}
-					} catch (error) {
-						OpenModal(`alert`, {header: 'Ошибка при обновлении темы', subheader: `Разрешите доступ к cookies на этом сайте`}, null, 'card');
-						theme = 'bright_light';
+					if (update) {
+						theme = theme == 'bright_light' ? 'space_gray' : 'bright_light';
+						localStorage.setItem('VKWikiTheme', theme);
 					}
-				} else {
+				} catch (error) {
 					OpenModal(`alert`, {header: 'Ошибка при обновлении темы', subheader: `Разрешите доступ к cookies на этом сайте`}, null, 'card');
 					theme = 'bright_light';
 				}
-				this.setState({ settings: {...this.state.settings, theme: 'auto' } }, () => console.warn(this.state.settings));
+			} else if (isEmbedded) {
+				try {
+					theme = await this.Storage({key: 'VKWikiTheme', defaultValue: theme});
+					if (theme) theme = theme.value;
+					if (theme && update) {
+						theme = theme == 'bright_light' ? 'space_gray' : 'bright_light';
+						theme = await this.Storage({key: 'VKWikiTheme', value: theme});
+						if (theme) theme = theme.value;
+					}
+				} catch (error) {
+					OpenModal(`alert`, {header: 'Ошибка при обновлении темы', subheader: `Разрешите доступ к cookies на этом сайте`}, null, 'card');
+					theme = 'bright_light';
+				}
 			} else {
-				theme = this.state.settings.theme;
-				console.warn(theme);
-				this.setState({ settings: {...this.state.settings, theme: theme } }, () => console.warn(this.state.settings));
+				OpenModal(`alert`, {header: 'Ошибка при обновлении темы', subheader: `Разрешите доступ к cookies на этом сайте`}, null, 'card');
+				theme = 'bright_light';
 			}
+			this.setState({theme});
 			document.body.setAttribute('scheme', theme);
 		};
 		Storage = async(data = {key: 'key', defaultValue: 'defaultValue', value: 'value', delete: false}) => {
@@ -904,7 +889,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 				)
 			}
 		};
-		getItemPreview = (data, x, tooltip, item = false, coll = false, levels = false) => {
+		getItemPreview = (data, x, tooltip, item = false, coll = false, levels = false, onClick = false, className = false, action = false) => {
 			const { activePanel, activeStory, checkItems } = this.state;
 			const { OpenModal } = this;
 			isDev&&console.warn('getItemPreview', activeStory, activePanel);
@@ -924,15 +909,17 @@ const App = withAdaptivity(({ viewWidth }) => {
 			if (levels && !syncItem) {
 				return;
 			}
+			let after = tooltip ? false : (!isDonut ? item && <Icon24TshirtOutline width={24} height={24}/> || coll && <Icon24CubeBoxOutline width={24} height={24}/> : syncItem ? <Icon28CheckCircleOutline width={24} height={24} style={{color: 'var(--dynamic_green)'}}/> : <Icon28CancelCircleOutline width={24} height={24} style={{color: 'var(--destructive)'}}/>);
 			return (
-				<Card key={x} id={`modal_${x+1}`} onClick={() => OpenModal(`item`, {id: Items.indexOf(data), item: item, collection: coll, description: data.description})} className="Card__Item">
+				<Card key={x} id={`modal_${x+1}`} onClick={action ? () => {} : onClick ? onClick : () => OpenModal(`item`, {id: Items.findIndex(item => item.id == data.id), item: item, collection: coll, description: data.description})} className={`Card__Item${after ? ' Card__Item--after' : ''}${className ? ` ${className}` : ''}${action ? ` Card__Item--action` : ''}`}>
 					<RichCell 
 						before={<div className="Card__image">
 							<Spinner size="regular" className="Card__imagePreload" />
 							<Avatar style={{objectFit: "none"}} mode="app" src={`${pathImages}${data.icon}`} size={60}/>
 						</div>}
-						caption={syncItemFull ? `${syncItemFull.lvl} уровень` : data.description}
-						after={tooltip || !isDonut ? item && <Icon24TshirtOutline width={24} height={24}/> || coll && <Icon24CubeBoxOutline width={24} height={24}/> : syncItem ? <Icon28CheckCircleOutline width={24} height={24} style={{color: 'var(--dynamic_green)'}}/> : <Icon28CancelCircleOutline width={24} height={24} style={{color: 'var(--destructive)'}}/>}
+						caption={syncItemFull ? `${syncItemFull.lvl} уровень` : tooltip ? tooltip : data.description}
+						after={after || action}
+						disabled={action ? true : false}
 						bottom={syncItemFull &&
 							<UsersStack size="m" visibleCount={3} photos={[
 								syncItemFull.stones[0][0]!=0?`${pathImages}stones/${(syncItemFull.stones[0][0]-1)*7+syncItemFull.stones[0][1]}.png`:null,
@@ -998,6 +985,12 @@ const App = withAdaptivity(({ viewWidth }) => {
 				}
 			}
 			if (name == '9' && activeStory == 'profile') {
+				if (!isDonut) {
+					// this.OpenModal('donut');
+					return this.OpenModal('donut');
+				}
+			}
+			if (name == '10' && activeStory == 'profile') {
 				if (!isDonut) {
 					// this.OpenModal('donut');
 					return this.OpenModal('donut');
@@ -1136,25 +1129,6 @@ const App = withAdaptivity(({ viewWidth }) => {
 					}
 				}
 				return auth;
-			}
-			if (mode == 'getGlobalSettings' && data && data.stage) {
-				if (data.stage == 'modal') {
-					this.OpenModal(`getGlobalSettings`);
-				}
-				if (data.stage == 'save') {
-					await this.Storage({key: 'globalSettings', value: JSON.stringify(this.state.settings)});
-					this.CloseModal();
-					this.openSnackbar({text: 'Настройки сохранены', icon: 'done'});
-				}
-				if (data.stage == 'get') {
-					let settings = await this.Storage({key: 'globalSettings', defaultValue: JSON.stringify(this.state.settings)});
-					if (settings?.value) {
-						settings = JSON.parse(settings.value);
-					} else settings = this.state.settings;
-					this.setState({ settings });
-					console.warn(settings);
-				}
-				return;
 			}
 			if (mode == 'getStats' && auth_key && id) {
 				try {
@@ -1505,7 +1479,11 @@ const App = withAdaptivity(({ viewWidth }) => {
 		};
 		storeProfilesRefresh = async() => {
 			this.setState({ fetching: true });
-			await this.storeProfiles(this.state.storeProfilesIndex);
+			await this.Storage({key: 'storeProfiles', value: JSON.stringify(this.state.storeProfiles)});
+			let index = this.state.storeProfilesIndex;
+			let firstIndex = 0;
+			let lastIndex = this.state.storeProfiles.length-[...this.state.storeProfiles].reverse().findIndex(profile => profile.id)-1;
+			await this.storeProfiles(this.state.storeProfiles[index]?.id ? index : lastIndex ? lastIndex : firstIndex);
 			this.setState({ fetching: false});
 		};
 		storeProfiles = async(id) => {
@@ -1533,11 +1511,16 @@ const App = withAdaptivity(({ viewWidth }) => {
 					}
 				} else {
 					if (isDonut) {
-						this.state.id = null;
-						this.state.login = null;
-						this.state.auth = null;
-						this.state.server = null;
-						this.OpenModal(`getSettings`, {mode: 'add'});
+						let count = Number((await this.Storage({key: 'storeProfilesDeleted', defaultValue: '0'})).value) || 0;
+						if (count <= 5) {
+							this.state.id = null;
+							this.state.login = null;
+							this.state.auth = null;
+							this.state.server = null;
+							this.OpenModal(`getSettings`, {mode: 'add'});
+						} else {
+							this.openSnackbar({text: 'Превышен лимит добавления', icon: 'error'});
+						}
 					} else {
 						this.OpenModal('donut');
 					}
@@ -1558,16 +1541,22 @@ const App = withAdaptivity(({ viewWidth }) => {
 					if (slot == -1) {
 						this.openSnackbar({text: 'Нет свободных мест', icon: 'error'});
 					} else {
-						this.state.storeProfiles[slot] = {
-							server: Number(this.state.server),
-							id: Number(this.state.id),
-							login: this.state.login,
-							auth: this.state.auth,
-						};
-						await this.Storage({key: 'storeProfiles', value: JSON.stringify(this.state.storeProfiles)});
-						this.CloseModal();
-						this.openSnackbar({text: 'Профиль добавлен', icon: 'done'});
-						await this.storeProfiles(slot);
+						let count = Number((await this.Storage({key: 'storeProfilesDeleted', defaultValue: '0'})).value) || 0;
+						if (count <= 5) {
+							await this.Storage({key: 'storeProfilesDeleted', value: String(count+1)});
+							this.state.storeProfiles[slot] = {
+								server: Number(this.state.server),
+								id: Number(this.state.id),
+								login: this.state.login,
+								auth: this.state.auth,
+							};
+							await this.Storage({key: 'storeProfiles', value: JSON.stringify(this.state.storeProfiles)});
+							this.CloseModal();
+							this.openSnackbar({text: 'Профиль добавлен', icon: 'done'});
+							await this.storeProfiles(slot);
+						} else {
+							this.openSnackbar({text: 'Превышен лимит добавления', icon: 'error'});
+						}
 					}
 				}
 			} else {
@@ -1577,22 +1566,15 @@ const App = withAdaptivity(({ viewWidth }) => {
 		removeProfileInStore = async() => {
 			const { activePanel, activeStory } = this.state;
 			isDev&&console.warn('removeProfileInStore', activeStory, activePanel);
-			let count = Number((await this.Storage({key: 'storeProfilesDeleted', defaultValue: '0'})).value) || 0;
-			if (count <= 5) {
-				await this.Storage({key: 'storeProfilesDeleted', value: String(count+1)});
-				this.state.storeProfiles.splice(this.state.storeProfilesIndex, 1);
-				this.state.storeProfiles.push({
-					id: null
-				});
-				await this.Storage({key: 'storeProfiles', value: JSON.stringify(this.state.storeProfiles)});
-				this.state.storeProfilesFull = this.state.storeProfiles.slice();
-				this.CloseModal();
-				this.openSnackbar({text: 'Профиль удалён', icon: 'done'});
-				await this.storeProfiles(this.state.storeProfilesIndex-1);
-			} else {
-				this.CloseModal();
-				this.openSnackbar({text: 'Превышен лимит удаления', icon: 'error'});
-			}
+			this.state.storeProfiles.splice(this.state.storeProfilesIndex, 1);
+			this.state.storeProfiles.push({
+				id: null
+			});
+			await this.Storage({key: 'storeProfiles', value: JSON.stringify(this.state.storeProfiles)});
+			this.state.storeProfilesFull = this.state.storeProfiles.slice();
+			this.CloseModal();
+			this.openSnackbar({text: 'Профиль удалён', icon: 'done'});
+			await this.storeProfiles(this.state.storeProfilesIndex-1);
 		};
 		loadProfile = async(dev = false, reload = false, version = 1, withParams = false) => {
 			const { activePanel, activeStory } = this.state;
@@ -1619,7 +1601,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 							dataDonutUser = data;
 						}
 					});
-					logger('[APP] Auth', [{
+					logger(['%c[Warlord Helper] Auth', 'background: #182b3c; color: #fafeff; padding: 5px; border-radius: 4px;'], [{
 						label: 'dataVK',
 						message: dataVK
 					}, {
@@ -1643,18 +1625,21 @@ const App = withAdaptivity(({ viewWidth }) => {
 								if (myDonut?.response?.status == 'active' || myDonut?.response?.status == 'expiring') {
 									let stage = Number(myDonut.response.period);
 									let price = Number(myDonut.response.amount);
-									let size = (price-50)/5+5;
+									let size = (price-50)/this.state.storeProfilesSize+this.state.storeProfilesSize;
+									this.state.storeProfilesSize = size;
 									this.state.storeProfiles = this.state.storeProfiles.slice(0, size);
 									this.state.storeProfilesFull = this.state.storeProfilesFull.slice(0, size);
 									for (let i of new Array(size-this.state.storeProfiles.length < 0 ? 0 : size-this.state.storeProfiles.length)) this.state.storeProfiles.push({ id: null });
 								} else {
-									this.state.storeProfiles.slice(0, 5);
-									this.state.storeProfilesFull = this.state.storeProfilesFull.slice(0, 5);
+									this.state.storeProfiles.slice(0, this.state.storeProfilesSize);
+									this.state.storeProfilesFull = this.state.storeProfilesFull.slice(0, this.state.storeProfilesSize);
 								}
 							} else {
-								this.state.storeProfiles.slice(0, 5);
-								this.state.storeProfilesFull = this.state.storeProfilesFull.slice(0, 5);
+								this.state.storeProfiles.slice(0, this.state.storeProfilesSize);
+								this.state.storeProfilesFull = this.state.storeProfilesFull.slice(0, this.state.storeProfilesSize);
 							}
+						} else {
+							this.state.storeProfilesSize = this.state.storeProfiles.length;
 						}
 						let dataGame = await getGame(this.state.server, null, {
 							login: this.state.storeProfiles[this.state.storeProfilesIndex].login || dataVK.id,
@@ -1670,6 +1655,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 							});
 							if (dataGameItems?.u) {
 								syncUserGame = dataGameItems.u;
+								dataGameItems.i = dataGameItems.i.filter(item => Number(item._o) == 1);
 								syncItems = dataGameItems.i.map((data, x) => {
 									return Number(data._id);
 								});
@@ -1842,6 +1828,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 						});
 						if (dataGameItems?.u) {
 							syncUserGame = dataGameItems.u;
+							dataGameItems.i = dataGameItems.i.filter(item => Number(item._o) == 1);
 							syncItems = dataGameItems.i.map((data, x) => {
 								return Number(data._id);
 							});
@@ -1991,21 +1978,19 @@ const App = withAdaptivity(({ viewWidth }) => {
 					syncUser = dataVK;
 					this.setState({ user: {vk: dataVK, game: null} });
 				}
-				if (!this.state.storeProfilesFull[0].first_name) {
-					let allDataVK = await getBridge('VKWebAppCallAPIMethod', {"method": "users.get", "params": {"user_ids": this.state.storeProfilesFull.map(profile => profile.id).join(','), "fields": "photo_100,photo_200,photo_max_orig", "v": '5.130', "access_token": "9942dca8c434ee910f1745a2989105b6b66d712e4f6d96b474278ca18ea7e6d7a8db5f4e569b16c6d1d20"}});
-					for (let storeProfileData of allDataVK?.response) {
-						let storeProfile = this.state.storeProfilesFull.findIndex(profile => profile.id == storeProfileData.id);
-						if (storeProfile != -1) {
-							this.state.storeProfilesFull[storeProfile] = {
-								...this.state.storeProfilesFull[storeProfile],
-								first_name: storeProfileData.first_name,
-								last_name: storeProfileData.last_name,
-								photo_100: storeProfileData.photo_100,
-								photo_200: storeProfileData.photo_200,
-								photo_max_orig: storeProfileData.photo_max_orig
-							}
-						};
-					}
+				let allDataVK = await getBridge('VKWebAppCallAPIMethod', {"method": "users.get", "params": {"user_ids": this.state.storeProfiles.map(profile => profile.id).join(','), "fields": "photo_100,photo_200,photo_max_orig", "v": '5.130', "access_token": "9942dca8c434ee910f1745a2989105b6b66d712e4f6d96b474278ca18ea7e6d7a8db5f4e569b16c6d1d20"}});
+				for (let storeProfileData of allDataVK?.response) {
+					let storeProfile = this.state.storeProfiles.findIndex(profile => profile.id == storeProfileData.id);
+					if (storeProfile != -1) {
+						this.state.storeProfilesFull[storeProfile] = {
+							...this.state.storeProfiles[storeProfile],
+							first_name: storeProfileData.first_name,
+							last_name: storeProfileData.last_name,
+							photo_100: storeProfileData.photo_100,
+							photo_200: storeProfileData.photo_200,
+							photo_max_orig: storeProfileData.photo_max_orig
+						}
+					};
 				}
 				this.state.storeProfilesFull[this.state.storeProfilesIndex] = {
 					...this.state.storeProfiles[this.state.storeProfilesIndex],
@@ -2027,15 +2012,14 @@ const App = withAdaptivity(({ viewWidth }) => {
 			const { loadProfile, setTheme, checkServer, setActivePanel } = this;
 			queryParams = parseQueryString(window.location.search);
 			hashParams = parseQueryString(window.location.hash);
-			logger('[APP] Params', [{
+			logger(['%c[Warlord Helper] Params', 'background: #182b3c; color: #fafeff; padding: 5px; border-radius: 4px;'], [{
 				label: 'queryParams',
 				message: queryParams
 			}, {
 				label: 'hashParams',
 				message: hashParams
 			}]);
-			if (isEmbedded) await this.BotAPI('getGlobalSettings', null, null, null, {stage: 'get'});
-			setTheme();
+			await (!isEmbedded) && setTheme();
 			if (isEmbedded) await checkServer();
 			if (isEmbedded && serverStatus) {
 				if (!hashParams) hashParams = {"": undefined};
@@ -2072,7 +2056,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 					this.state.storeProfiles = JSON.parse(storeProfiles.value);
 				} else return;
 				this.state.storeProfilesFull = this.state.storeProfiles.slice();
-				logger('[APP] storeProfiles', this.state.storeProfiles);
+				logger(['%c[Warlord Helper] storeProfiles', 'background: #182b3c; color: #fafeff; padding: 5px; border-radius: 4px;'], this.state.storeProfiles);
 				await loadProfile(Object.keys(hashParams).indexOf('dev') != -1, resize, 1, Object.keys(hashParams).indexOf('view') != -1);
 			} else {
 				setActivePanel(null);
@@ -2121,6 +2105,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 				<MODAL_getSettings__login id='getSettings-login' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} />
 				<MODAL_getSettings__password id='getSettings-password' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} />
 				<MODAL_getSettings__server id='getSettings-server' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} />
+				<MODAL_getSettings__order id='getSettings-order' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} />
 				<MODAL_mediaArenaItems id='mediaArenaItems' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} clan_id={clan_id} api_id={api_id} clan_auth={clan_auth} />
 				<MODAL_mediaEventsItems id='mediaEventsItems' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} clan_id={clan_id} api_id={api_id} clan_auth={clan_auth} />
 				<MODAL_mediaSales id='mediaSales' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} />
@@ -2161,8 +2146,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 			}
 		};
 		render() {
-			const { activeStory, activePanel, popout, user } = this.state;
-			const { theme } = this.state.settings;
+			const { activeStory, activePanel, popout, user, theme } = this.state;
 			const { onStoryChange, numberForm, numberSpaces, setActivePanel, modal } = this;
 			return (
 				<SplitLayout style={{ justifyContent: "center" }} popout={popout} modal={modal()}>
@@ -2176,8 +2160,8 @@ const App = withAdaptivity(({ viewWidth }) => {
 										className="RichCell--Header"
 										before={<Avatar badge={<div style={{ backgroundImage: `url(${serverHub[server-1]?.logo})`, backgroundSize: 'cover', backgroundPosition: 'center', width: 16, height: 16, }}/>} size={36} src={user && user.vk ? user.vk.photo_200 : 'https://vk.com/images/camera_200.png'}/>}
 										caption={`${serverHub[server-1]?.name}, ${isDev ? 'режим разработчика' : isDonut ? 'полный доступ' : 'обычный доступ'}`}
-									>{user && user.vk ? `${user.vk.first_name} ${user.vk.last_name}` : 'Пользователь'}</RichCell>
-									<Spacing size={16} />	
+									>{user?.vk?.first_name ? `${user.vk.first_name} ${user.vk.last_name}` : 'Пользователь'}</RichCell>
+									<Spacing size={16} />
 									</React.Fragment>}
 									<RichCell
 										className="RichCell--Context"
@@ -2415,9 +2399,9 @@ const App = withAdaptivity(({ viewWidth }) => {
 
 							<View id="profile" activePanel={!activePanel ? 'profile' : activePanel}>
 								<Panel id="profile">
-									{!isDesktop && <PanelHeader>Мой профиль</PanelHeader>}
+									{!isDesktop && <PanelHeader before={<PanelHeaderButton onClick={() => this.OpenModal(`getSettings-order`)}>Изменить</PanelHeaderButton>}>Мой профиль</PanelHeader>}
 									{user.vk && <Group>
-										{isDesktop && <PanelHeader className='HeaderFix' fixed={false} separator={true} after={this.getCopy(this.state.activeStory)}>Мой профиль</PanelHeader>}
+										{isDesktop && <PanelHeader className='HeaderFix' fixed={false} separator={true} after={this.getCopy(this.state.activeStory)} before={<PanelHeaderButton onClick={() => this.OpenModal(`getSettings-order`)}>Изменить</PanelHeaderButton>}>Мой профиль</PanelHeader>}
 										<PullToRefresh onRefresh={() => this.storeProfilesRefresh()} isFetching={this.state.fetching}>
 											<Spacing size={6} />
 											<Gallery
@@ -2427,14 +2411,15 @@ const App = withAdaptivity(({ viewWidth }) => {
 												showArrows
 												onChange={(e) => isDonut&&this.storeProfiles(e)}
 												slideIndex={isDonut?this.state.storeProfilesIndex:0}
-												slideWidth="35%"
+												slideWidth={isDesktop ? '35%' : '50%'}
 												align="center"
 											>
 												{isDonut?this.state.storeProfiles.map((item, x) => item.id?<div className={x == this.state.storeProfilesIndex ? "selected" : ""} key={x}>
 														<Avatar badge={<div style={{ backgroundImage: `url(${serverHub[item.server-1]?.logo})`, backgroundSize: 'cover', backgroundPosition: 'center', width: 24, height: 24, }}/>} size={96} src={this.state.storeProfilesFull[x].photo_200 ? this.state.storeProfilesFull[x].photo_200 : 'https://vk.com/images/camera_200.png'} />
 														<Spacing size={8} />
-														<Title level="2" weight="2" style={{whiteSpace: "pre-wrap"}}>{this.state.storeProfilesFull[x].first_name ? `${this.state.storeProfilesFull[x].first_name}\n${this.state.storeProfilesFull[x].last_name}` : `Player\n${item.id}`}</Title>
-														<Text style={{ marginTop: 8, color: 'var(--text_secondary)' }}>королевство {serverHub[item.server-1]?.name}</Text>
+														<Title level="2" weight="2">{this.state.storeProfilesFull[x].first_name ? `${this.state.storeProfilesFull[x].first_name}\n${this.state.storeProfilesFull[x].last_name}` : `Player\n${item.id}`}</Title>
+														<Link style={{ marginTop: 6, color: 'var(--text_link)' }} href={`https://vk.com/id${this.state.storeProfilesFull[x].id}`} target="_blank">@id{this.state.storeProfilesFull[x].id}</Link>
+														<Text style={{ marginTop: 2, color: 'var(--text_secondary)' }}>королевство {serverHub[item.server-1]?.name}</Text>
 													</div>:<div key={x}>
 														<Avatar size={96} shadow={false}><Icon56FaceIdOutline/></Avatar>
 														<Spacing size={8} />
@@ -2444,13 +2429,13 @@ const App = withAdaptivity(({ viewWidth }) => {
 												):<div className="selected">
 													<Avatar badge={<div style={{ backgroundImage: `url(${serverHub[this.state.storeProfilesFull[0].server-1]?.logo})`, backgroundSize: 'cover', backgroundPosition: 'center', width: 24, height: 24, }}/>} size={96} src={this.state.storeProfilesFull[0].photo_200 ? this.state.storeProfilesFull[0].photo_200 : 'https://vk.com/images/camera_200.png'} />
 													<Spacing size={8} />
-													<Title level="2" weight="2" style={{whiteSpace: "pre-wrap"}}>{this.state.storeProfilesFull[0].first_name ? `${this.state.storeProfilesFull[0].first_name}\n${this.state.storeProfilesFull[0].last_name}` : `Player\n${this.state.storeProfilesFull[0].id}`}</Title>
-													<Text style={{ marginTop: 8, color: 'var(--text_secondary)' }}>королевство {serverHub[this.state.storeProfilesFull[0].server-1]?.name}</Text>
+													<Title level="2" weight="2">{this.state.storeProfilesFull[0].first_name ? `${this.state.storeProfilesFull[0].first_name}\n${this.state.storeProfilesFull[0].last_name}` : `Player\n${this.state.storeProfilesFull[0].id}`}</Title>
+													<Link style={{ marginTop: 6, color: 'var(--text_link)' }} href={`https://vk.com/id${this.state.storeProfilesFull[0].id}`} target="_blank">@id{this.state.storeProfilesFull[0].id}</Link>
+													<Text style={{ marginTop: 2, color: 'var(--text_secondary)' }}>королевство {serverHub[this.state.storeProfilesFull[0].server-1]?.name}</Text>
 												</div>}
 											</Gallery>
 											<div>
 												<Button stretched size="m" mode="tertiary" onClick={() => this.BotAPI('getAuth', null, null, null, {stage: 'modal'})}>Настройки профиля</Button>
-												<Button stretched size="m" mode="tertiary" onClick={() => this.BotAPI('getGlobalSettings', null, null, null, {stage: 'modal'})}>Общие настройки</Button>
 											</div>
 											<Spacing separator size={12} />
 											<React.Fragment>
@@ -2467,18 +2452,21 @@ const App = withAdaptivity(({ viewWidth }) => {
 												<SimpleCell onClick={() => setActivePanel('9', true)} before={<Avatar mode="app" src={`${pathImages}labels/14.png`} />} description="Автоматизация" expandable indicator={<React.Fragment>
 													<span className="Text">{!isDonut&&<Icon28DonateCircleFillYellow width={24} height={24}/>}</span>
 												</React.Fragment>}>Ресурсы</SimpleCell>
+												<SimpleCell onClick={() => setActivePanel('10', true)} before={<Avatar mode="app" src={`${pathImages}labels/20.png`} />} description="Автоматизация" expandable indicator={<React.Fragment>
+													<span className="Text">{!isDonut&&<Icon28DonateCircleFillYellow width={24} height={24}/>}</span>
+												</React.Fragment>}>Кузница</SimpleCell>
 												<Spacing separator size={12} />
-												<SimpleCell onClick={() => setActivePanel('1', true)} before={<Avatar mode="app" src={`${pathImages}labels/12.png`} />} description="Ассортимент вещей" expandable indicator={<React.Fragment>
+												<SimpleCell onClick={() => setActivePanel('1', true)} before={<Avatar mode="app" src={`${pathImages}labels/12.png`} />} description="Ассортимент предметов" expandable indicator={<React.Fragment>
 													{!isDonut ? <span className="Text"><Icon28DonateCircleFillYellow width={24} height={24}/></span> : <React.Fragment><span className="Text">{syncItems.length} / {Items.length}</span>
-													<span className="Subhead">{numberForm(Items.length, ['вещь', 'вещи', 'вещей'])}</span></React.Fragment>}
+													<span className="Subhead">{numberForm(Items.length, ['предмет', 'предмета', 'предметов'])}</span></React.Fragment>}
 												</React.Fragment>}>Магазин</SimpleCell>
 												<SimpleCell onClick={() => setActivePanel('2', true)} before={<Avatar mode="app" src={`${pathImages}labels/20.png`} />} description="Ассортимент коллекций" expandable indicator={<React.Fragment>
 													{!isDonut ? <span className="Text"><Icon28DonateCircleFillYellow width={24} height={24}/></span> : <React.Fragment><span className="Text">{Collections.items.map((item) => syncItems.indexOf(item) == -1 ? 0 : 1).reduce((x, y) => x + y)} / {Collections.items.length}</span>
 													<span className="Subhead">{numberForm(Collections.items.length, ['коллекция', 'коллекции', 'коллекций'])}</span></React.Fragment>}
 												</React.Fragment>}>Коллекции</SimpleCell>
-												<SimpleCell onClick={() => setActivePanel('3', true)} before={<Avatar mode="app" src={`${pathImages}labels/31.png`} />} description="Вещи и камни" expandable indicator={<React.Fragment>
+												<SimpleCell onClick={() => setActivePanel('3', true)} before={<Avatar mode="app" src={`${pathImages}labels/31.png`} />} description="Предметы и камни" expandable indicator={<React.Fragment>
 													{!isDonut ? <span className="Text"><Icon28DonateCircleFillYellow width={24} height={24}/></span> : <React.Fragment><span className="Text">{syncItems.length}</span>
-													<span className="Subhead">{numberForm(syncItems.length, ['вещь', 'вещи', 'вещей'])}</span></React.Fragment>}
+													<span className="Subhead">{numberForm(syncItems.length, ['предмет', 'предмета', 'предметов'])}</span></React.Fragment>}
 												</React.Fragment>}>Инкрустация</SimpleCell>
 												{(this.state.storeProfiles[this.state.storeProfilesIndex]?.server == 1 || this.state.storeProfiles[this.state.storeProfilesIndex]?.server == 2)&&<SimpleCell onClick={() => setActivePanel('5', true)} before={<Avatar mode="app" src={`${pathImages}labels/23.png`} />} description="Друзья и характеристики" expandable indicator={<React.Fragment>
 													<span className="Text">{!isDonut&&<Icon28DonateCircleFillYellow width={24} height={24}/>}</span>
@@ -2501,6 +2489,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 								<PANEL_profile__7 id='7' parent='profile' state={this.state} options={this} />
 								{/* <PANEL_profile__8 id='8' parent='profile' state={this.state} options={this} /> */}
 								<PANEL_profile__9 id='9' parent='profile' state={this.state} options={this} />
+								<PANEL_profile__10 id='10' parent='profile' state={this.state} options={this} />
 							</View>
 
 
@@ -2528,7 +2517,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 											<Spacing size={6} />
 											<SimpleCell onClick={() => setActivePanel('1')} before={<Avatar mode="app" src={`${pathImages}labels/1.png`} />} description="Предметы и цены" expandable indicator={<React.Fragment>
 												<span className="Text">{dataMap.shop.length}</span>
-												<span className="Subhead">{numberForm(dataMap.shop.length, ['вещь', 'вещи', 'вещей'])}</span>
+												<span className="Subhead">{numberForm(dataMap.shop.length, ['предмет', 'предмета', 'предметов'])}</span>
 											</React.Fragment>}>Мустафа</SimpleCell>
 											<SimpleCell onClick={() => setActivePanel('2')} before={<Avatar mode="app" src={`${pathImages}labels/2.png`} />} description="Постройки для обыска" expandable indicator={<React.Fragment>
 												<span className="Text">{dataMap.builds.length}</span>
@@ -2735,7 +2724,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 											</React.Fragment>}>Улучшения</SimpleCell>
 											<SimpleCell onClick={() => setActivePanel('3')} before={<Avatar mode="app" src={`${pathImages}labels/20.png`} />} description="Экипировка и цены" expandable indicator={<React.Fragment>
 												<span className="Text">{dataGuild.items.length}</span>
-												<span className="Subhead">{numberForm(dataGuild.items.length, ['вещь', 'вещи', 'вещей'])}</span>
+												<span className="Subhead">{numberForm(dataGuild.items.length, ['предмет', 'предмета', 'предметов'])}</span>
 											</React.Fragment>}>Кузница</SimpleCell>
 											<SimpleCell onClick={() => setActivePanel('4')} before={<Avatar mode="app" src={`${pathImages}labels/21.png`} />} description="Навыки и их уровни" expandable indicator={<React.Fragment>
 												<span className="Text">{dataGuild.academy.length}</span>
@@ -2788,9 +2777,9 @@ const App = withAdaptivity(({ viewWidth }) => {
 											{isEmbedded&&serverStatus&&<SimpleCell onClick={() => setActivePanel('1', true)} before={<Avatar mode="app" src={`${pathImages}labels/26.png`} />} description="Затраты на улучшение предмета" expandable indicator={<React.Fragment>
 												<span className="Text">{!isDonut&&<Icon28DonateCircleFillYellow width={24} height={24}/>}</span>
 											</React.Fragment>}>Калькулятор</SimpleCell>}
-											{isEmbedded&&serverStatus&&<SimpleCell onClick={() => setActivePanel('5', true)} before={<Avatar mode="app" src={`${pathImages}labels/20.png`} />} description="Последние добавленные вещи" expandable indicator={<React.Fragment>
+											{isEmbedded&&serverStatus&&<SimpleCell onClick={() => setActivePanel('5', true)} before={<Avatar mode="app" src={`${pathImages}labels/20.png`} />} description="Последние добавленные предметы" expandable indicator={<React.Fragment>
 												{!isDonut ? <span className="Text"><Icon28DonateCircleFillYellow width={24} height={24}/></span> : <React.Fragment><span className="Text">{dataOther.new.length}</span>
-												<span className="Subhead">{numberForm(dataOther.new.length, ['вещь', 'вещи', 'вещей'])}</span></React.Fragment>}
+												<span className="Subhead">{numberForm(dataOther.new.length, ['предмет', 'предмета', 'предметов'])}</span></React.Fragment>}
 											</React.Fragment>}>Новые предметы</SimpleCell>}
 											<SimpleCell onClick={() => setActivePanel('3')} before={<Avatar mode="app" src={`${pathImages}labels/28.png`} />} description="Ивенты и награды" expandable indicator={<React.Fragment>
 												<span className="Text">{dataOther.events.map((item) => item.items.map(() => 1).reduce((x, y) => x + y)).reduce((x, y) => x + y)}</span>
@@ -2798,11 +2787,11 @@ const App = withAdaptivity(({ viewWidth }) => {
 											</React.Fragment>}>События</SimpleCell>
 											<SimpleCell onClick={() => setActivePanel('2')} before={<Avatar mode="app" src={`${pathImages}labels/27.png`} />} description="Награды с лото" expandable indicator={<React.Fragment>
 												<span className="Text">{dataOther.lottery.length}</span>
-												<span className="Subhead">{numberForm(dataOther.lottery.length, ['вещь', 'вещи', 'вещей'])}</span>
+												<span className="Subhead">{numberForm(dataOther.lottery.length, ['предмет', 'предмета', 'предметов'])}</span>
 											</React.Fragment>}>Лотерея</SimpleCell>
 											<SimpleCell onClick={() => setActivePanel('4')} before={<Avatar mode="app" src={`${pathImages}labels/30.png`} />} description="Награды с обыска" expandable indicator={<React.Fragment>
 												<span className="Text">{dataOther.search.length}</span>
-												<span className="Subhead">{numberForm(dataOther.search.length, ['вещь', 'вещи', 'вещей'])}</span>
+												<span className="Subhead">{numberForm(dataOther.search.length, ['предмет', 'предмета', 'предметов'])}</span>
 											</React.Fragment>}>Обыск друзей</SimpleCell>
 										</React.Fragment>
 									</Group>

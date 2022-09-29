@@ -40,7 +40,7 @@ class PANEL extends React.Component {
 				<Group>
 					<div className='Sticky Sticky__top withSeparator'>
 						{state.isDesktop && options.getPanelHeader(title, description, avatar, this.props.id, parent)}
-						{options.getRichCellDescription(<React.Fragment>В игру регулярно поступают новые вещи, этот раздел отображает последние добавленные вещи и указывает их наличие у вас</React.Fragment>)}
+						{options.getRichCellDescription(<React.Fragment>В игру регулярно поступают новые предметы, этот раздел отображает последние добавленные предметы и указывает их наличие у вас</React.Fragment>)}
 						<Spacing size={8} />
 					</div>
 					{dataOther.new && <CardGrid size={state.isDesktop ? "m" : "l"}>

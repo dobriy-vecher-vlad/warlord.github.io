@@ -212,22 +212,18 @@ class PANEL extends React.Component {
 		return returnData;
 	};
 	setBotLog = async(message = 'update...', type = 'text', color = null) => {
+		let log = this.state.botLog;
 		if (message == 'clear') {
-			this._isMounted && this.setState({ botLog: <Placeholder
+			log = (<Placeholder
 				style={{overflow: "hidden"}}
 				icon={<Icon28ListOutline width={56} height={56} />}
 				stretched
 			>
 				Нет новых<br />действий
-			</Placeholder>})
+			</Placeholder>);
 		} else {
-			let log = this.state.botLog;
-			if (!Array.isArray(this.state.botLog)) {
-				log = [];
-			}
-			if (type == 'text') {
-				log.push({ type: 'text', message: message, color: color });
-			}
+			if (!Array.isArray(this.state.botLog)) log = [];
+			if (type == 'text') log.push({ type: 'text', message: message, color: color });
 			if (type == 'boss' && color == null) {
 				log.push({ type: 'boss', message: {
 					avatar: message.type,
@@ -265,11 +261,14 @@ class PANEL extends React.Component {
 				} };
 				log.push(data);
 			}
-			this._isMounted && this.setState({ botLog: log })
 		}
-		this._isMounted && document.querySelector('.BotLog.Scroll')&&document.querySelector('.BotLog.Scroll').scrollTo({ top: document.querySelector('.BotLog.Scroll').scrollHeight });
+		this._isMounted && this.setState({ botLog: log }, () => this._isMounted && document.querySelector('.BotLog.Scroll')&&document.querySelector('.BotLog.Scroll').scrollTo({ top: document.querySelector('.BotLog.Scroll').scrollHeight }));
 	};
 	BotRaids = async(mode = 'load', needSnackbar = false) => {
+		if (mode == 'start') {
+			syncBot.isStart = true;
+			this._isMounted && this.setState({ botLog: this.state.botLog });
+		}
 		const { botRaidsSettings } = this.state;
 		const { setBotLog } = this;
 		const { OpenModal, BotAPI, openSnackbar, numberForm, setActivePanel } = this.props.options;
@@ -1911,9 +1910,9 @@ class PANEL extends React.Component {
 								marginRight: 0,
 								marginLeft: 0
 							}}>
-								<Button size="m" onClick={() => this._isMounted && BotRaids('start')} disabled={syncBot.isStart} loading={syncBot.isStart} stretched mode="commerce" style={{ marginRight: 8 }}>Запустить</Button>
-								<Button size="m" onClick={() => this._isMounted && this.setState({ isPause: true }, () => BotRaids('pause'))} disabled={!syncBot.isStart} loading={this.state.isPause} stretched mode="destructive" style={{ marginRight: 8 }}>Остановить</Button>
-								<Button size="m" onClick={() => this._isMounted && this.setState({ isExit: true }, () => BotRaids('exit'))} disabled={!syncBot.isStart && syncBot.raids.point ? false : true} loading={this.state.isExit} stretched mode="secondary" style={{ marginRight: 8 }}>Завершить</Button>
+								<Button size="m" onClick={() => this._isMounted && BotRaids('start')} disabled={syncBot.isStart||this.state.isLoad} loading={syncBot.isStart} stretched mode="commerce" style={{ marginRight: 8 }}>Запустить</Button>
+								<Button size="m" onClick={() => this._isMounted && this.setState({ isPause: true }, () => BotRaids('pause'))} disabled={!syncBot.isStart||this.state.isLoad} loading={this.state.isPause} stretched mode="destructive" style={{ marginRight: 8 }}>Остановить</Button>
+								<Button size="m" onClick={() => this._isMounted && this.setState({ isExit: true }, () => BotRaids('exit'))} disabled={(!syncBot.isStart && syncBot.raids.point ? false : true)||this.state.isLoad} loading={this.state.isExit} stretched mode="secondary" style={{ marginRight: 8 }}>Завершить</Button>
 								<Button size="m" onClick={() => this._isMounted && this.setState({ isLoad: true }, () => BotRaids('reload'))} disabled={syncBot.isStart||this.state.isLoad} loading={this.state.isLoad} stretched mode="secondary">Обновить</Button>
 							</div>:<React.Fragment>
 								<div style={{
@@ -1921,8 +1920,8 @@ class PANEL extends React.Component {
 									marginRight: 8,
 									marginLeft: 8
 								}}>
-									<Button size="m" onClick={() => this._isMounted && BotRaids('start')} disabled={syncBot.isStart} loading={syncBot.isStart} stretched mode="commerce" style={{ marginRight: 8 }}>Запустить</Button>
-									<Button size="m" onClick={() => this._isMounted && this.setState({ isPause: true }, () => BotRaids('pause'))} disabled={!syncBot.isStart} loading={this.state.isPause} stretched mode="destructive">Остановить</Button>
+									<Button size="m" onClick={() => this._isMounted && BotRaids('start')} disabled={syncBot.isStart||this.state.isLoad} loading={syncBot.isStart} stretched mode="commerce" style={{ marginRight: 8 }}>Запустить</Button>
+									<Button size="m" onClick={() => this._isMounted && this.setState({ isPause: true }, () => BotRaids('pause'))} disabled={!syncBot.isStart||this.state.isLoad} loading={this.state.isPause} stretched mode="destructive">Остановить</Button>
 								</div>
 								<Spacing size={8} />
 								<div style={{
@@ -1930,7 +1929,7 @@ class PANEL extends React.Component {
 									marginRight: 8,
 									marginLeft: 8
 								}}>
-									<Button size="m" onClick={() => this._isMounted && this.setState({ isExit: true }, () => BotRaids('exit'))} disabled={!syncBot.isStart && syncBot.raids.point ? false : true} loading={this.state.isExit} stretched mode="secondary" style={{ marginRight: 8 }}>Завершить</Button>
+									<Button size="m" onClick={() => this._isMounted && this.setState({ isExit: true }, () => BotRaids('exit'))} disabled={(!syncBot.isStart && syncBot.raids.point ? false : true)||this.state.isLoad} loading={this.state.isExit} stretched mode="secondary" style={{ marginRight: 8 }}>Завершить</Button>
 									<Button size="m" onClick={() => this._isMounted && this.setState({ isLoad: true }, () => BotRaids('reload'))} disabled={syncBot.isStart||this.state.isLoad} loading={this.state.isLoad} stretched mode="secondary">Обновить</Button>
 								</div>
 							</React.Fragment>}
@@ -2057,30 +2056,31 @@ class PANEL extends React.Component {
 							<Spacing separator size={16} />
 							<CardGrid size="m">
 								<Card className='DescriptionCardWiki Clear'>
-									<Skeleton height={state.isDesktop?36:44} width={268}/>
+									<Skeleton height={36}/>
 								</Card>
 								<Card className='DescriptionCardWiki Clear'>
-									<Skeleton height={state.isDesktop?36:44} width={268}/>
+									<Skeleton height={36}/>
 								</Card>
 								<Card className='DescriptionCardWiki Clear'>
-									<Skeleton height={state.isDesktop?36:44} width={268}/>
+									<Skeleton height={36}/>
 								</Card>
 								<Card className='DescriptionCardWiki Clear'>
-									<Skeleton height={state.isDesktop?36:44} width={268}/>
+									<Skeleton height={36}/>
 								</Card>
 								<Card className='DescriptionCardWiki Clear'>
-									<Skeleton height={state.isDesktop?36:44} width={268}/>
+									<Skeleton height={36}/>
 								</Card>
 								<Card className='DescriptionCardWiki Clear'>
-									<Skeleton height={state.isDesktop?36:44} width={268}/>
+									<Skeleton height={36}/>
 								</Card>
 								<Card className='DescriptionCardWiki Clear'>
-									<Skeleton height={state.isDesktop?36:44} width={268}/>
+									<Skeleton height={36}/>
 								</Card>
 								<Card className='DescriptionCardWiki Clear'>
-									<Skeleton height={state.isDesktop?36:44} width={268}/>
+									<Skeleton height={36}/>
 								</Card>
 							</CardGrid>
+							<Spacing separator size={16} />
 						</div>
 						<div className='Sticky Sticky__bottom withSeparator'>
 							<Spacing size={8} />

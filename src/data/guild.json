@@ -543,11 +543,11 @@
 		"price": [60000, 125000],
 		"items": [{
 			"id": 821,
-			"item": true,
+			"collection": true,
 			"scroll": true
 		}, {
 			"id": 822,
-			"collection": true,
+			"item": true,
 			"scroll": true
 		}, {
 			"id": 823,

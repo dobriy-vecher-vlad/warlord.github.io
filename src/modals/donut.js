@@ -41,7 +41,7 @@ class MODAL extends React.Component {
 						<Cell className="DescriptionWiki" before={<Icon24SkullOutline />} description="Проходите в автоматическом режиме выбранный рейд всего за 2 минуты">Автоматическое прохождение рейдов</Cell>
 						<Cell after={<Counter size="s" mode="prominent">New</Counter>} className="DescriptionWiki" before={<Icon24CupOutline />} description="Набирайте в автоматическом режиме очки арены">Автоматическое прохождение арены</Cell>
 						<Cell className="DescriptionWiki" before={<Icon24Users3Outline />} description="Сканируйте всех ваших друзей, выводя их в удобном и сортируемом списке">Сканер друзей</Cell>
-						<Cell className="DescriptionWiki" before={<Icon24TshirtOutline />} description="Напротив каждого предмета в приложении будет указываться его наличие у вас">Наличие вещей</Cell>
+						<Cell className="DescriptionWiki" before={<Icon24TshirtOutline />} description="Напротив каждого предмета в приложении будет указываться его наличие у вас">Наличие предметов</Cell>
 						<Cell className="DescriptionWiki" before={<Icon24MoneyCircleOutline />} description="Список предметов с подробной информацией">Магазин, Коллекции и Инкрустация</Cell>
 						<Cell className="DescriptionWiki" before={<Icon24PollOutline />} description="Считайте затраты на боссов, арену, казну гильдии и предметы ещё эффективнее">Калькуляторы</Cell>
 						{/* <Cell className="DescriptionWiki" before={<Icon24FavoriteOutline />} description="Иконка в виде звёздочки в комментариях и доступ к эксклюзивным записям">Значок и стена</Cell> */}

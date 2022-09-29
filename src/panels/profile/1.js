@@ -26,7 +26,7 @@ class PANEL extends React.Component {
 			snackbar: null,
 			tabs: 1,
 			mode: { yesStock: true, noStock: true },
-			items: this.props.syncItems,
+			items: this.props.syncItems || [],
 			currentItems: null,
 			allItems: null,
 			hasItems: 0,
@@ -96,15 +96,15 @@ class PANEL extends React.Component {
 						<Gradient style={{margin: state.isDesktop ? '-7px -7px 0 -7px' : 0}}>
 							<CardScroll>
 								<Card className="beautifulCard" mode="outline">
-									<InfoRow header={`всего`}><span>{hasItems+missingItems} {options.numberForm(hasItems+missingItems, ['вещь', 'вещи', 'вещей'])}</span></InfoRow>
+									<InfoRow header={`всего`}><span>{hasItems+missingItems} {options.numberForm(hasItems+missingItems, ['предмет', 'предмета', 'предметов'])}</span></InfoRow>
 									<Icon28FavoriteOutline style={{['--fill']: 'var(--systemOrange)' }}/>
 								</Card>
 								<Card className="beautifulCard" mode="outline">
-									<InfoRow header={`${options.numberForm(hasItems, ['куплена', 'куплены', 'куплено'])}`}><span>{hasItems} {options.numberForm(hasItems, ['вещь', 'вещи', 'вещей'])}</span></InfoRow>
+									<InfoRow header={`${options.numberForm(hasItems, ['куплена', 'куплены', 'куплено'])}`}><span>{hasItems} {options.numberForm(hasItems, ['предмет', 'предмета', 'предметов'])}</span></InfoRow>
 									<Icon28CheckCircleOutline style={{['--fill']: 'var(--systemGreen)' }}/>
 								</Card>
 								<Card className="beautifulCard" mode="outline">
-									<InfoRow header={`не ${options.numberForm(missingItems, ['куплена', 'куплены', 'куплено'])}`}><span>{missingItems} {options.numberForm(missingItems, ['вещь', 'вещи', 'вещей'])}</span></InfoRow>
+									<InfoRow header={`не ${options.numberForm(missingItems, ['куплена', 'куплены', 'куплено'])}`}><span>{missingItems} {options.numberForm(missingItems, ['предмет', 'предмета', 'предметов'])}</span></InfoRow>
 									<Icon28CancelCircleOutline style={{['--fill']: 'var(--systemRed)' }}/>
 								</Card>
 							</CardScroll>
@@ -127,10 +127,10 @@ class PANEL extends React.Component {
 						<Spacing size={8} />
 						<CardGrid size="m">
 							<Card className="DescriptionCardWiki">
-								<Cell mode="selectable" checked={this.state.mode.yesStock} after={<Icon28CheckCircleOutline width={24} height={24} style={{color: this.state.mode.yesStock ? 'var(--dynamic_green)' : 'var(--icon_secondary)'}}/>} description="Отображение в списке" onChange={(e) => this.setState({ mode: { ...this.state.mode, yesStock: e.target.checked } }, this.updateItems)}>Купленные вещи</Cell>
+								<Cell mode="selectable" checked={this.state.mode.yesStock} after={<Icon28CheckCircleOutline width={24} height={24} style={{color: this.state.mode.yesStock ? 'var(--dynamic_green)' : 'var(--icon_secondary)'}}/>} description="Отображение в списке" onChange={(e) => this.setState({ mode: { ...this.state.mode, yesStock: e.target.checked } }, this.updateItems)}>Купленные предметы</Cell>
 							</Card>
 							<Card className="DescriptionCardWiki">
-								<Cell mode="selectable" checked={this.state.mode.noStock} after={<Icon28CancelCircleOutline width={24} height={24} style={{color: this.state.mode.noStock ? 'var(--destructive)' : 'var(--icon_secondary)'}}/>} description="Отображение в списке" onChange={(e) =>this.setState({ mode: { ...this.state.mode, noStock: e.target.checked } }, this.updateItems)}>Не купленные вещи</Cell>
+								<Cell mode="selectable" checked={this.state.mode.noStock} after={<Icon28CancelCircleOutline width={24} height={24} style={{color: this.state.mode.noStock ? 'var(--destructive)' : 'var(--icon_secondary)'}}/>} description="Отображение в списке" onChange={(e) =>this.setState({ mode: { ...this.state.mode, noStock: e.target.checked } }, this.updateItems)}>Не купленные предметы</Cell>
 							</Card>
 						</CardGrid>
 					</div>

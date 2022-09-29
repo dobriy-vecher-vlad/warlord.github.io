@@ -11,7 +11,6 @@ import {
 	Radio,
 	Placeholder,
 	Slider,
-	FormItem
 } from '@vkontakte/vkui';
 import { Icon28ListOutline } from '@vkontakte/icons';
 import Skeleton from '../../components/skeleton';
@@ -43,28 +42,37 @@ class PANEL extends React.Component {
 			</Placeholder>,
 			botSettings: {
 				useEnergy: false,
-				useGold: true
+				useGold: true,
+				useLoss: true,
+				useChest: false,
 			},
-			tryLimit: 20
+			tryLimit: 20,
 		};
 		this._isMounted = false;
 	};
 	updateSelect = async(el) => {
-		if (el.target.name) {
-			if (el.target.name == 'skipMode') {
-				this._isMounted && this.setState({ botSettings: {
-					...this.state.botSettings,
-					useEnergy: Number(el.target.value) == 1 ? true : false,
-					useGold: Number(el.target.value) == 2 ? true : false
-				}}, async() => {
-					let data = {
-						...this.state.botSettings,
-						tryLimit: this.state.tryLimit
-					}
-					this._isMounted && await this.props.options.Storage({key: 'arenaSettings', value: JSON.stringify(data)});
-				});
+		let botSettings = {};
+		if (el?.customSelect) {
+			botSettings = {
+				...this.state.botSettings,
+				...el.customSelect,
 			}
+		} else {
+			if (el?.target?.name == 'skipMode') botSettings = {
+				...this.state.botSettings,
+				useEnergy: Number(el.target.value) == 1 ? true : false,
+				useGold: Number(el.target.value) == 2 ? true : false,
+			};
+			if (el?.target?.name == 'endMode') botSettings = {
+				...this.state.botSettings,
+				useLoss: Number(el.target.value) == 1 ? true : false,
+				useChest: Number(el.target.value) == 2 ? true : false,
+			};
 		}
+		this._isMounted && this.setState({ botSettings }, async() => this._isMounted && await this.props.options.Storage({key: 'arenaSettings', value: JSON.stringify({
+			...this.state.botSettings,
+			tryLimit: this.state.tryLimit
+		})}));
 	};
 	getLeague = (cups) => {
 		// console.log(cups);
@@ -133,35 +141,33 @@ class PANEL extends React.Component {
 		return league;
 	};
 	setBotLog = async(message = 'update...', type = 'text', color = null) => {
+		let log = this.state.botLog;
 		if (message == 'clear') {
-			this._isMounted && this.setState({ botLog: <Placeholder
+			log = (<Placeholder
 				style={{overflow: "hidden"}}
 				icon={<Icon28ListOutline width={56} height={56} />}
 				stretched
 			>
 				Нет новых<br />действий
-			</Placeholder>})
+			</Placeholder>);
 		} else {
-			let log = this.state.botLog;
-			if (!Array.isArray(this.state.botLog)) {
-				log = [];
-			}
+			if (!Array.isArray(this.state.botLog)) log = [];
 			if (type == 'text') {
 				log.push({ type: 'text', message: message, color: color });
-			}
-			if (type == 'newEnemy') {
-				log.push({ type: 'enemy', message: {
-					avatar: `bot/arena/avatar_${message.avatar}.png`,
-					title: message.name,
-					time: this.props.options.getRealTime(),
-					message: `Обнаружен противник с ${this.props.options.numberSpaces(message.hp*15)} HP и ${this.props.options.numberSpaces(message.dmg)} DMG`
-				} });
-			}
-			this._isMounted && this.setState({ botLog: log })
+			} else log.push({ type: 'enemy', message: {
+				avatar: `bot/arena/avatar_${message.avatar}.png`,
+				title: message.name,
+				time: this.props.options.getRealTime(),
+				message: `Обнаружен противник с ${this.props.options.numberSpaces(message.hp*15)} HP и ${this.props.options.numberSpaces(message.dmg)} DMG`
+			} });
 		}
-		this._isMounted && document.querySelector('.BotLog.Scroll')&&document.querySelector('.BotLog.Scroll').scrollTo({ top: document.querySelector('.BotLog.Scroll').scrollHeight });
+		this._isMounted && this.setState({ botLog: log }, () => this._isMounted && document.querySelector('.BotLog.Scroll')&&document.querySelector('.BotLog.Scroll').scrollTo({ top: document.querySelector('.BotLog.Scroll').scrollHeight }));
 	};
 	BotArena = async(mode = 'load') => {
+		if (mode == 'start') {
+			syncBot.isStart = true;
+			this._isMounted && this.setState({ botLog: this.state.botLog });
+		}
 		const { botSettings } = this.state;
 		const { setBotLog } = this;
 		const { OpenModal, BotAPI, openSnackbar, numberForm, setActivePanel } = this.props.options;
@@ -262,7 +268,7 @@ class PANEL extends React.Component {
 						i: 121,
 					}, getGameAuth);
 					syncBot.arena.try++;
-					this._isMounted && syncBot.isStart && setBotLog(`Успешно пропустили противника ${syncBot.arena.try}/${this.state.tryLimit}`, 'text', 'green');
+					this._isMounted && syncBot.isStart && setBotLog(`Успешно пропустили противника${botSettings.useLoss ? ` ${syncBot.arena.try}/${this.state.tryLimit}` : ''}`, 'text', 'green');
 				} else {
 					this._isMounted && syncBot.isStart && setBotLog(`Не хватает энергии на пропуск противника`, 'text', 'red');
 					this._isMounted && this.BotArena('pause');
@@ -397,12 +403,13 @@ class PANEL extends React.Component {
 					t: hash,
 				}, getGameAuth);
 				if (fight && fight.fight) {
-					let reward = fight.r;
+					let reward = Array.isArray(fight.r) ? fight.r[1] : fight.r;
 					fight = fight.fight;
 					if ((Number(fight._myhp) > 0 && Number(fight._hp) <= 0) || (Number(fight._myhp) <= 0 && Number(fight._hp) <= 0)) {
 						// console.warn('endFight', fight);
 						isAlive = false;
 						// console.warn(syncBot.arena.player._ap, syncBot.arena.player._ap, reward._ap);
+						if (Array.isArray(fight.r)) syncBot.arena.player.chests++;
 						syncBot.arena.player._ap = Number(syncBot.arena.player._ap) + 19;
 						syncBot.arena.player._exp = Number(syncBot.arena.player._exp) + (Number.isInteger(Number(reward._exp)) ? Number(reward._exp) : 0);
 						let league = this.getLeague(syncBot.arena.player._ap);
@@ -417,7 +424,7 @@ class PANEL extends React.Component {
 						let league = this.getLeague(syncBot.arena.player._ap);
 						syncBot.arena.player._al = league.id;
 						syncBot.arena.try++;
-						this._isMounted && syncBot.isStart && setBotLog(`Противник оказался сильнее ${syncBot.arena.try}/${this.state.tryLimit}`, 'text', 'red');
+						this._isMounted && syncBot.isStart && setBotLog(`Противник оказался сильнее${botSettings.useLoss ? ` ${syncBot.arena.try}/${this.state.tryLimit}` : ''}`, 'text', 'red');
 						return true;
 					} else {
 						isAlive = true;
@@ -447,9 +454,14 @@ class PANEL extends React.Component {
 		if (mode == 'start') {
 			syncBot.isStart = true;
 			this._isMounted && setBotLog(`Бот успешно запущен`, 'text', 'green');
+			if (botSettings.useChest && syncBot.arena.player.chests == 3) {
+				this._isMounted && setBotLog(`Лимит сундуков`, 'text', 'red');
+				this._isMounted && this.BotArena('pause');
+				return false;
+			}
 			do {
 				this._isMounted && await startFight(auth_key, api_uid, sslt, Number(data.player._id));
-			} while (this._isMounted && syncBot.isStart && syncBot.arena.try < this.state.tryLimit);
+			} while (this._isMounted && syncBot.isStart && ((botSettings.useLoss && syncBot.arena.try < this.state.tryLimit) || (botSettings.useChest && syncBot.arena.player.chests < 3)));
 			this._isMounted && syncBot.isStart && this.BotArena('pause');
 		}
 		if (mode == 'load' || mode == 'reload') {
@@ -460,6 +472,8 @@ class PANEL extends React.Component {
 					if (settings) {
 						botSettings.useEnergy = settings.useEnergy;
 						botSettings.useGold = settings.useGold;
+						botSettings.useLoss = settings.useLoss;
+						botSettings.useChest = settings.useChest;
 						this.state.tryLimit = settings.tryLimit || 20;
 					}
 				}
@@ -591,11 +605,17 @@ class PANEL extends React.Component {
 										value={Number(this.state.tryLimit)}
 										onChange={tryLimit => this.setState({tryLimit})}
 									/>
-									<Radio className="Clear" disabled={syncBot.isStart} description={`Остановка после ${this.state.tryLimit} ${options.numberForm(this.state.tryLimit, ['боя', 'боёв', 'боёв'])}`}>Лимит проигрышей</Radio>
+									<Radio className="Clear" disabled={syncBot.isStart}>Лимит проигрышей</Radio>
 								</Card>
 							</CardGrid>
 							<Spacing size={8} />
 							<CardGrid size="m">
+								<Card className='DescriptionCardWiki Clear withRadio'>
+									<Radio checked={this.state.botSettings.useLoss} onChange={(e) => this._isMounted && this.updateSelect(e)} name="endMode" disabled={syncBot.isStart} value="1" description={`Остановка после ${this.state.tryLimit} ${options.numberForm(this.state.tryLimit, ['боя', 'боёв', 'боёв'])}`}>Бой</Radio>
+								</Card>
+								<Card className='DescriptionCardWiki Clear withRadio'>
+									<Radio checked={this.state.botSettings.useChest} onChange={(e) => this._isMounted && this.updateSelect(e)} name="endMode" disabled={syncBot.isStart || Number(syncBot.arena.player.chests) == 3} value="2" description="Остановка после лимита сундуков">Сундуки</Radio>
+								</Card>
 								<Card className='DescriptionCardWiki Clear'>
 									<Radio checked={this.state.botSettings.useEnergy} onChange={(e) => this._isMounted && this.updateSelect(e)} name="skipMode" disabled={syncBot.isStart} value="1" description="Тратит 4 энергии">Энергия</Radio>
 								</Card>
@@ -633,16 +653,16 @@ class PANEL extends React.Component {
 								marginRight: 0,
 								marginLeft: 0
 							}}>
-								<Button size="m" onClick={() => this._isMounted && BotArena('start')} disabled={syncBot.isStart} loading={syncBot.isStart} stretched mode="commerce" style={{ marginRight: 8 }}>Запустить</Button>
-								<Button size="m" onClick={() => this._isMounted && this.setState({ isPause: true }, () => BotArena('pause'))} disabled={!syncBot.isStart} loading={this.state.isPause} stretched mode="destructive" style={{ marginRight: 8 }}>Остановить</Button>
+								<Button size="m" onClick={() => this._isMounted && BotArena('start')} disabled={syncBot.isStart||this.state.isLoad} loading={syncBot.isStart} stretched mode="commerce" style={{ marginRight: 8 }}>Запустить</Button>
+								<Button size="m" onClick={() => this._isMounted && this.setState({ isPause: true }, () => BotArena('pause'))} disabled={!syncBot.isStart||this.state.isLoad} loading={this.state.isPause} stretched mode="destructive" style={{ marginRight: 8 }}>Остановить</Button>
 								<Button size="m" onClick={() => this._isMounted && this.setState({ isLoad: true }, () => BotArena('reload'))} disabled={syncBot.isStart||this.state.isLoad} loading={this.state.isLoad} stretched mode="secondary">Обновить</Button>
 							</div>:<div style={{
 								display: 'flex',
 								marginRight: 8,
 								marginLeft: 8
 							}}>
-								<Button size="m" onClick={() => this._isMounted && BotArena('start')} disabled={syncBot.isStart} loading={syncBot.isStart} stretched mode="commerce" style={{ marginRight: 8 }}>Запустить</Button>
-								<Button size="m" onClick={() => this._isMounted && this.setState({ isPause: true }, () => BotArena('pause'))} disabled={!syncBot.isStart} loading={this.state.isPause} stretched mode="destructive" style={{ marginRight: 8 }}>Остановить</Button>
+								<Button size="m" onClick={() => this._isMounted && BotArena('start')} disabled={syncBot.isStart||this.state.isLoad} loading={syncBot.isStart} stretched mode="commerce" style={{ marginRight: 8 }}>Запустить</Button>
+								<Button size="m" onClick={() => this._isMounted && this.setState({ isPause: true }, () => BotArena('pause'))} disabled={!syncBot.isStart||this.state.isLoad} loading={this.state.isPause} stretched mode="destructive" style={{ marginRight: 8 }}>Остановить</Button>
 								<Button size="m" onClick={() => this._isMounted && this.setState({ isLoad: true }, () => BotArena('reload'))} disabled={syncBot.isStart||this.state.isLoad} loading={this.state.isLoad} stretched mode="secondary">Обновить</Button>
 							</div>}
 						</div>
@@ -675,24 +695,24 @@ class PANEL extends React.Component {
 								</Card>
 							</CardGrid>
 							<Spacing separator size={16} />
-							<CardGrid size={state.isDesktop ? "m" : "l"}>
-								{state.isDesktop ? <React.Fragment>
-									<Card className='DescriptionCardWiki Clear'>
-										<Skeleton height={state.isDesktop?36:44} width={state.isDesktop ? 268 : "auto"}/>
-									</Card>
-									<Card className='DescriptionCardWiki Clear'>
-										<Skeleton height={state.isDesktop?36:44} width={state.isDesktop ? 268 : "auto"}/>
-									</Card>
-									<Card className='DescriptionCardWiki Clear'>
-										<Skeleton height={state.isDesktop?36:44} width={state.isDesktop ? 268 : "auto"}/>
-									</Card>
-								</React.Fragment>:<React.Fragment>
-									<Card className='DescriptionCardWiki Clear'>
-										<Skeleton height={68} width="auto"/>
-									</Card>
-								</React.Fragment>}
+							<CardGrid size={state.isDesktop ? "m" : "m"}>
 								<Card className='DescriptionCardWiki Clear'>
-									<Skeleton height={state.isDesktop?36:44} width={state.isDesktop ? 268 : "auto"}/>
+									<Skeleton height={state.isDesktop?36:52}/>
+								</Card>
+								<Card className='DescriptionCardWiki Clear'>
+									<Skeleton height={state.isDesktop?36:52}/>
+								</Card>
+								<Card className='DescriptionCardWiki Clear'>
+									<Skeleton height={36}/>
+								</Card>
+								<Card className='DescriptionCardWiki Clear'>
+									<Skeleton height={36}/>
+								</Card>
+								<Card className='DescriptionCardWiki Clear'>
+									<Skeleton height={36}/>
+								</Card>
+								<Card className='DescriptionCardWiki Clear'>
+									<Skeleton height={36}/>
 								</Card>
 							</CardGrid>
 						</div>
