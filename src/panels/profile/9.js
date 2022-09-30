@@ -323,7 +323,6 @@ class PANEL extends React.Component {
 		
 		this._isMounted && this.setState({ isLoad: true });
 
-		let sslt = 0;
 		let api_uid = state.login || state.user.vk.id;
 		let auth_key = state.auth;
 		if (!auth_key) {

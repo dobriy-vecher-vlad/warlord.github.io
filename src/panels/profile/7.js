@@ -182,7 +182,6 @@ class PANEL extends React.Component {
 		}
 
 		
-		let sslt = 0;
 		let api_uid = state.login || state.user?.vk?.id;
 		let auth_key = state.auth;
 		if (!auth_key) {
@@ -233,7 +232,7 @@ class PANEL extends React.Component {
 		// console.log('Data', data);
 		// console.log('Player', data.player);
 		syncBot.arena = data;
-		const startFight = async(auth_key, api_uid, sslt, id) => {
+		const startFight = async() => {
 			let isAlive = true;
 			let enemy = this._isMounted && await getGame(this.props.state.server, {
 				i: 9,
@@ -460,7 +459,7 @@ class PANEL extends React.Component {
 				return false;
 			}
 			do {
-				this._isMounted && await startFight(auth_key, api_uid, sslt, Number(data.player._id));
+				this._isMounted && await startFight();
 			} while (this._isMounted && syncBot.isStart && ((botSettings.useLoss && syncBot.arena.try < this.state.tryLimit) || (botSettings.useChest && syncBot.arena.player.chests < 3)));
 			this._isMounted && syncBot.isStart && this.BotArena('pause');
 		}

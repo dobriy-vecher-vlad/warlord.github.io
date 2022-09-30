@@ -75,6 +75,12 @@ class PANEL extends React.Component {
 				forms: ['топаз', 'топаза', 'топазов'],
 				count: 0,
 				multiplier: 8,
+			}, {
+				id: 'm9',
+				name: 'Редкие жемчужины',
+				forms: ['жемчужина', 'жемчужины', 'жемчужин'],
+				count: 0,
+				multiplier: 0,
 			}],
 		};
 		this.Scroll = React.createRef();
@@ -92,8 +98,7 @@ class PANEL extends React.Component {
 		this._isMounted && this.setState({ isLoad: true });
 		let dataProfile;
 		if (!this.state.profile || isUpgrade) {
-			let sslt = 0;
-			let api_uid = state.login || state.user?.vk?.id;
+			let api_uid = state.login || state.user.vk.id;
 			let auth_key = state.auth;
 			if (!auth_key) {
 				auth_key = this._isMounted && await BotAPI('getAuth', null, null, null, {stage: 'modal', text: 'Для продолжения работы необходимо указать ключ авторизации'});
@@ -116,19 +121,27 @@ class PANEL extends React.Component {
 				this._isMounted && setActivePanel('profile');
 				return;
 			}
+			this.state.getGameAuth.id = dataProfile?.u?._id || api_uid;
 			this.state.profile = dataProfile;
 		} else dataProfile = this.state.profile;
 
-		this.state.resources.map(resource => resource.count = dataProfile.u[`_${resource?.id}`] || 0);
+		this.state.resources.map(resource => resource.count = Number(dataProfile.u[`_${resource?.id}`]) || 0);
 		this.state.items = [];
+		let resource = this.state.resources.find(resource => resource.id == this.state.tabs);
 		dataProfile.i.filter(item => Number(item._o) == 1)?.map(item => {
 			try {
 				let _item = Items.find(_item => _item.id == Number(item._id));
-				if (`m${_item.currency}` != this.state.tabs) return;
 				_item.lvl = Number(item._u) || 0;
-				_item.scrolls = Number(dataProfile?.iupgrade?.i?.find(item => Number(item._id) == Number(_item.id))?._cnt) || 0;
-				if (!((_item.lvl >= 5 && _item.lvl < 10) || (_item.scrolls >= [1, 3, 5, 7, 9][_item.lvl]))) return;
+				if (resource.id == 'm9') {
+					_item.scrolls = 0;
+					if (_item.lvl < 5 || _item.lvl >= 10 || resource.count < enchantmentsScrolls[_item.lvl]) return;
+				} else {
+					if (`m${_item.currency}` != resource.id) return;
+					_item.scrolls = Number(dataProfile?.iupgrade?.i?.find(item => Number(item._id) == Number(_item.id))?._cnt) || 0;
+					if (_item.lvl >= 5 || _item.scrolls < [...enchantmentsScrolls].splice(0, 5)?.[_item.lvl]) return;
+				}
 				_item.prices = enchantmentsMultiplier.map((multiplier) => Math.ceil((_item.dmg + _item.hp) * multiplier) * (this.state.resources.find(resource => resource.id == `m${_item.currency}`)?.multiplier || 1));
+				if (this.state.resources.find(resource => resource.id == `m${_item.currency}`)?.count < _item.prices[_item.lvl]) return;
 				_item.enchantments = {
 					dmg: enchantmentsMultiplier.map((multiplier) => Math.ceil(_item.dmg * multiplier || 0)),
 					hp: enchantmentsMultiplier.map((multiplier) => Math.ceil(_item.hp * multiplier || 0)),
@@ -211,7 +224,7 @@ class PANEL extends React.Component {
 								loader={<Spinner size="regular" style={{ margin: '20px 0' }} />}
 								scrollableTarget={state.isDesktop?"Scroll":false}
 							><CardGrid size={state.isDesktop ? "m" : "l"}>
-								{currentItems.map((data, x) => options.getItemPreview(data, x, `${data.lvl} уровень${!data.scrolls ? '' : `, ${data.scrolls} ${options.numberForm(data.scrolls, ['заточка', 'заточки', 'заточек'])}`}`, false, false, false, () => this.setState({ activeItem: this.state.activeItem == data.id ? false : data.id }), this.state.activeItem == data.id ? 'Card__Item--checkbox Card__Item--active' : 'Card__Item--checkbox'))}
+								{currentItems.map((data, x) => options.getItemPreview(data, x, `${data.lvl} уровень${!data.scrolls ? '' : `, ${data.scrolls} ${options.numberForm(data.scrolls, ['заточка', 'заточки', 'заточек'])}`}`, false, false, false, () => this.setState({ activeItem: this.state.activeItem == data.id ? false : data.id }), `Card__Item--checkbox${this.state.activeItem == data.id ? ' Card__Item--active' : '' }`))}
 							</CardGrid></InfiniteScroll>
 						</div>:<Cell className="DescriptionWiki" style={{textAlign: 'center'}} description="Нет предметов"></Cell>}
 						<div className='Sticky Sticky__bottom withSeparator'>
