@@ -72,7 +72,7 @@ class MODAL extends React.Component {
 								before={<Avatar src={profile.photo_100 || 'https://vk.com/images/camera_200.png'} />}
 								onRemove={() => this.removeProfiles(x)}
 								onDragFinish={({ from, to }) => this.reorderProfiles({ from, to })}
-							>{profile.first_name} {profile.last_name} 1</Cell>);
+							>{profile.first_name} {profile.last_name}</Cell>);
 						})}
 					</List>
 					<Footer>{profiles.length} из {this.props.state.storeProfilesSize} {options.numberForm(profiles.length, ['слот', 'слота', 'слотов'])}</Footer>
