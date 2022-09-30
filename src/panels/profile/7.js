@@ -402,13 +402,14 @@ class PANEL extends React.Component {
 					t: hash,
 				}, getGameAuth);
 				if (fight && fight.fight) {
-					let reward = Array.isArray(fight.r) ? fight.r[1] : fight.r;
+					let isChest = Array.isArray(fight.r);
+					let reward = isChest ? fight.r[1] : fight.r;
 					fight = fight.fight;
 					if ((Number(fight._myhp) > 0 && Number(fight._hp) <= 0) || (Number(fight._myhp) <= 0 && Number(fight._hp) <= 0)) {
 						// console.warn('endFight', fight);
 						isAlive = false;
 						// console.warn(syncBot.arena.player._ap, syncBot.arena.player._ap, reward._ap);
-						if (Array.isArray(fight.r)) syncBot.arena.player.chests++;
+						if (isChest) syncBot.arena.player.chests++;
 						syncBot.arena.player._ap = Number(syncBot.arena.player._ap) + 19;
 						syncBot.arena.player._exp = Number(syncBot.arena.player._exp) + (Number.isInteger(Number(reward._exp)) ? Number(reward._exp) : 0);
 						let league = this.getLeague(syncBot.arena.player._ap);

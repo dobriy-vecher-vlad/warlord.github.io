@@ -799,8 +799,8 @@ div.Scroll::-webkit-scrollbar-track {
 	padding-top: 0;
 	padding-bottom: 0;
 }
-.ModalCard#donut .Cell .SimpleCell__content,
-.ModalCard#mediaSales .Cell .SimpleCell__content {
+.ModalCard#donut .Cell .SimpleCell__main>:first-child,
+.ModalCard#mediaSales .Cell .SimpleCell__main>:first-child {
 	display: none!important;
 }
 .ModalCard#donut .Cell .SimpleCell__subtitle,
@@ -837,8 +837,8 @@ div.Scroll::-webkit-scrollbar-track {
 	padding-top: 0;
 	padding-bottom: 0;
 }
-.ModalCard#donut .Cell .Subhead,
-.ModalCard#mediaSales .Cell .Subhead {
+.ModalCard#donut .Cell .SimpleCell__main>:not(:first-child) .SimpleCell__subtitle,
+.ModalCard#mediaSales .Cell .SimpleCell__main>:not(:first-child) .SimpleCell__subtitle {
 	margin: 0;
 	font-size: 14px;
 	line-height: 17px;
@@ -2374,10 +2374,13 @@ input::-webkit-inner-spin-button {
 	margin-right: 4px;
 	margin-left: 4px;
 }
+.ModalPageHeader--content .RichCell .RichCell__before {
+	margin-right: 8px;
+}
 .ModalPageHeader--content .RichCell .RichCell__in {
 	padding-top: 0;
 	padding-bottom: 0;
-	margin-left: 8px;
+	margin-left: 0;
 }
 .ModalPageHeader--content .RichCell .RichCell__caption {
 	font-size: 13px;
@@ -3578,8 +3581,8 @@ body[scheme=space_gray] .ActionCard::after {
 		margin: 0;
 		border-radius: 10px!important;
 	}
-	.ModalPageHeader--content .RichCell .RichCell__in {
-		margin-left: 12px;
+	.ModalPageHeader--content .RichCell .RichCell__before {
+		margin-right: 12px;
 	}
 
 	.HorizontalRating .Header {

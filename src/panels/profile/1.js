@@ -100,11 +100,11 @@ class PANEL extends React.Component {
 									<Icon28FavoriteOutline style={{['--fill']: 'var(--systemOrange)' }}/>
 								</Card>
 								<Card className="beautifulCard" mode="outline">
-									<InfoRow header={`${options.numberForm(hasItems, ['куплена', 'куплены', 'куплено'])}`}><span>{hasItems} {options.numberForm(hasItems, ['предмет', 'предмета', 'предметов'])}</span></InfoRow>
+									<InfoRow header={`${options.numberForm(hasItems, ['куплен', 'куплены', 'куплены'])}`}><span>{hasItems} {options.numberForm(hasItems, ['предмет', 'предмета', 'предметов'])}</span></InfoRow>
 									<Icon28CheckCircleOutline style={{['--fill']: 'var(--systemGreen)' }}/>
 								</Card>
 								<Card className="beautifulCard" mode="outline">
-									<InfoRow header={`не ${options.numberForm(missingItems, ['куплена', 'куплены', 'куплено'])}`}><span>{missingItems} {options.numberForm(missingItems, ['предмет', 'предмета', 'предметов'])}</span></InfoRow>
+									<InfoRow header={`не ${options.numberForm(missingItems, ['куплен', 'куплены', 'куплены'])}`}><span>{missingItems} {options.numberForm(missingItems, ['предмет', 'предмета', 'предметов'])}</span></InfoRow>
 									<Icon28CancelCircleOutline style={{['--fill']: 'var(--systemRed)' }}/>
 								</Card>
 							</CardScroll>

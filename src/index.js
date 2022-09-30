@@ -149,7 +149,7 @@ const parseQueryString = (string = '') => {
 };
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
-const wikiVersion = '1.7.3 fix 2';
+const wikiVersion = '1.7.3';
 const pathImages = 'https://dobriy-vecher-vlad.github.io/warlord-helper/media/images/';
 const serverHub = [{
 	id: 1,
@@ -2292,7 +2292,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 										{isDesktop && <PanelHeader className='HeaderFix' fixed={false} separator={true}><PanelHeaderContent status={`Версия ${wikiVersion}`}>Warlord Helper</PanelHeaderContent></PanelHeader>}
 										<Gallery 
 											bullets={false} 
-											isDraggable={!isDesktop} 
+											isDraggable={false} 
 											showArrows 
 											className={`Gallery__banners infinityGallery ${!isDesktop&&'isDraggable'}`} 
 											slideWidth={isDesktop?375:318+8} 
@@ -2340,7 +2340,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 												<CardGrid className={`CardsNews withIcon CardGrid--xs`}>
 													{isEmbedded&&<Card onClick={() => this.OpenModal('mediaSales')}><HorizontalCell size='l' header="Акция"><Icon28LikeOutline style={{['--fill']: 'var(--systemRed)' }}/></HorizontalCell></Card>}
 													{isEmbedded&&<Card onClick={() => this.OpenModal('donut')}><HorizontalCell size='l' header="Подписка"><Icon28LikeOutline style={{['--fill']: 'var(--systemTeal)' }}/></HorizontalCell></Card>}
-													{isEmbedded&&<Card><Link href={`https://vk.com/@wiki.warlord-authkey`} target="_blank"><HorizontalCell size='l' header="Ключ"><Icon28KeyOutline style={{['--fill']: 'var(--systemTeal)' }}/></HorizontalCell></Link></Card>}
+													{isEmbedded&&<Card><Link href={`https://vk.com/@wiki.warlord-authorization`} target="_blank"><HorizontalCell size='l' header="Ключ"><Icon28KeyOutline style={{['--fill']: 'var(--systemTeal)' }}/></HorizontalCell></Link></Card>}
 													<Card><Link href={`https://vk.com/@wiki.warlord-faq`} target="_blank"><HorizontalCell size='l' header="Помощь"><Icon28HelpOutline style={{['--fill']: 'var(--systemTeal)' }}/></HorizontalCell></Link></Card>
 													{!isEmbedded&&<Card><HorizontalCell disabled size='l' header=" "><Icon28GridSquareOutline style={{['--fill']: '#505050' }}/></HorizontalCell></Card>}
 													{!isEmbedded&&<Card><HorizontalCell disabled size='l' header=" "><Icon28GridSquareOutline style={{['--fill']: '#505050' }}/></HorizontalCell></Card>}

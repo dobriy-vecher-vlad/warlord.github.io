@@ -1,18 +1,14 @@
 import React from 'react';
 import {
-	FormItem,
 	Div,
 	ModalPageHeader,
 	PanelHeaderSubmit,
-	PanelHeaderBack,
-	Radio,
 	ModalPage,
 	List,
 	Cell,
 	Avatar,
 	PanelHeaderButton,
 	Footer,
-	Spacing
 } from '@vkontakte/vkui';
 
 class MODAL extends React.Component {
@@ -55,6 +51,7 @@ class MODAL extends React.Component {
 		const { profiles, profilesFull } = this.state;
 		return (
 			<ModalPage
+				settlingHeight={100}
 				className="ModalPage--classic"
 				id={this.props.id}
 				header={<ModalPageHeader
@@ -75,7 +72,7 @@ class MODAL extends React.Component {
 								before={<Avatar src={profile.photo_100 || 'https://vk.com/images/camera_200.png'} />}
 								onRemove={() => this.removeProfiles(x)}
 								onDragFinish={({ from, to }) => this.reorderProfiles({ from, to })}
-							>{profile.first_name} {profile.last_name}</Cell>);
+							>{profile.first_name} {profile.last_name} 1</Cell>);
 						})}
 					</List>
 					<Footer>{profiles.length} из {this.props.state.storeProfilesSize} {options.numberForm(profiles.length, ['слот', 'слота', 'слотов'])}</Footer>

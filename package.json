@@ -9,7 +9,8 @@
     "build": "react-scripts build",
     "predeploy": "npm run build",
     "deploy": "vk-miniapps-deploy",
-    "clean-source": "rimraf README.md src webroot package.json"
+    "clean-source": "rimraf README.md src webroot package.json",
+    "tunnel": "vk-tunnel --insecure=1 --http-protocol=https --ws-protocol=wss --host=0.0.0.0 --port=10888"
   },
   "keywords": [],
   "author": "",

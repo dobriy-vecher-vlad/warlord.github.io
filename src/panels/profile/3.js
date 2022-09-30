@@ -109,7 +109,7 @@ class PANEL extends React.Component {
 						<Gradient style={{margin: state.isDesktop ? '-7px -7px 0 -7px' : 0}}>
 							<CardScroll>
 								<Card className="beautifulCard" mode="outline">
-									<InfoRow header={`${options.numberForm(stats[0], ['куплена', 'куплены', 'куплено'])}`}><span>{options.numberSpaces(stats[0])} {options.numberForm(stats[0], ['предмет', 'предмета', 'предметов'])}</span></InfoRow>
+									<InfoRow header={`${options.numberForm(stats[0], ['куплен', 'куплены', 'куплены'])}`}><span>{options.numberSpaces(stats[0])} {options.numberForm(stats[0], ['предмет', 'предмета', 'предметов'])}</span></InfoRow>
 									<Icon28CoinsOutline style={{['--fill']: 'var(--systemOrange)' }}/>
 								</Card>
 								<Card className="beautifulCard" mode="outline">
