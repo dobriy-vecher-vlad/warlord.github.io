@@ -1262,6 +1262,9 @@ div.Scroll::-webkit-scrollbar-track {
 	display: block;
 	margin-top: unset;
 }
+.Sticky .RichCell__caption {
+	white-space: unset;
+}
 .Card__Item .RichCell__top .Text {
 	font-weight: 400;
 }
@@ -2769,6 +2772,11 @@ body[scheme=space_gray] .ActionCard::after {
 	padding-bottom: 0;
 }
 
+.Snackbar--isObject .Snackbar__content-text {
+	-webkit-line-clamp: unset;
+	-webkit-box-orient: vertical;
+}
+
 
 @media screen and (orientation: landscape) {
 	.ModalPage:not(.ModalPage--classic) .ModalPageHeader:after {
@@ -3666,6 +3674,11 @@ body[scheme=space_gray] .ActionCard::after {
 	.CounterCell__grid {
 		flex-wrap: wrap;
 	}
+
+
+	html, body {
+		background-color: var(--background_page);
+	}
 }
 
 
@@ -3742,8 +3755,4 @@ body[scheme=space_gray] .ActionCard::after {
 		--safe-area-inset-bottom: env(safe-area-inset-bottom);
 		--safe-area-inset-left: env(safe-area-inset-left);
 	}
-}
-
-html, body {
-	background-color: var( --background_content,var(--vkui--color_background_content) );
 }

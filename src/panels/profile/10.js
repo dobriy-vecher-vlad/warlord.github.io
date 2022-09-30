@@ -93,7 +93,7 @@ class PANEL extends React.Component {
 		let dataProfile;
 		if (!this.state.profile || isUpgrade) {
 			let sslt = 0;
-			let api_uid = state.login || state.user.vk.id;
+			let api_uid = state.login || state.user?.vk?.id;
 			let auth_key = state.auth;
 			if (!auth_key) {
 				auth_key = this._isMounted && await BotAPI('getAuth', null, null, null, {stage: 'modal', text: 'Для продолжения работы необходимо указать ключ авторизации'});
@@ -155,8 +155,10 @@ class PANEL extends React.Component {
 				openSnackbar({text: 'Удачная попытка улучшения предмета', icon: 'done'});
 			} else if (Number(data.a._res) == 2) {
 				openSnackbar({text: 'Неудачная попытка улучшения предмета', icon: 'error'});
-			} else openSnackbar({text: 'Неизвестная ошибка при улучшении предмета', icon: 'error'});
-		} else openSnackbar({text: 'Неизвестная ошибка при улучшении предмета', icon: 'error'});
+			// } else openSnackbar({text: 'Неизвестная ошибка при улучшении предмета', icon: 'error'});
+			} else openSnackbar({text: icon, icon: 'error'});
+		// } else openSnackbar({text: 'Неизвестная ошибка при улучшении предмета', icon: 'error'});
+		} else openSnackbar({text: data, icon: 'error'});
 		await this.updateItems(true);
 		this.setState({ activeItem: item.id });
 		this.setState({ isLoad: false });
@@ -208,7 +210,7 @@ class PANEL extends React.Component {
 								hasMore={allItems.length > currentItems.length}
 								loader={<Spinner size="regular" style={{ margin: '20px 0' }} />}
 								scrollableTarget={state.isDesktop?"Scroll":false}
-							><CardGrid size={state.isDesktop ? "m" : "m"}>
+							><CardGrid size={state.isDesktop ? "m" : "l"}>
 								{currentItems.map((data, x) => options.getItemPreview(data, x, `${data.lvl} уровень${!data.scrolls ? '' : `, ${data.scrolls} ${options.numberForm(data.scrolls, ['заточка', 'заточки', 'заточек'])}`}`, false, false, false, () => this.setState({ activeItem: this.state.activeItem == data.id ? false : data.id }), this.state.activeItem == data.id ? 'Card__Item--checkbox Card__Item--active' : 'Card__Item--checkbox'))}
 							</CardGrid></InfiniteScroll>
 						</div>:<Cell className="DescriptionWiki" style={{textAlign: 'center'}} description="Нет предметов"></Cell>}
@@ -219,6 +221,15 @@ class PANEL extends React.Component {
 									let item = currentItems.find(item => item.id == this.state.activeItem);
 									if (!item) return (<Placeholder key={x} style={{ paddingTop: this.state.placeholderSize/2+1, paddingBottom: this.state.placeholderSize/2 }} icon={<Icon56FragmentsOutline/>}>Выберите предмет для улучшения</Placeholder>);
 									let scrolls = enchantmentsScrolls[item.lvl];
+									let currentDmg;
+									let currentHp;
+									try {
+										currentDmg = item.enchantments.dmg.slice(0, item.lvl).reduce((x, y) => x + y);
+										currentHp = item.enchantments.hp.slice(0, item.lvl).reduce((x, y) => x + y);
+									} catch (error) {
+										currentDmg = 0;
+										currentHp = 0;
+									}
 									return (<React.Fragment key={x}>
 										<div style={{ marginLeft: state.isDesktop ? 0 : 8, marginRight: state.isDesktop ? 0 : 8 }}>{options.getItemPreview(item, x, `Необходимо ${options.numberSpaces(item.prices[item.lvl], ' ')} ${options.numberForm(item.prices[item.lvl], this.state.resources.find(resource => resource.id == `m${item.currency}`)?.forms)} и ${scrolls} ${options.numberForm(scrolls, item.lvl >= 5 ? ['жемчужина', 'жемчужины', 'жемчужин'] : ['заточка', 'заточки', 'заточек'])}`, false, false, false, false, false, <Button loading={this.state.isLoad} before={<Icon12ArrowUp style={{color: 'var(--button_commerce_foreground,var(--vkui--color_text_contrast))'}}/>} appearance="positive" mode="primary" onClick={() => this.upgradeItem(item)}>Улучшить</Button>)}</div>
 										<Spacing size={16} separator />
@@ -226,14 +237,14 @@ class PANEL extends React.Component {
 											<div className="CounterCell">
 												<div className="CounterCell__title">Урон</div>
 												<div className="CounterCell__content">
-													<div className="CounterCell__text">{options.numberSpaces(item.dmg + item.enchantments.dmg.slice(0, item.lvl).reduce((x, y) => x + y), ' ')} DMG</div>
+													<div className="CounterCell__text">{options.numberSpaces(item.dmg + currentDmg, ' ')} DMG</div>
 													<div className="CounterCell__text"><Icon16Up/> {options.numberSpaces(item.enchantments.dmg[item.lvl], ' ')} DMG</div>
 												</div>
 											</div>
 											<div className="CounterCell">
 												<div className="CounterCell__title">Здоровье</div>
 												<div className="CounterCell__content">
-													<div className="CounterCell__text">{options.numberSpaces((item.hp + item.enchantments.hp.slice(0, item.lvl).reduce((x, y) => x + y)) * 15, ' ')} HP</div>
+													<div className="CounterCell__text">{options.numberSpaces((item.hp + currentHp) * 15, ' ')} HP</div>
 													<div className="CounterCell__text"><Icon16Up/> {options.numberSpaces(item.enchantments.hp[item.lvl] * 15, ' ')} HP</div>
 												</div>
 											</div>
@@ -250,7 +261,7 @@ class PANEL extends React.Component {
 						</div>
 					</>:<>
 						<div className="Scroll" id="Scroll" style={{maxHeight: state.isDesktop ? '372px' : 'unset'}}>
-							<CardGrid size={state.isDesktop ? "m" : "m"}>
+							<CardGrid size={state.isDesktop ? "m" : "l"}>
 								{new Array(10).fill(null).map((item, x) => <Card className="Card__Item" key={x}><Skeleton height={68}/></Card>)}
 							</CardGrid>
 						</div>

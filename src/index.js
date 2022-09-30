@@ -718,8 +718,14 @@ const App = withAdaptivity(({ viewWidth }) => {
 				this.setState({ snackbar: null });
 			}
 			if (!data) return;
+			let isObject = false;
+			if (typeof data.text == 'object') {
+				data.text = JSON.stringify(data.text);
+				isObject = true;
+			}
 			this.setState({ snackbar:
 				<Snackbar
+					className={isObject ? 'Snackbar--isObject' : ''}
 					layout={data.vertical}
 					duration={data.duration}
 					onClose={() => this.setState({ snackbar: null })}
@@ -2177,7 +2183,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 										data-story="profile"
 										onClick={onStoryChange}
 										before={<Icon28UserOutline />}
-										// after={<Counter size="s" mode="prominent">НОВОЕ</Counter>}
+										after={<Counter size="s" mode="prominent">НОВОЕ</Counter>}
 									>Мой профиль</RichCell>}
 									{(this.state.storeProfiles[this.state.storeProfilesIndex]?.server == 1 || this.state.storeProfiles[this.state.storeProfilesIndex]?.server == 2)&&<RichCell
 										className="RichCell--Context"
@@ -2185,7 +2191,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 										data-story="rating"
 										onClick={onStoryChange}
 										before={<Icon28UserCardOutline />}
-										after={<Counter size="s" mode="prominent">НОВОЕ</Counter>}
+										// after={<Counter size="s" mode="prominent">НОВОЕ</Counter>}
 									>Рейтинг</RichCell>}
 									{/* {isEmbedded && <RichCell
 										className="RichCell--Context"

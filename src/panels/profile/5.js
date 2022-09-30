@@ -33,7 +33,7 @@ class PANEL extends React.Component {
 			this._isMounted && this.props.options.OpenModal(`alert`, {header: 'Ошибка при получении друзей', subheader: `${data.error_data.error_reason}`}, null, 'card');
 			this._isMounted && this.props.options.setActivePanel(this.props.parent);
 		} else if (data.access_token) {
-			data = this._isMounted && await this.props.state.getBridge("VKWebAppCallAPIMethod", {"method": "friends.get", "params": {"user_id": this.props.state.user.vk.id, "fields": "photo_50", "count": 5000, "v": "5.130", "access_token": data.access_token}});
+			data = this._isMounted && await this.props.state.getBridge("VKWebAppCallAPIMethod", {"method": "friends.get", "params": {"user_id": this.props.state.user?.vk?.id, "fields": "photo_50", "count": 5000, "v": "5.130", "access_token": data.access_token}});
 			if (data?.response?.count && data?.response?.count !== 0) {
 				for (let i = 0; i < Math.ceil(data.response.count/300); i++) {
 					if (this._isMounted) {
@@ -45,7 +45,7 @@ class PANEL extends React.Component {
 						}, {
 							login: clan_id,
 							password: clan_auth,
-							id: this.props.state.user.vk.id,
+							id: this.props.state.user?.vk?.id,
 						});
 						typeof dataGame.u == 'undefined' ? dataGame.u = [] : '';
 						typeof dataGame.u.length == 'undefined' ? dataGame.u = [dataGame.u] : '';
@@ -62,7 +62,7 @@ class PANEL extends React.Component {
 								active: [new Date - Number(item._bd) * 1000, new Date - Number(item._l_t) * 1000]
 							});
 						});
-						syncFriends.splice(syncFriends.findIndex(x => x.id === this.props.state.user.vk.id), 1);
+						syncFriends.splice(syncFriends.findIndex(x => x.id === this.props.state.user?.vk?.id), 1);
 					}
 				}
 				syncFriends.sort(function(a, b) {

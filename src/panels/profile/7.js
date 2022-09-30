@@ -183,7 +183,7 @@ class PANEL extends React.Component {
 
 		
 		let sslt = 0;
-		let api_uid = state.login || state.user.vk.id;
+		let api_uid = state.login || state.user?.vk?.id;
 		let auth_key = state.auth;
 		if (!auth_key) {
 			auth_key = this._isMounted && await BotAPI('getAuth', null, null, null, {stage: 'modal', text: 'Для продолжения работы необходимо указать ключ авторизации'});
@@ -229,7 +229,7 @@ class PANEL extends React.Component {
 		if (dataProfile?.chests?.ch) {
 			typeof dataProfile?.chests?.ch?.length == 'undefined' ? dataProfile.chests.ch = [dataProfile?.chests?.ch] : [];
 			data.player.chests = Number(dataProfile?.chests?.ch.length);
-		}
+		} else data.player.chests = 0;
 		// console.log('Data', data);
 		// console.log('Player', data.player);
 		syncBot.arena = data;
@@ -470,12 +470,20 @@ class PANEL extends React.Component {
 				if (settings) {
 					settings = JSON.parse(settings.value);
 					if (settings) {
-						botSettings.useEnergy = settings.useEnergy;
-						botSettings.useGold = settings.useGold;
-						botSettings.useLoss = settings.useLoss;
-						botSettings.useChest = settings.useChest;
+						botSettings.useEnergy = typeof settings.useEnergy != 'undefined' ?  settings.useEnergy : false;
+						botSettings.useGold = typeof settings.useGold != 'undefined' ?  settings.useGold : true;
+						botSettings.useLoss = typeof settings.useLoss != 'undefined' ?  settings.useLoss : true;
+						botSettings.useChest = typeof settings.useChest != 'undefined' ?  settings.useChest : false;
 						this.state.tryLimit = settings.tryLimit || 20;
 					}
+				}
+				if (botSettings.useEnergy == botSettings.useGold) {
+					botSettings.useEnergy = false;
+					botSettings.useGold = true;
+				}
+				if (botSettings.useLoss == botSettings.useChest) {
+					botSettings.useLoss = true;
+					botSettings.useChest = false;
 				}
 			}
 			if (mode == 'reload') {
@@ -605,15 +613,15 @@ class PANEL extends React.Component {
 										value={Number(this.state.tryLimit)}
 										onChange={tryLimit => this.setState({tryLimit})}
 									/>
-									<Radio className="Clear" disabled={syncBot.isStart}>Лимит проигрышей</Radio>
+									<Radio className="Clear" disabled={syncBot.isStart} style={{ pointerEvents: 'none' }}>Лимит проигрышей</Radio>
 								</Card>
 							</CardGrid>
 							<Spacing size={8} />
 							<CardGrid size="m">
-								<Card className='DescriptionCardWiki Clear withRadio'>
+								<Card className='DescriptionCardWiki Clear'>
 									<Radio checked={this.state.botSettings.useLoss} onChange={(e) => this._isMounted && this.updateSelect(e)} name="endMode" disabled={syncBot.isStart} value="1" description={`Остановка после ${this.state.tryLimit} ${options.numberForm(this.state.tryLimit, ['боя', 'боёв', 'боёв'])}`}>Бой</Radio>
 								</Card>
-								<Card className='DescriptionCardWiki Clear withRadio'>
+								<Card className='DescriptionCardWiki Clear'>
 									<Radio checked={this.state.botSettings.useChest} onChange={(e) => this._isMounted && this.updateSelect(e)} name="endMode" disabled={syncBot.isStart || Number(syncBot.arena.player.chests) == 3} value="2" description="Остановка после лимита сундуков">Сундуки</Radio>
 								</Card>
 								<Card className='DescriptionCardWiki Clear'>

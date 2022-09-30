@@ -309,7 +309,7 @@ class PANEL extends React.Component {
 			return;
 		}
 		let sslt = 0;
-		let api_uid = state.login || state.user.vk.id;
+		let api_uid = state.login || state.user?.vk?.id;
 		let auth_key = state.auth;
 		if (!auth_key) {
 			auth_key = this._isMounted && await BotAPI('getAuth', null, null, null, {stage: 'modal', text: 'Для продолжения работы необходимо указать ключ авторизации'});
