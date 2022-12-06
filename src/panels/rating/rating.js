@@ -104,16 +104,12 @@ class PANEL extends React.Component {
 	};
 	calcTag = async(name, reserve) => {
 		if (name) {
-			let search = /\[(.*)\]/.exec(name.replace(/ /g, '')) || /-(.*)-/.exec(name.replace(/ /g, '')) || /(.*)? (.*)/.exec(name);
-			if (search && search[1] && search[1].length < 5) {
+			let search = /^(.+?) /.exec(name.replace(/{|}|\[|]|-|_/g, ' ').replace(/ +/g, ' ').replace(/^\s/g, ''));
+			if (search?.[1]?.length < 5) {
 				name = search[1];
-			} else {
-				name = reserve ? await this.calcTag(reserve) : '#';
-			};
-		} else {
-			name = '#';
-		}
-		return name;
+			} else name = reserve ? await this.calcTag(reserve) : '#';
+		} else name = '#';
+		return name.slice(0, 3);
 	};
 	calcInitialsAvatarColor = (v) => v%6+1;
 	loadRating = async() => {

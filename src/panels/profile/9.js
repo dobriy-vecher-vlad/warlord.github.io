@@ -415,7 +415,7 @@ class PANEL extends React.Component {
 		}
 		if (dataGuild?.hist?.h) {
 			typeof dataGuild?.hist?.h?.length == 'undefined' ? dataGuild.hist.h = [dataGuild?.hist?.h] : [];
-			this.state.times.guildWars = dataGuild?.hist?.h?.filter(event => Number(event._t) == 18 && Number(event._v3) == 1)?.map(war => ({
+			this.state.times.guildWars = dataGuild?.hist?.h?.filter(event => (Number(event._t) == 18 || Number(event._t) == 20) && Number(event._v3) == 1)?.map(war => ({
 				id: Number(war._v2),
 				enemy: Number(war._v1),
 				date: war._d

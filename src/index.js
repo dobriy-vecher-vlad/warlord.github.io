@@ -149,7 +149,7 @@ const parseQueryString = (string = '') => {
 };
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
-const wikiVersion = '1.7.3';
+const wikiVersion = '1.7.4';
 const pathImages = 'https://dobriy-vecher-vlad.github.io/warlord-helper/media/images/';
 const serverHub = [{
 	id: 1,
@@ -2183,7 +2183,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 										data-story="profile"
 										onClick={onStoryChange}
 										before={<Icon28UserOutline />}
-										after={<Counter size="s" mode="prominent">НОВОЕ</Counter>}
+										// after={<Counter size="s" mode="prominent">НОВОЕ</Counter>}
 									>Мой профиль</RichCell>}
 									{(this.state.storeProfiles[this.state.storeProfilesIndex]?.server == 1 || this.state.storeProfiles[this.state.storeProfilesIndex]?.server == 2)&&<RichCell
 										className="RichCell--Context"

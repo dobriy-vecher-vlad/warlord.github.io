@@ -113,9 +113,18 @@ class MODAL extends React.Component {
 				<Div>
 					{!state.isDesktop?<Spacing size={8} />:<DescriptionHeader avatar={`${pathImages}${data.image}`} state={state} options={options} data={data} header={data.title} description="Карта — Обыск"/>}
 					<DescriptionCell label={`Описание`} text={data.description}/>
-					<DescriptionCell label={`Местоположение`} text={data.map}/>
 					<DescriptionCell label={`Ресурс для улучшения`} text={`${data.item} с босса ${data.from}`}/>
 					<DescriptionCell label={`Задержка перед обыском`} text={options.getTime(data.time)}/>
+					{data.region != 0 && (<>
+						<Spacing separator size={16} />
+						{[0].map((y, x) => {
+							let region = dataMap.regions.find(region => region.items.find(location => location.id == data.region)).items.find(location => location.id == data.region);
+							return (<React.Fragment key={x}>
+								<DescriptionCell label={`Местоположение`} text={`${region.title} [${region.id}]`}/>
+								<DescriptionCell label={`Уровень района`} text={`${region.lvl || 0} уровень`}/>
+							</React.Fragment>);
+						})}
+					</>)}
 					<Spacing separator size={16} />
 					<CardGrid size="m">
 					{data.levels.map((level, x) => {
@@ -280,6 +289,16 @@ class MODAL extends React.Component {
 					{!state.isDesktop?<Spacing size={8} />:<DescriptionHeader avatar={`${pathImages}${data.icon}`} state={state} options={options} data={data} header={data.title} description="Карта — Захват"/>}
 					<DescriptionCell label={`Описание`} text={data.description}/>
 					<DescriptionCell label={`Необходимо очков для захвата района`} text={`${options.numberSpaces(data.score)} очков`}/>
+					{data.region != 0 && (<>
+						<Spacing separator size={16} />
+						{[0].map((y, x) => {
+							let region = dataMap.regions.find(region => region.items.find(location => location.id == data.region)).items.find(location => location.id == data.region);
+							return (<React.Fragment key={x}>
+								<DescriptionCell label={`Номер района`} text={`${region.id} номер`}/>
+								<DescriptionCell label={`Уровень района`} text={`${region.lvl || 0} уровень`}/>
+							</React.Fragment>);
+						})}
+					</>)}
 					{!state.isDesktop&&<Spacing size={8} />}
 				</Div>
 			</ModalPage>
