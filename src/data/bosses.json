@@ -7751,4 +7751,99 @@
 	"image": "bosses/images/469.png",
 	"icon": "bosses/icons/469.png",
 	"region": 0
+}, {
+	"id": 470,
+	"name": "Шамп Ур",
+	"description": "Охотник за головами",
+	"hp": 12350000,
+	"dmg": 50000,
+	"type": 1,
+	"time": 14400,
+	"tries": 4,
+	"energy": 12,
+	"rewards": {
+		"exp": 65000,
+		"m1": 0,
+		"m2": 8500
+	},
+	"background": "bosses/backgrounds/13.png",
+	"image": "bosses/images/470.png",
+	"icon": "bosses/icons/470.png",
+	"region": 0
+}, {
+	"id": 471,
+	"name": "Вивианна",
+	"description": "Разбойница",
+	"hp": 14165000,
+	"dmg": 55000,
+	"type": 1,
+	"time": 14400,
+	"tries": 4,
+	"energy": 12,
+	"rewards": {
+		"exp": 76000,
+		"m1": 250,
+		"m2": 0
+	},
+	"background": "bosses/backgrounds/12.png",
+	"image": "bosses/images/471.png",
+	"icon": "bosses/icons/471.png",
+	"region": 0
+}, {
+	"id": 472,
+	"name": "Себастьян",
+	"description": "Воскресший воин",
+	"hp": 17500000,
+	"dmg": 60500,
+	"type": 1,
+	"time": 14400,
+	"tries": 4,
+	"energy": 14,
+	"rewards": {
+		"exp": 95000,
+		"m1": 0,
+		"m2": 0
+	},
+	"background": "bosses/backgrounds/4.png",
+	"image": "bosses/images/472.png",
+	"icon": "bosses/icons/472.png",
+	"region": 0
+}, {
+	"id": 473,
+	"name": "Эльоддур",
+	"description": "Темный владыка",
+	"hp": 35000000,
+	"dmg": 75000,
+	"type": 1,
+	"time": 14400,
+	"tries": 4,
+	"energy": 15,
+	"rewards": {
+		"exp": 150000,
+		"m1": 0,
+		"m2": 15000
+	},
+	"background": "bosses/backgrounds/4.png",
+	"image": "bosses/images/473.png",
+	"icon": "bosses/icons/473.png",
+	"region": 0
+}, {
+	"id": 474,
+	"name": "Ксардас",
+	"description": "Могущественный некромант",
+	"hp": 25000000,
+	"dmg": 65000,
+	"type": 1,
+	"time": 14400,
+	"tries": 4,
+	"energy": 14,
+	"rewards": {
+		"exp": 125000,
+		"m1": 0,
+		"m2": 12500
+	},
+	"background": "bosses/backgrounds/4.png",
+	"image": "bosses/images/474.png",
+	"icon": "bosses/icons/474.png",
+	"region": 0
 }]
