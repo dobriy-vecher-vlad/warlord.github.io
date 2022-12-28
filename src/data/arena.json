@@ -975,6 +975,30 @@
 					}
 				],
 				"icon": "arena/season_2022_9.png"
+			}, {
+				"name": "Октябрь 2022",
+				"items": [
+					{
+						"id": 832,
+						"item": true
+					}, {
+						"id": 833,
+						"item": true
+					}
+				],
+				"icon": "arena/season_2022_10.png"
+			}, {
+				"name": "Ноябрь 2022",
+				"items": [
+					{
+						"id": 830,
+						"item": true
+					}, {
+						"id": 847,
+						"item": true
+					}
+				],
+				"icon": "arena/season_2022_11.png"
 			}
 		]
 	}],

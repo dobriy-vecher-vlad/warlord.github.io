@@ -1066,6 +1066,113 @@
 				"id": 778,
 				"collection": true
 			}]
+		}, {
+			"id": 470,
+			"items": [{
+				"id": 223,
+				"item": true,
+				"scroll": true
+			}, {
+				"id": 845,
+				"item": true,
+				"scroll": true
+			}, {
+				"id": 850,
+				"item": true,
+				"scroll": true
+			}, {
+				"id": 856,
+				"item": true,
+				"scroll": true
+			}]
+		}, {
+			"id": 471,
+			"items": [{
+				"id": 227,
+				"item": true,
+				"scroll": true
+			}, {
+				"id": 837,
+				"item": true,
+				"scroll": true
+			}, {
+				"id": 844,
+				"item": true,
+				"scroll": true
+			}, {
+				"id": 852,
+				"item": true,
+				"scroll": true
+			}]
+		}, {
+			"id": 472,
+			"items": [{
+				"id": 841,
+				"item": true,
+				"scroll": true
+			}, {
+				"id": 843,
+				"item": true,
+				"scroll": true
+			}, {
+				"id": 846,
+				"item": true,
+				"scroll": true
+			}, {
+				"id": 848,
+				"item": true,
+				"scroll": true
+			}, {
+				"id": 855,
+				"item": true,
+				"scroll": true
+			}]
+		}, {
+			"id": 474,
+			"items": [{
+				"id": 831,
+				"item": true,
+				"scroll": true
+			}, {
+				"id": 836,
+				"item": true,
+				"scroll": true
+			}, {
+				"id": 840,
+				"item": true,
+				"scroll": true
+			}, {
+				"id": 842,
+				"item": true,
+				"scroll": true
+			}, {
+				"id": 857,
+				"item": true,
+				"scroll": true
+			}]
+		}, {
+			"id": 473,
+			"items": [{
+				"id": 638,
+				"item": true,
+				"scroll": true
+			}, {
+				"id": 828,
+				"item": true,
+				"scroll": true
+			}, {
+				"id": 829,
+				"item": true,
+				"scroll": true
+			}, {
+				"id": 839,
+				"item": true,
+				"scroll": true
+			}, {
+				"id": 854,
+				"item": true,
+				"scroll": true
+			}]
 		}]
 	}, {
 		"title": "Рейдовые боссы",

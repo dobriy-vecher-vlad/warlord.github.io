@@ -16,7 +16,7 @@
 	"background": "bosses/backgrounds/7.png",
 	"image": "bosses/images/1.png",
 	"icon": "bosses/icons/1.png",
-	"region": 2
+	"region": 1
 }, {
 	"id": 3,
 	"name": "Паучище",
@@ -35,13 +35,13 @@
 	"background": "bosses/backgrounds/3.png",
 	"image": "bosses/images/3.png",
 	"icon": "bosses/icons/3.png",
-	"region": 3
+	"region": 2
 }, {
 	"id": 11,
 	"name": "Разбойник",
 	"description": "Разбойник с большой дороги",
-	"hp": 2500,
-	"dmg": 30,
+	"hp": 1750,
+	"dmg": 21,
 	"type": 1,
 	"time": 7200,
 	"tries": 16,
@@ -54,13 +54,13 @@
 	"background": "bosses/backgrounds/6.png",
 	"image": "bosses/images/11.png",
 	"icon": "bosses/icons/11.png",
-	"region": 6
+	"region": 5
 }, {
 	"id": 12,
 	"name": "Паук Солдат",
 	"description": "Солдат паучьего гнезда",
-	"hp": 850,
-	"dmg": 30,
+	"hp": 595,
+	"dmg": 21,
 	"type": 1,
 	"time": 5400,
 	"tries": 20,
@@ -73,7 +73,7 @@
 	"background": "bosses/backgrounds/1.png",
 	"image": "bosses/images/12.png",
 	"icon": "bosses/icons/12.png",
-	"region": 4
+	"region": 3
 }, {
 	"id": 27,
 	"name": "Черная Крыса",
@@ -92,13 +92,13 @@
 	"background": "bosses/backgrounds/7.png",
 	"image": "bosses/images/27.png",
 	"icon": "bosses/icons/27.png",
-	"region": 3
+	"region": 2
 }, {
 	"id": 60,
 	"name": "Киор",
 	"description": "Главарь банды разбойников",
-	"hp": 4000,
-	"dmg": 45,
+	"hp": 2800,
+	"dmg": 32,
 	"type": 1,
 	"time": 7200,
 	"tries": 16,
@@ -111,13 +111,13 @@
 	"background": "bosses/backgrounds/6.png",
 	"image": "bosses/images/60.png",
 	"icon": "bosses/icons/60.png",
-	"region": 6
+	"region": 5
 }, {
 	"id": 61,
 	"name": "Гоблин",
 	"description": "Уродливый прислужник короля Лича",
-	"hp": 7500,
-	"dmg": 35,
+	"hp": 5250,
+	"dmg": 25,
 	"type": 1,
 	"time": 7800,
 	"tries": 14,
@@ -130,13 +130,13 @@
 	"background": "bosses/backgrounds/10.png",
 	"image": "bosses/images/61.png",
 	"icon": "bosses/icons/61.png",
-	"region": 7
+	"region": 6
 }, {
 	"id": 62,
 	"name": "Зохай",
 	"description": "Главарь гоблинской шайки у разрушенного форта",
-	"hp": 10000,
-	"dmg": 45,
+	"hp": 7000,
+	"dmg": 32,
 	"type": 1,
 	"time": 7800,
 	"tries": 12,
@@ -149,13 +149,13 @@
 	"background": "bosses/backgrounds/10.png",
 	"image": "bosses/images/62.png",
 	"icon": "bosses/icons/62.png",
-	"region": 7
+	"region": 6
 }, {
 	"id": 63,
 	"name": "Горный Тролль",
 	"description": "Крайне сильное и крайне тупое создание",
-	"hp": 15000,
-	"dmg": 50,
+	"hp": 10500,
+	"dmg": 35,
 	"type": 1,
 	"time": 7800,
 	"tries": 12,
@@ -168,13 +168,13 @@
 	"background": "bosses/backgrounds/9.png",
 	"image": "bosses/images/63.png",
 	"icon": "bosses/icons/63.png",
-	"region": 8
+	"region": 7
 }, {
 	"id": 64,
 	"name": "Скелет Воин",
 	"description": "Оживленный прислужник тьмы",
-	"hp": 35000,
-	"dmg": 85,
+	"hp": 24500,
+	"dmg": 60,
 	"type": 1,
 	"time": 7800,
 	"tries": 12,
@@ -187,13 +187,13 @@
 	"background": "bosses/backgrounds/4.png",
 	"image": "bosses/images/64.png",
 	"icon": "bosses/icons/64.png",
-	"region": 9
+	"region": 8
 }, {
 	"id": 65,
 	"name": "Тарон",
 	"description": "Уличный бандит Растхельма",
-	"hp": 75000,
-	"dmg": 100,
+	"hp": 52500,
+	"dmg": 70,
 	"type": 1,
 	"time": 7800,
 	"tries": 10,
@@ -206,13 +206,13 @@
 	"background": "bosses/backgrounds/7.png",
 	"image": "bosses/images/65.png",
 	"icon": "bosses/icons/65.png",
-	"region": 10
+	"region": 9
 }, {
 	"id": 66,
 	"name": "Оборотень",
 	"description": "Получеловек - Полуволк. Смертельно опасен",
-	"hp": 175000,
-	"dmg": 200,
+	"hp": 122500,
+	"dmg": 140,
 	"type": 1,
 	"time": 14400,
 	"tries": 8,
@@ -225,13 +225,13 @@
 	"background": "bosses/backgrounds/2.png",
 	"image": "bosses/images/66.png",
 	"icon": "bosses/icons/66.png",
-	"region": 11
+	"region": 10
 }, {
 	"id": 67,
 	"name": "Пещерный Тролль",
 	"description": "Рейдовый Титан",
-	"hp": 15000000,
-	"dmg": 1000,
+	"hp": 10500000,
+	"dmg": 700,
 	"type": 0,
 	"time": 14400,
 	"tries": 6,
@@ -244,13 +244,13 @@
 	"background": "bosses/backgrounds/3.png",
 	"image": "bosses/images/67.png",
 	"icon": "bosses/icons/67.png",
-	"region": 12
+	"region": 11
 }, {
 	"id": 68,
 	"name": "Орк Воин",
 	"description": "Рядовой солдат орков",
-	"hp": 250000,
-	"dmg": 350,
+	"hp": 175000,
+	"dmg": 245,
 	"type": 1,
 	"time": 14400,
 	"tries": 5,
@@ -263,13 +263,13 @@
 	"background": "bosses/backgrounds/4.png",
 	"image": "bosses/images/68.png",
 	"icon": "bosses/icons/68.png",
-	"region": 13
+	"region": 12
 }, {
 	"id": 69,
 	"name": "Гроккар",
 	"description": "Командир отряда орков, засевших у форта Надежда",
-	"hp": 45000000,
-	"dmg": 3500,
+	"hp": 31500000,
+	"dmg": 2450,
 	"type": 0,
 	"time": 14400,
 	"tries": 5,
@@ -282,13 +282,13 @@
 	"background": "bosses/backgrounds/4.png",
 	"image": "bosses/images/69.png",
 	"icon": "bosses/icons/69.png",
-	"region": 13
+	"region": 12
 }, {
 	"id": 70,
 	"name": "Скелет Лучник",
 	"description": "Оживленный прислужник тьмы",
-	"hp": 25000,
-	"dmg": 75,
+	"hp": 17500,
+	"dmg": 53,
 	"type": 1,
 	"time": 7800,
 	"tries": 12,
@@ -301,13 +301,13 @@
 	"background": "bosses/backgrounds/4.png",
 	"image": "bosses/images/70.png",
 	"icon": "bosses/icons/70.png",
-	"region": 9
+	"region": 8
 }, {
 	"id": 71,
 	"name": "Грог",
 	"description": "Тролль с молотом? Какого черта?",
-	"hp": 25000,
-	"dmg": 50,
+	"hp": 17500,
+	"dmg": 35,
 	"type": 1,
 	"time": 7800,
 	"tries": 12,
@@ -320,7 +320,7 @@
 	"background": "bosses/backgrounds/9.png",
 	"image": "bosses/images/71.png",
 	"icon": "bosses/icons/71.png",
-	"region": 8
+	"region": 7
 }, {
 	"id": 74,
 	"name": "Земляной паук",
@@ -4201,8 +4201,8 @@
 	"id": 278,
 	"name": "Болотник",
 	"description": "Обитатель долины",
-	"hp": 350000,
-	"dmg": 450,
+	"hp": 245000,
+	"dmg": 315,
 	"type": 1,
 	"time": 25200,
 	"tries": 5,
@@ -4215,13 +4215,13 @@
 	"background": "bosses/backgrounds/13.png",
 	"image": "bosses/images/278.png",
 	"icon": "bosses/icons/278.png",
-	"region": 14
+	"region": 13
 }, {
 	"id": 279,
 	"name": "Некромант",
 	"description": "Обитатель маяка",
-	"hp": 450000,
-	"dmg": 650,
+	"hp": 315000,
+	"dmg": 455,
 	"type": 1,
 	"time": 25200,
 	"tries": 5,
@@ -4234,7 +4234,7 @@
 	"background": "bosses/backgrounds/12.png",
 	"image": "bosses/images/279.png",
 	"icon": "bosses/icons/279.png",
-	"region": 15
+	"region": 14
 }, {
 	"id": 281,
 	"name": "Дорожный Бандит",
@@ -4372,8 +4372,8 @@
 	"id": 288,
 	"name": "Каин",
 	"description": "Убийца Шиммерана",
-	"hp": 700000,
-	"dmg": 750,
+	"hp": 490000,
+	"dmg": 525,
 	"type": 1,
 	"time": 25200,
 	"tries": 5,
@@ -4386,13 +4386,13 @@
 	"background": "bosses/backgrounds/14.png",
 	"image": "bosses/images/288.png",
 	"icon": "bosses/icons/288.png",
-	"region": 16
+	"region": 15
 }, {
 	"id": 289,
 	"name": "Орк-Шаман",
 	"description": "Главная опасность Южного Тракта",
-	"hp": 900000,
-	"dmg": 900,
+	"hp": 630000,
+	"dmg": 630,
 	"type": 1,
 	"time": 14400,
 	"tries": 5,
@@ -4405,13 +4405,13 @@
 	"background": "bosses/backgrounds/9.png",
 	"image": "bosses/images/289.png",
 	"icon": "bosses/icons/289.png",
-	"region": 17
+	"region": 16
 }, {
 	"id": 290,
 	"name": "Страж Долины",
 	"description": "Охраняет долину от чужаков",
-	"hp": 50000000,
-	"dmg": 4500,
+	"hp": 35000000,
+	"dmg": 3150,
 	"type": 0,
 	"time": 14400,
 	"tries": 5,
@@ -4429,8 +4429,8 @@
 	"id": 291,
 	"name": "Взрывной Билл",
 	"description": "Капитан пиратского судна",
-	"hp": 250000000,
-	"dmg": 7250,
+	"hp": 175000000,
+	"dmg": 5075,
 	"type": 0,
 	"time": 7200,
 	"tries": 3,
@@ -4443,7 +4443,7 @@
 	"background": "bosses/backgrounds/18.png",
 	"image": "bosses/images/291.png",
 	"icon": "bosses/icons/291.png",
-	"region": 16
+	"region": 15
 }, {
 	"id": 292,
 	"name": "Слепая Тварь",
@@ -4847,8 +4847,8 @@
 	"id": 313,
 	"name": "Молох",
 	"description": "Терроризирующий деревню монстр. Титан",
-	"hp": 90000000,
-	"dmg": 6250,
+	"hp": 63000000,
+	"dmg": 4375,
 	"type": 0,
 	"time": 14400,
 	"tries": 4,
@@ -4861,7 +4861,7 @@
 	"background": "bosses/backgrounds/13.png",
 	"image": "bosses/images/313.png",
 	"icon": "bosses/icons/313.png",
-	"region": 18
+	"region": 17
 }, {
 	"id": 314,
 	"name": "Последователь Культа",
@@ -5284,8 +5284,8 @@
 	"id": 337,
 	"name": "Ургат",
 	"description": "Предводитель клана орков Команчи",
-	"hp": 92500000,
-	"dmg": 7500,
+	"hp": 64750000,
+	"dmg": 5250,
 	"type": 0,
 	"time": 14400,
 	"tries": 4,
@@ -5298,13 +5298,13 @@
 	"background": "bosses/backgrounds/9.png",
 	"image": "bosses/images/337.png",
 	"icon": "bosses/icons/337.png",
-	"region": 19
+	"region": 18
 }, {
 	"id": 338,
 	"name": "Орк Команчи",
 	"description": "Воин клана Команчи",
-	"hp": 1000000,
-	"dmg": 1125,
+	"hp": 700000,
+	"dmg": 788,
 	"type": 1,
 	"time": 14400,
 	"tries": 4,
@@ -5317,13 +5317,13 @@
 	"background": "bosses/backgrounds/9.png",
 	"image": "bosses/images/338.png",
 	"icon": "bosses/icons/338.png",
-	"region": 19
+	"region": 18
 }, {
 	"id": 339,
 	"name": "Людоед Налетчик",
 	"description": "Питается сбившимися с тропы путниками",
-	"hp": 1000000,
-	"dmg": 2500,
+	"hp": 700000,
+	"dmg": 1750,
 	"type": 1,
 	"time": 14400,
 	"tries": 4,
@@ -5336,13 +5336,13 @@
 	"background": "bosses/backgrounds/13.png",
 	"image": "bosses/images/339.png",
 	"icon": "bosses/icons/339.png",
-	"region": 20
+	"region": 19
 }, {
 	"id": 340,
 	"name": "Огр",
 	"description": "Обитает в окрестностях рыбацкой деревни",
-	"hp": 1350000,
-	"dmg": 5000,
+	"hp": 945000,
+	"dmg": 3500,
 	"type": 1,
 	"time": 14400,
 	"tries": 4,
@@ -5355,13 +5355,13 @@
 	"background": "bosses/backgrounds/4.png",
 	"image": "bosses/images/340.png",
 	"icon": "bosses/icons/340.png",
-	"region": 21
+	"region": 20
 }, {
 	"id": 341,
 	"name": "Мясник Вуку",
 	"description": "Опасайтесь его тесака",
-	"hp": 150000000,
-	"dmg": 10000,
+	"hp": 105000000,
+	"dmg": 7000,
 	"type": 0,
 	"time": 14400,
 	"tries": 4,
@@ -5374,7 +5374,7 @@
 	"background": "bosses/backgrounds/4.png",
 	"image": "bosses/images/341.png",
 	"icon": "bosses/icons/341.png",
-	"region": 22
+	"region": 21
 }, {
 	"id": 342,
 	"name": "Кровавый Молох",
@@ -5664,8 +5664,8 @@
 	"id": 357,
 	"name": "Каменный Гигант",
 	"description": "Безмолвный обитатель пустыни",
-	"hp": 2250000,
-	"dmg": 10000,
+	"hp": 1575000,
+	"dmg": 7000,
 	"type": 1,
 	"time": 14400,
 	"tries": 4,
@@ -5678,13 +5678,13 @@
 	"background": "bosses/backgrounds/9.png",
 	"image": "bosses/images/357.png",
 	"icon": "bosses/icons/357.png",
-	"region": 23
+	"region": 22
 }, {
 	"id": 358,
 	"name": "Зачарованный Гигант",
 	"description": "Последняя преграда перед Гримдрифтом",
-	"hp": 2850000,
-	"dmg": 20000,
+	"hp": 1995000,
+	"dmg": 14000,
 	"type": 1,
 	"time": 14400,
 	"tries": 4,
@@ -5697,7 +5697,7 @@
 	"background": "bosses/backgrounds/9.png",
 	"image": "bosses/images/358.png",
 	"icon": "bosses/icons/358.png",
-	"region": 24
+	"region": 23
 }, {
 	"id": 359,
 	"name": "Пещерный гоблин",
@@ -6291,8 +6291,8 @@
 	"id": 390,
 	"name": "Циклоп",
 	"description": "Свирепый обитатель гор Гримдрифта",
-	"hp": 300000000,
-	"dmg": 13125,
+	"hp": 210000000,
+	"dmg": 9188,
 	"type": 0,
 	"time": 14400,
 	"tries": 4,
@@ -6305,13 +6305,13 @@
 	"background": "bosses/backgrounds/9.png",
 	"image": "bosses/images/390.png",
 	"icon": "bosses/icons/390.png",
-	"region": 25
+	"region": 24
 }, {
 	"id": 391,
 	"name": "Джейн",
 	"description": "Охотница за головами",
-	"hp": 4500000,
-	"dmg": 26250,
+	"hp": 3150000,
+	"dmg": 18375,
 	"type": 1,
 	"time": 14400,
 	"tries": 5,
@@ -6324,13 +6324,13 @@
 	"background": "bosses/backgrounds/14.png",
 	"image": "bosses/images/391.png",
 	"icon": "bosses/icons/391.png",
-	"region": 25
+	"region": 24
 }, {
 	"id": 392,
 	"name": "Защитник Кургана",
 	"description": "Вечный житель Руин",
-	"hp": 5000000,
-	"dmg": 28500,
+	"hp": 3500000,
+	"dmg": 19950,
 	"type": 1,
 	"time": 14400,
 	"tries": 4,
@@ -6343,13 +6343,13 @@
 	"background": "bosses/backgrounds/14.png",
 	"image": "bosses/images/392.png",
 	"icon": "bosses/icons/392.png",
-	"region": 28
+	"region": 27
 }, {
 	"id": 393,
 	"name": "Темный Жнец",
 	"description": "Древнее зло",
-	"hp": 315000000,
-	"dmg": 14250,
+	"hp": 220500000,
+	"dmg": 9975,
 	"type": 0,
 	"time": 14400,
 	"tries": 4,
@@ -6362,7 +6362,7 @@
 	"background": "bosses/backgrounds/14.png",
 	"image": "bosses/images/393.png",
 	"icon": "bosses/icons/393.png",
-	"region": 27
+	"region": 26
 }, {
 	"id": 394,
 	"name": "Скелет Руин",
@@ -6633,8 +6633,8 @@
 	"id": 408,
 	"name": "Болотник",
 	"description": "Обитатель долины",
-	"hp": 325000,
-	"dmg": 3250,
+	"hp": 227500,
+	"dmg": 2275,
 	"type": 1,
 	"time": 3600,
 	"tries": 2,
@@ -6647,13 +6647,13 @@
 	"background": "bosses/backgrounds/13.png",
 	"image": "bosses/images/408.png",
 	"icon": "bosses/icons/408.png",
-	"region": 26
+	"region": 25
 }, {
 	"id": 409,
 	"name": "Болотник",
 	"description": "Обитатель долины",
-	"hp": 325000,
-	"dmg": 3250,
+	"hp": 227500,
+	"dmg": 2275,
 	"type": 1,
 	"time": 3600,
 	"tries": 2,
@@ -6666,13 +6666,13 @@
 	"background": "bosses/backgrounds/13.png",
 	"image": "bosses/images/409.png",
 	"icon": "bosses/icons/409.png",
-	"region": 26
+	"region": 25
 }, {
 	"id": 410,
 	"name": "Болотник",
 	"description": "Обитатель долины",
-	"hp": 325000,
-	"dmg": 3250,
+	"hp": 227500,
+	"dmg": 2275,
 	"type": 1,
 	"time": 3600,
 	"tries": 2,
@@ -6685,13 +6685,13 @@
 	"background": "bosses/backgrounds/13.png",
 	"image": "bosses/images/410.png",
 	"icon": "bosses/icons/410.png",
-	"region": 26
+	"region": 25
 }, {
 	"id": 411,
 	"name": "Болотник",
 	"description": "Обитатель долины",
-	"hp": 325000,
-	"dmg": 3250,
+	"hp": 227500,
+	"dmg": 2275,
 	"type": 1,
 	"time": 3600,
 	"tries": 2,
@@ -6704,7 +6704,7 @@
 	"background": "bosses/backgrounds/13.png",
 	"image": "bosses/images/411.png",
 	"icon": "bosses/icons/411.png",
-	"region": 26
+	"region": 25
 }, {
 	"id": 413,
 	"name": "Скелет Руин",
@@ -7431,8 +7431,8 @@
 	"id": 453,
 	"name": "Актлак",
 	"description": "Житель морских глубин",
-	"hp": 5000000,
-	"dmg": 28500,
+	"hp": 3500000,
+	"dmg": 19950,
 	"type": 1,
 	"time": 14400,
 	"tries": 5,
@@ -7445,7 +7445,7 @@
 	"background": "bosses/backgrounds/12.png",
 	"image": "bosses/images/453.png",
 	"icon": "bosses/icons/453.png",
-	"region": 27
+	"region": 26
 }, {
 	"id": 454,
 	"name": "Зачарованное Древо",
@@ -7469,8 +7469,8 @@
 	"id": 455,
 	"name": "Болотный Трупоед",
 	"description": "Опасное существо, в битве с которым сгинуло много героев",
-	"hp": 335000000,
-	"dmg": 15000,
+	"hp": 234500000,
+	"dmg": 10500,
 	"type": 0,
 	"time": 14400,
 	"tries": 5,
@@ -7483,13 +7483,13 @@
 	"background": "bosses/backgrounds/10.png",
 	"image": "bosses/images/455.png",
 	"icon": "bosses/icons/455.png",
-	"region": 29
+	"region": 28
 }, {
 	"id": 456,
 	"name": "Изгой",
 	"description": "Бывший осужденный",
-	"hp": 5150000,
-	"dmg": 29500,
+	"hp": 3605000,
+	"dmg": 20650,
 	"type": 1,
 	"time": 14400,
 	"tries": 5,
@@ -7502,13 +7502,13 @@
 	"background": "bosses/backgrounds/10.png",
 	"image": "bosses/images/456.png",
 	"icon": "bosses/icons/456.png",
-	"region": 30
+	"region": 29
 }, {
 	"id": 457,
 	"name": "Двалин",
 	"description": "Местный задира",
-	"hp": 5250000,
-	"dmg": 30000,
+	"hp": 3675000,
+	"dmg": 21000,
 	"type": 1,
 	"time": 14400,
 	"tries": 5,
@@ -7521,13 +7521,13 @@
 	"background": "bosses/backgrounds/10.png",
 	"image": "bosses/images/457.png",
 	"icon": "bosses/icons/457.png",
-	"region": 31
+	"region": 30
 }, {
 	"id": 458,
 	"name": "Каменный Голем",
 	"description": "Появившееся из песков существо",
-	"hp": 325000000,
-	"dmg": 14500,
+	"hp": 227500000,
+	"dmg": 10150,
 	"type": 0,
 	"time": 14400,
 	"tries": 5,
@@ -7540,13 +7540,13 @@
 	"background": "bosses/backgrounds/10.png",
 	"image": "bosses/images/458.png",
 	"icon": "bosses/icons/458.png",
-	"region": 28
+	"region": 27
 }, {
 	"id": 459,
 	"name": "Зимний Страж",
 	"description": "Пробудившийся в снегах страж",
-	"hp": 325000000,
-	"dmg": 17500,
+	"hp": 227500000,
+	"dmg": 12250,
 	"type": 0,
 	"time": 14400,
 	"tries": 5,
@@ -7559,13 +7559,13 @@
 	"background": "bosses/backgrounds/9.png",
 	"image": "bosses/images/459.png",
 	"icon": "bosses/icons/459.png",
-	"region": 19
+	"region": 18
 }, {
 	"id": 460,
 	"name": "Грабоид",
 	"description": "Легендарный подземный хищник",
-	"hp": 450000000,
-	"dmg": 22750,
+	"hp": 315000000,
+	"dmg": 15925,
 	"type": 0,
 	"time": 14400,
 	"tries": 5,
@@ -7578,13 +7578,13 @@
 	"background": "bosses/backgrounds/9.png",
 	"image": "bosses/images/460.png",
 	"icon": "bosses/icons/460.png",
-	"region": 23
+	"region": 22
 }, {
 	"id": 461,
 	"name": "Проклятый Гигант",
 	"description": "Гигант под 3 метра ростом",
-	"hp": 7875000,
-	"dmg": 35000,
+	"hp": 5512500,
+	"dmg": 24500,
 	"type": 1,
 	"time": 14400,
 	"tries": 5,
@@ -7597,13 +7597,13 @@
 	"background": "bosses/backgrounds/1.png",
 	"image": "bosses/images/461.png",
 	"icon": "bosses/icons/461.png",
-	"region": 32
+	"region": 31
 }, {
 	"id": 462,
 	"name": "Флетчер",
 	"description": "Наёмник Гильдии",
-	"hp": 300000,
-	"dmg": 475,
+	"hp": 210000,
+	"dmg": 333,
 	"type": 1,
 	"time": 7200,
 	"tries": 12,
@@ -7616,13 +7616,13 @@
 	"background": "bosses/backgrounds/6.png",
 	"image": "bosses/images/462.png",
 	"icon": "bosses/icons/462.png",
-	"region": 13
+	"region": 12
 }, {
 	"id": 463,
 	"name": "Охотник Шауда",
 	"description": "Охотник за головами",
-	"hp": 10000000,
-	"dmg": 45000,
+	"hp": 7000000,
+	"dmg": 31500,
 	"type": 1,
 	"time": 14400,
 	"tries": 6,
@@ -7635,13 +7635,13 @@
 	"background": "bosses/backgrounds/13.png",
 	"image": "bosses/images/463.png",
 	"icon": "bosses/icons/463.png",
-	"region": 33
+	"region": 32
 }, {
 	"id": 464,
 	"name": "Магнус",
 	"description": "Проклятый солдат армии Эльоддура",
-	"hp": 13000000,
-	"dmg": 55000,
+	"hp": 9100000,
+	"dmg": 38500,
 	"type": 1,
 	"time": 14400,
 	"tries": 6,
@@ -7654,7 +7654,7 @@
 	"background": "bosses/backgrounds/4.png",
 	"image": "bosses/images/464.png",
 	"icon": "bosses/icons/464.png",
-	"region": 34
+	"region": 33
 }, {
 	"id": 465,
 	"name": "Сартана",
@@ -7678,8 +7678,8 @@
 	"id": 466,
 	"name": "Даркаут",
 	"description": "Исчадие Ада",
-	"hp": 16000000,
-	"dmg": 65000,
+	"hp": 11200000,
+	"dmg": 45500,
 	"type": 1,
 	"time": 14400,
 	"tries": 4,
@@ -7692,13 +7692,13 @@
 	"background": "bosses/backgrounds/4.png",
 	"image": "bosses/images/466.png",
 	"icon": "bosses/icons/466.png",
-	"region": 35
+	"region": 34
 }, {
 	"id": 467,
 	"name": "Хала",
 	"description": "Царица Тьмы",
-	"hp": 450000000,
-	"dmg": 8500,
+	"hp": 315000000,
+	"dmg": 5950,
 	"type": 0,
 	"time": 7200,
 	"tries": 6,
@@ -7712,13 +7712,13 @@
 	"background": "bosses/backgrounds/4.png",
 	"image": "bosses/images/467.png",
 	"icon": "bosses/icons/467.png",
-	"region": 22
+	"region": 21
 }, {
 	"id": 468,
 	"name": "Тирис",
 	"description": "Элитный Наемник",
-	"hp": 7000000,
-	"dmg": 30000,
+	"hp": 4900000,
+	"dmg": 21000,
 	"type": 1,
 	"time": 7200,
 	"tries": 7,
@@ -7731,7 +7731,7 @@
 	"background": "bosses/backgrounds/9.png",
 	"image": "bosses/images/468.png",
 	"icon": "bosses/icons/468.png",
-	"region": 30
+	"region": 29
 }, {
 	"id": 469,
 	"name": "Катра Хитоэль",
@@ -7769,7 +7769,7 @@
 	"background": "bosses/backgrounds/13.png",
 	"image": "bosses/images/470.png",
 	"icon": "bosses/icons/470.png",
-	"region": 0
+	"region": 35
 }, {
 	"id": 471,
 	"name": "Вивианна",
@@ -7788,7 +7788,7 @@
 	"background": "bosses/backgrounds/12.png",
 	"image": "bosses/images/471.png",
 	"icon": "bosses/icons/471.png",
-	"region": 0
+	"region": 36
 }, {
 	"id": 472,
 	"name": "Себастьян",
@@ -7807,7 +7807,7 @@
 	"background": "bosses/backgrounds/4.png",
 	"image": "bosses/images/472.png",
 	"icon": "bosses/icons/472.png",
-	"region": 0
+	"region": 37
 }, {
 	"id": 473,
 	"name": "Эльоддур",
@@ -7826,7 +7826,7 @@
 	"background": "bosses/backgrounds/4.png",
 	"image": "bosses/images/473.png",
 	"icon": "bosses/icons/473.png",
-	"region": 0
+	"region": 39
 }, {
 	"id": 474,
 	"name": "Ксардас",
@@ -7845,5 +7845,5 @@
 	"background": "bosses/backgrounds/4.png",
 	"image": "bosses/images/474.png",
 	"icon": "bosses/icons/474.png",
-	"region": 0
+	"region": 38
 }]

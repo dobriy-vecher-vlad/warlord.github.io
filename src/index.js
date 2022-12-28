@@ -91,6 +91,7 @@ import './style.css';
 
 import Items from './data/items.json';
 import Collections from './data/collections.json';
+// import Bosses from './data/bosses.json';
 
 import dataMain from './data/main.json';
 import dataMap from './data/map.json';
@@ -149,7 +150,7 @@ const parseQueryString = (string = '') => {
 };
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
-const wikiVersion = '1.7.4';
+const wikiVersion = '1.7.5';
 const pathImages = 'https://dobriy-vecher-vlad.github.io/warlord-helper/media/images/';
 const serverHub = [{
 	id: 1,
@@ -497,7 +498,6 @@ const App = withAdaptivity(({ viewWidth }) => {
 	const getParseBosses = async() => {
 		let xml = `<bosses></bosses>`;
 		let response = await x2js.xml_str2json(xml);
-		console.log(response);
 		let result = [];
 		response.bosses.npc.forEach((item, x) => {
 			result.push({
@@ -520,12 +520,167 @@ const App = withAdaptivity(({ viewWidth }) => {
 				icon: `bosses/icons/${Number(item.u._id)}.png`
 			});
 		});
-		console.log(response);
-		console.log(result);
-		console.log(JSON.stringify(result));
+		for (let boss of result) {
+			let findBoss = Bosses.find(item => item.id == boss.id);
+			if (findBoss) {
+				if (findBoss.hp != boss.hp) {
+					console.warn(boss.name, 'hp', {
+						current: findBoss.hp,
+						new: boss.hp,
+					});
+					findBoss.hp = boss.hp;
+				}
+				if (findBoss.dmg != boss.dmg) {
+					console.warn(boss.name, 'dmg', {
+						current: findBoss.dmg,
+						new: boss.dmg,
+					});
+					findBoss.dmg = boss.dmg;
+				}
+				if (findBoss.type != boss.type) {
+					console.warn(boss.name, 'type', {
+						current: findBoss.type,
+						new: boss.type,
+					});
+					findBoss.type = boss.type;
+				}
+				if (findBoss.time != boss.time) {
+					console.warn(boss.name, 'time', {
+						current: findBoss.time,
+						new: boss.time,
+					});
+					findBoss.time = boss.time;
+				}
+				if (findBoss.tries != boss.tries) {
+					console.warn(boss.name, 'tries', {
+						current: findBoss.tries,
+						new: boss.tries,
+					});
+					findBoss.tries = boss.tries;
+				}
+				if (findBoss.energy != boss.energy) {
+					console.warn(boss.name, 'energy', {
+						current: findBoss.energy,
+						new: boss.energy,
+					});
+					findBoss.energy = boss.energy;
+				}
+				if (JSON.stringify(findBoss.rewards) != JSON.stringify(boss.rewards)) {
+					console.warn(boss.name, 'rewards', {
+						current: findBoss.rewards,
+						new: boss.rewards,
+					});
+				}
+			}
+		}
 	};
 	// getParseBosses();
-
+	const getParseMap = async() => {
+		let xml = `<maps></maps>`;
+		let response = await x2js.xml_str2json(xml);
+		let result = [];
+		response.maps.map.forEach((item, x) => {
+			result.push({
+				id: Number(item._id)-1,
+				title: item._n,
+				description: item._ds,
+				lvl: Number(item._rul),
+				boss: Bosses.findIndex(boss => boss.id == Number(item._d3)) == -1 ? false : Bosses.findIndex(boss => boss.id == Number(item._d3)),
+			});
+		});
+		let Maps = dataMap.regions.map((item) => item.items).flat(1);
+		for (let map of result) {
+			let findMap = Maps.find(item => item.id == map.id);
+			if (findMap) {
+				if (findMap.lvl != map.lvl) {
+					console.log(map.title, 'lvl', {
+						current: findMap.lvl,
+						new: map.lvl,
+					});
+					findMap.lvl = map.lvl;
+				}
+				if (findMap.boss != map.boss) {
+					console.log(map.title, 'boss', {
+						current: findMap.boss,
+						new: map.boss,
+					});
+					findMap.boss = map.boss;
+				}
+			}
+		}
+	};
+	// getParseMap();
+	const getParseItems = async() => {
+		let xml = `<shop></shop>`;
+		let response = await x2js.xml_str2json(xml);
+		let result = [];
+		response.shop.i.forEach((item, x) => {
+			result.push({
+				id: Number(item._id),
+				type: Number(item._cat),
+				title: item._name,
+				dmg: Number(item._d2),
+				hp: Number(item._d4),
+				currency: 
+					Number(item._p1) !== 0 ? 1 :
+					Number(item._p2) !== 0 ? 2 :
+					Number(item._p3) !== 0 ? 3 :
+					Number(item._p4) !== 0 ? 4 :
+					Number(item._p5) !== 0 ? 5 :
+					Number(item._p6) !== 0 ? 6 :
+					0,
+				price: 
+					Number(item._p1) !== 0 ? Number(item._p1) :
+					Number(item._p2) !== 0 ? Number(item._p2) :
+					Number(item._p3) !== 0 ? Number(item._p3) :
+					Number(item._p4) !== 0 ? Number(item._p4) :
+					Number(item._p5) !== 0 ? Number(item._p5) :
+					Number(item._p6) !== 0 ? Number(item._p6) :
+					0,
+			});
+		});
+		for (let elem of result) {
+			let findItem = Items.find(item => item.id == elem.id);
+			if (findItem) {
+				if (findItem.type != elem.type) {
+					console.log(elem.title, 'type', {
+						current: findItem.type,
+						new: elem.type,
+					});
+					findItem.type = elem.type;
+				}
+				if (findItem.dmg != elem.dmg) {
+					console.log(elem.title, 'dmg', {
+						current: findItem.dmg,
+						new: elem.dmg,
+					});
+					findItem.dmg = elem.dmg;
+				}
+				if (findItem.hp != elem.hp) {
+					console.log(elem.title, 'hp', {
+						current: findItem.hp,
+						new: elem.hp,
+					});
+					findItem.hp = elem.hp;
+				}
+				if (findItem.currency != elem.currency) {
+					console.log(elem.title, 'currency', {
+						current: findItem.currency,
+						new: elem.currency,
+					});
+					findItem.currency = elem.currency;
+				}
+				if (findItem.price != elem.price) {
+					console.log(elem.title, 'price', {
+						current: findItem.price,
+						new: elem.price,
+					});
+					findItem.price = elem.price;
+				}
+			}
+		}
+	};
+	// getParseItems();
 	const getParseXML = async() => {
 		let xml = `<?xml version="1.0" encoding="utf-8"?><data><a res="1" /><r  m1="41"  m3="434" /></data>`;
 		let data = await x2js.xml_str2json(xml);

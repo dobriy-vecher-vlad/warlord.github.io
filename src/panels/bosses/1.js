@@ -33,21 +33,41 @@ let discountArray = [{
 	description: 'Здоровье и атака без изменения',
 	value: 0
 }, {
+	title: 'Слабее на 5%',
+	description: 'Здоровье и атака меньше на 5%',
+	value: 5
+}, {
 	title: 'Слабее на 10%',
 	description: 'Здоровье и атака меньше на 10%',
 	value: 10
+}, {
+	title: 'Слабее на 15%',
+	description: 'Здоровье и атака меньше на 15%',
+	value: 15
 }, {
 	title: 'Слабее на 20%',
 	description: 'Здоровье и атака меньше на 20%',
 	value: 20
 }, {
+	title: 'Слабее на 25%',
+	description: 'Здоровье и атака меньше на 25%',
+	value: 25
+}, {
 	title: 'Слабее на 30%',
 	description: 'Здоровье и атака меньше на 30%',
 	value: 30
 }, {
+	title: 'Слабее на 35%',
+	description: 'Здоровье и атака меньше на 35%',
+	value: 35
+}, {
 	title: 'Слабее на 40%',
 	description: 'Здоровье и атака меньше на 40%',
 	value: 40
+}, {
+	title: 'Слабее на 45%',
+	description: 'Здоровье и атака меньше на 45%',
+	value: 45
 }, {
 	title: 'Слабее на 50%',
 	description: 'Здоровье и атака меньше на 50%',
@@ -62,6 +82,32 @@ class PANEL extends React.Component {
 			count_boss: {clearDamage: 0, totalDamage: 0, leftHP: 0, totalHit: 0},
 			newBossCount: 1,
 			newBossArray: [
+
+				'Временные боссы',
+
+				Bosses.find(item => item.id === 291),
+				Bosses.find(item => item.id === 453),
+				Bosses.find(item => item.id === 462),
+				Bosses.find(item => item.id === 467),
+				Bosses.find(item => item.id === 468),
+
+				'Общие боссы',
+
+				Bosses.find(item => item.id === 67),
+				Bosses.find(item => item.id === 69),
+				Bosses.find(item => item.id === 290),
+				Bosses.find(item => item.id === 313),
+				Bosses.find(item => item.id === 337),
+				Bosses.find(item => item.id === 459),
+				Bosses.find(item => item.id === 341),
+				Bosses.find(item => item.id === 460),
+				Bosses.find(item => item.id === 390),
+				Bosses.find(item => item.id === 393),
+				Bosses.find(item => item.id === 458),
+				Bosses.find(item => item.id === 455),
+				
+				'Одиночные боссы',
+
 				Bosses.find(item => item.id === 1),
 				Bosses.find(item => item.id === 3),
 				Bosses.find(item => item.id === 27),
@@ -76,36 +122,32 @@ class PANEL extends React.Component {
 				Bosses.find(item => item.id === 70),
 				Bosses.find(item => item.id === 65),
 				Bosses.find(item => item.id === 66),
-				Bosses.find(item => item.id === 67),
 				Bosses.find(item => item.id === 68),
-				Bosses.find(item => item.id === 69),
 				Bosses.find(item => item.id === 278),
-				Bosses.find(item => item.id === 290),
 				Bosses.find(item => item.id === 279),
 				Bosses.find(item => item.id === 288),
 				Bosses.find(item => item.id === 289),
-				Bosses.find(item => item.id === 313),
-				Bosses.find(item => item.id === 337),
 				Bosses.find(item => item.id === 338),
-				Bosses.find(item => item.id === 459),
 				Bosses.find(item => item.id === 339),
 				Bosses.find(item => item.id === 340),
-				Bosses.find(item => item.id === 341),
-				Bosses.find(item => item.id === 460),
 				Bosses.find(item => item.id === 357),
 				Bosses.find(item => item.id === 358),
-				Bosses.find(item => item.id === 390),
 				Bosses.find(item => item.id === 391),
-				Bosses.find(item => item.id === 393),
 				Bosses.find(item => item.id === 392),
-				Bosses.find(item => item.id === 458),
-				Bosses.find(item => item.id === 455),
 				Bosses.find(item => item.id === 456),
 				Bosses.find(item => item.id === 457),
 				Bosses.find(item => item.id === 461),
 				Bosses.find(item => item.id === 463),
 				Bosses.find(item => item.id === 464),
 				Bosses.find(item => item.id === 466),
+				Bosses.find(item => item.id === 470),
+				Bosses.find(item => item.id === 471),
+				Bosses.find(item => item.id === 472),
+				Bosses.find(item => item.id === 474),
+				Bosses.find(item => item.id === 473),
+
+				'Рейдовые боссы',
+
 				Bosses.find(item => item.id === 287),
 				Bosses.find(item => item.id === 284),
 				Bosses.find(item => item.id === 285),
@@ -114,11 +156,6 @@ class PANEL extends React.Component {
 				Bosses.find(item => item.id === 454),
 				Bosses.find(item => item.id === 465),
 				Bosses.find(item => item.id === 469),
-				Bosses.find(item => item.id === 291),
-				Bosses.find(item => item.id === 453),
-				Bosses.find(item => item.id === 462),
-				Bosses.find(item => item.id === 467),
-				Bosses.find(item => item.id === 468)
 			],
 			newBossHP: 0,
 			newBossDMG: 0
@@ -148,6 +185,7 @@ class PANEL extends React.Component {
 			});
 			this.setState({ newBossCount: newBossCount+1 });
 			newBossID = Bosses.length-1;
+			if (!newBossArray.includes('Свои боссы')) newBossArray.push('Свои боссы');
 			newBossArray.push(Bosses[Bosses.length-1]);
 			this.CalcBoss();
 		}
@@ -282,9 +320,9 @@ class PANEL extends React.Component {
 							searchable={true}
 							onChange={(e) => {newBossID = e.target.value, this.CalcBoss()}}
 							placeholder="Не выбран" 
-							options={this.state.newBossArray.map((data, x) => ({ label: data.name, description: data.description, value: Bosses.indexOf(data), avatar: `${pathImages}${data.icon}` }))}
+							options={this.state.newBossArray.map((data, x) => typeof data == 'string' ? ({ label: data, value: options.numberRandom(1, 999999), disabled: true }) : ({ label: data.name, description: data.description, value: Bosses.indexOf(data) == -1 ? options.numberRandom(1, 999999) : Bosses.indexOf(data), avatar: `${pathImages}${data.icon}` }) )}
 							renderOption={({ option, ...restProps }) => (
-								<CustomSelectOption {...restProps} before={<Avatar size={24} src={option.avatar} />} description={option.description} />
+								option.description ? <CustomSelectOption {...restProps} before={<Avatar size={24} src={option.avatar} />} description={option.description}/> : <CustomSelectOption {...restProps}/>
 							)}
 						/>
 						<Button stretched size="l" style={{minWidth: 'fit-content'}} mode="secondary" onClick={() => this.setNewBoss('open')}>Создать своего</Button>
@@ -304,9 +342,9 @@ class PANEL extends React.Component {
 							searchable={true}
 							onChange={(e) => {newBossID = e.target.value, this.CalcBoss()}}
 							placeholder="Не выбран" 
-							options={this.state.newBossArray.map((data, x) => ({ label: data.name, description: data.description, value: Bosses.indexOf(data), avatar: `${pathImages}${data.icon}` }))}
+							options={this.state.newBossArray.map((data, x) => typeof data == 'string' ? ({ label: data, value: options.numberRandom(1, 999999), disabled: true }) : ({ label: data.name, description: data.description, value: Bosses.indexOf(data) == -1 ? options.numberRandom(1, 999999) : Bosses.indexOf(data), avatar: `${pathImages}${data.icon}` }))}
 							renderOption={({ option, ...restProps }) => (
-								<CustomSelectOption {...restProps} before={<Avatar size={24} src={option.avatar} />} description={option.description} />
+								option.description ? <CustomSelectOption {...restProps} before={<Avatar size={24} src={option.avatar} />} description={option.description}/> : <CustomSelectOption {...restProps}/>
 							)}
 						/>
 						<Button style={{width: '50%'}} stretched size="l" mode="secondary" onClick={() => this.setNewBoss('open')}>Создать своего</Button>

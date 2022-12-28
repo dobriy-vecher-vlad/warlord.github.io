@@ -39,14 +39,14 @@ class PANEL extends React.Component {
 		const pathImages = 'https://dobriy-vecher-vlad.github.io/warlord-helper/media/images/';
 		const title = 'Список боссов';
 		const description = 'Боссы';
-		const avatar = 'labels/9.png';
+		const avatar = 'labels/29.png';
 		return (
 			<Panel id={this.props.id}>
 				{!state.isDesktop && options.getPanelHeader(title, description, avatar, this.props.id, parent)}
 				<Group>
 					<div className='Sticky Sticky__top withSeparator'>
 						{state.isDesktop && options.getPanelHeader(title, description, avatar, this.props.id, parent)}
-						{options.getRichCellDescription(<React.Fragment>Ежемесячно в игру поступают 2 новых предмета экипировки, которые доступны в качестве награды за арену<br/>Чем выше лига - тем лучше и больше награда с ежемесячного сундука</React.Fragment>)}
+						{options.getRichCellDescription(<React.Fragment>Всего в игре {dataBosses.bosses.map((item) => item.mobs.map(() => 1).reduce((x, y) => x + y)).reduce((x, y) => x + y)} {options.numberForm(dataBosses.bosses.map((item) => item.mobs.map(() => 1).reduce((x, y) => x + y)).reduce((x, y) => x + y), ['босс', 'босса', 'боссов'])}, которые делятся на временных, общих, одиночных, рейдовых и уникальных<br/>Каждый босс имеет свой лимит побед и стоимость нападения</React.Fragment>)}
 						<Spacing size={8} />
 					</div>
 					{dataBosses.bosses.map((data, x) =>
@@ -61,7 +61,7 @@ class PANEL extends React.Component {
 										<HorizontalCell size='m' header={boss.name} subtitle={boss.description}>
 											<Spinner size="regular" className="Horizontal__imagePreload" />
 											<Avatar size={88} mode='app' style={{
-													background: `url(${pathImages}${boss.image}) top left 25%/cover no-repeat, url(${pathImages}${boss.background}) center/cover`
+												background: `url(${pathImages}${boss.image}) top left 25%/cover no-repeat, url(${pathImages}${boss.background}) center/cover`
 											}}/>
 										</HorizontalCell>
 									</Card>
