@@ -172,7 +172,7 @@ class PANEL extends React.Component {
 		let api_uid = state.user?.vk?.id;
 		let auth_key = state.auth;
 		if (!auth_key) {
-			auth_key = this._isMounted && await BotAPI('getAuth', null, null, null, {stage: 'modal', text: 'Для продолжения работы необходимо указать ключ авторизации'});
+			auth_key = this._isMounted && await BotAPI('getAuth', null, null, null, {stage: 'modal', text: 'Для продолжения работы необходимо указать пароль авторизации'});
 			if (auth_key == 'modal') {
 				this._isMounted && setActivePanel('profile');
 				return
@@ -187,8 +187,8 @@ class PANEL extends React.Component {
 		};
 		let player = this._isMounted && await BotAPI('getStats', auth_key, api_uid, sslt);
 		if (!player) {
-			openSnackbar({text: 'Ключ авторизации игры неисправен, введите новый', icon: 'error'});
-			this._isMounted && BotAPI('getAuth', null, null, null, {stage: 'modal', text: 'Ключ авторизации игры неисправен, введите новый'});
+			openSnackbar({text: 'Пароль авторизации игры неисправен, введите новый', icon: 'error'});
+			this._isMounted && BotAPI('getAuth', null, null, null, {stage: 'modal', text: 'Пароль авторизации игры неисправен, введите новый'});
 			this._isMounted && setActivePanel('profile');
 			return;
 		}

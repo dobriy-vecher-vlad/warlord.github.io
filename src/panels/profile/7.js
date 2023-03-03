@@ -185,7 +185,7 @@ class PANEL extends React.Component {
 		let api_uid = state.login || state.user?.vk?.id;
 		let auth_key = state.auth;
 		if (!auth_key) {
-			auth_key = this._isMounted && await BotAPI('getAuth', null, null, null, {stage: 'modal', text: 'Для продолжения работы необходимо указать ключ авторизации'});
+			auth_key = this._isMounted && await BotAPI('getAuth', null, null, null, {stage: 'modal', text: 'Для продолжения работы необходимо указать пароль авторизации'});
 			if (auth_key == 'modal') {
 				this._isMounted && setActivePanel('profile');
 				return;
@@ -202,8 +202,8 @@ class PANEL extends React.Component {
 		getGameAuth.id = dataProfile?.u?._id || api_uid;
 		// console.warn(dataProfile);
 		if (!dataProfile?.u) {
-			openSnackbar({text: 'Ключ авторизации игры неисправен, введите новый', icon: 'error'});
-			this._isMounted && BotAPI('getAuth', null, null, null, {stage: 'modal', text: 'Ключ авторизации игры неисправен, введите новый', error: typeof dataProfile == 'string' ? dataProfile : dataProfile?.err_msg ? dataProfile?.err_msg : JSON.stringify(dataProfile)});
+			openSnackbar({text: 'Пароль авторизации игры неисправен, введите новый', icon: 'error'});
+			this._isMounted && BotAPI('getAuth', null, null, null, {stage: 'modal', text: 'Пароль авторизации игры неисправен, введите новый', error: typeof dataProfile == 'string' ? dataProfile : dataProfile?.err_msg ? dataProfile?.err_msg : JSON.stringify(dataProfile)});
 			this._isMounted && setActivePanel('profile');
 			return;
 		}

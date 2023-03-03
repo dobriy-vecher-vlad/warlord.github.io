@@ -150,7 +150,7 @@ const parseQueryString = (string = '') => {
 };
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
-const wikiVersion = '1.7.5';
+const wikiVersion = '1.8.0';
 const pathImages = 'https://dobriy-vecher-vlad.github.io/warlord-helper/media/images/';
 const serverHub = [{
 	id: 1,
@@ -180,7 +180,7 @@ const serverHub = [{
 // 	logo: `${pathImages}/main/logo_ok.svg`,
 }, {
 	id: 3,
-	name: 'Эрмун',
+	name: 'Яндекс',
 	api: 'ya',
 	site: 'yandex.ru',
 	company: 'Яндекс',
@@ -213,6 +213,7 @@ import PANEL_profile__7 from './panels/profile/7';
 // import PANEL_profile__8 from './panels/profile/8';
 import PANEL_profile__9 from './panels/profile/9';
 import PANEL_profile__10 from './panels/profile/10';
+import PANEL_profile__11 from './panels/profile/11';
 
 import VIEW_rating from './panels/rating/rating';
 
@@ -1157,6 +1158,12 @@ const App = withAdaptivity(({ viewWidth }) => {
 					return this.OpenModal('donut');
 				}
 			}
+			if (name == '11' && activeStory == 'profile') {
+				if (!isDonut) {
+					// this.OpenModal('donut');
+					return this.OpenModal('donut');
+				}
+			}
 			if (name == '1' && activeStory == 'bosses') {
 				if (!isDonut) {
 					// this.OpenModal('donut');
@@ -1672,16 +1679,11 @@ const App = withAdaptivity(({ viewWidth }) => {
 					}
 				} else {
 					if (isDonut) {
-						let count = Number((await this.Storage({key: 'storeProfilesDeleted', defaultValue: '0'})).value) || 0;
-						if (count <= 5) {
-							this.state.id = null;
-							this.state.login = null;
-							this.state.auth = null;
-							this.state.server = null;
-							this.OpenModal(`getSettings`, {mode: 'add'});
-						} else {
-							this.openSnackbar({text: 'Превышен лимит добавления', icon: 'error'});
-						}
+						this.state.id = null;
+						this.state.login = null;
+						this.state.auth = null;
+						this.state.server = null;
+						this.OpenModal(`getSettings`, {mode: 'add'});
 					} else {
 						this.OpenModal('donut');
 					}
@@ -1702,22 +1704,16 @@ const App = withAdaptivity(({ viewWidth }) => {
 					if (slot == -1) {
 						this.openSnackbar({text: 'Нет свободных мест', icon: 'error'});
 					} else {
-						let count = Number((await this.Storage({key: 'storeProfilesDeleted', defaultValue: '0'})).value) || 0;
-						if (count <= 5) {
-							await this.Storage({key: 'storeProfilesDeleted', value: String(count+1)});
-							this.state.storeProfiles[slot] = {
-								server: Number(this.state.server),
-								id: Number(this.state.id),
-								login: this.state.login,
-								auth: this.state.auth,
-							};
-							await this.Storage({key: 'storeProfiles', value: JSON.stringify(this.state.storeProfiles)});
-							this.CloseModal();
-							this.openSnackbar({text: 'Профиль добавлен', icon: 'done'});
-							await this.storeProfiles(slot);
-						} else {
-							this.openSnackbar({text: 'Превышен лимит добавления', icon: 'error'});
-						}
+						this.state.storeProfiles[slot] = {
+							server: Number(this.state.server),
+							id: Number(this.state.id),
+							login: this.state.login,
+							auth: this.state.auth,
+						};
+						await this.Storage({key: 'storeProfiles', value: JSON.stringify(this.state.storeProfiles)});
+						this.CloseModal();
+						this.openSnackbar({text: 'Профиль добавлен', icon: 'done'});
+						await this.storeProfiles(slot);
 					}
 				}
 			} else {
@@ -1727,15 +1723,22 @@ const App = withAdaptivity(({ viewWidth }) => {
 		removeProfileInStore = async() => {
 			const { activePanel, activeStory } = this.state;
 			isDev&&console.warn('removeProfileInStore', activeStory, activePanel);
-			this.state.storeProfiles.splice(this.state.storeProfilesIndex, 1);
-			this.state.storeProfiles.push({
-				id: null
-			});
-			await this.Storage({key: 'storeProfiles', value: JSON.stringify(this.state.storeProfiles)});
-			this.state.storeProfilesFull = this.state.storeProfiles.slice();
-			this.CloseModal();
-			this.openSnackbar({text: 'Профиль удалён', icon: 'done'});
-			await this.storeProfiles(this.state.storeProfilesIndex-1);
+			let count = Number((await this.Storage({key: 'storeProfilesDeleted', defaultValue: '0'})).value) || 0;
+			if (count <= 5) {
+				await this.Storage({key: 'storeProfilesDeleted', value: String(count+1)});
+				this.state.storeProfiles.splice(this.state.storeProfilesIndex, 1);
+				this.state.storeProfiles.push({
+					id: null
+				});
+				await this.Storage({key: 'storeProfiles', value: JSON.stringify(this.state.storeProfiles)});
+				this.state.storeProfilesFull = this.state.storeProfiles.slice();
+				this.CloseModal();
+				this.openSnackbar({text: 'Профиль удалён', icon: 'done'});
+				await this.storeProfiles(this.state.storeProfilesIndex-1);
+			} else {
+				this.CloseModal();
+				this.openSnackbar({text: 'Превышен лимит удаления', icon: 'error'});
+			}
 		};
 		loadProfile = async(dev = false, reload = false, version = 1, withParams = false) => {
 			const { activePanel, activeStory } = this.state;
@@ -1800,7 +1803,9 @@ const App = withAdaptivity(({ viewWidth }) => {
 								this.state.storeProfilesFull = this.state.storeProfilesFull.slice(0, this.state.storeProfilesSize);
 							}
 						} else {
-							this.state.storeProfilesSize = this.state.storeProfiles.length;
+							let size = 5;
+							this.state.storeProfilesSize = Math.max(this.state.storeProfiles.length, 5);
+							for (let i of new Array(size-this.state.storeProfiles.length < 0 ? 0 : size-this.state.storeProfiles.length)) this.state.storeProfiles.push({ id: null });
 						}
 						let dataGame = await getGame(this.state.server, null, {
 							login: this.state.storeProfiles[this.state.storeProfilesIndex].login || dataVK.id,
@@ -2140,6 +2145,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 					this.setState({ user: {vk: dataVK, game: null} });
 				}
 				let allDataVK = await getBridge('VKWebAppCallAPIMethod', {"method": "users.get", "params": {"user_ids": this.state.storeProfiles.map(profile => profile.id).join(','), "fields": "photo_100,photo_200,photo_max_orig", "v": '5.130', "access_token": "9942dca8c434ee910f1745a2989105b6b66d712e4f6d96b474278ca18ea7e6d7a8db5f4e569b16c6d1d20"}});
+				this.state.storeProfilesFull = [...this.state.storeProfiles];
 				for (let storeProfileData of allDataVK?.response) {
 					let storeProfile = this.state.storeProfiles.findIndex(profile => profile.id == storeProfileData.id);
 					if (storeProfile != -1) {
@@ -2266,7 +2272,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 				<MODAL_getSettings__login id='getSettings-login' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} />
 				<MODAL_getSettings__password id='getSettings-password' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} />
 				<MODAL_getSettings__server id='getSettings-server' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} />
-				<MODAL_getSettings__order id='getSettings-order' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} />
+				<MODAL_getSettings__order id='getSettings-order' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} storeProfiles={this.state.storeProfiles} storeProfilesFull={this.state.storeProfilesFull} storeProfilesSize={this.state.storeProfilesSize} />
 				<MODAL_mediaArenaItems id='mediaArenaItems' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} clan_id={clan_id} api_id={api_id} clan_auth={clan_auth} />
 				<MODAL_mediaEventsItems id='mediaEventsItems' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} clan_id={clan_id} api_id={api_id} clan_auth={clan_auth} />
 				<MODAL_mediaSales id='mediaSales' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} />
@@ -2600,6 +2606,10 @@ const App = withAdaptivity(({ viewWidth }) => {
 											</div>
 											<Spacing separator size={12} />
 											<React.Fragment>
+												<SimpleCell onClick={() => setActivePanel('11', true)} before={<Avatar mode="app" src={`${pathImages}labels/20.png`} />} description="Генератор изображений" expandable indicator={<React.Fragment>
+													<span className="Text">{!isDonut&&<Icon28DonateCircleFillYellow width={24} height={24}/>}</span>
+												</React.Fragment>}>Коллекции</SimpleCell>
+												<Spacing separator size={12} />
 												{/* <SimpleCell onClick={() => setActivePanel('8', true)} before={<Avatar mode="app" src={`${pathImages}labels/29.png`} />} description="Автоматизация" expandable indicator={<React.Fragment>
 													<span className="Text">{!isDonut&&<Icon28DonateCircleFillYellow width={24} height={24}/>}</span>
 												</React.Fragment>}>Боссы</SimpleCell> */}
@@ -2651,6 +2661,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 								{/* <PANEL_profile__8 id='8' parent='profile' state={this.state} options={this} /> */}
 								<PANEL_profile__9 id='9' parent='profile' state={this.state} options={this} />
 								<PANEL_profile__10 id='10' parent='profile' state={this.state} options={this} />
+								<PANEL_profile__11 id='11' parent='profile' state={this.state} options={this} />
 							</View>
 
 
@@ -2981,7 +2992,3 @@ const App = withAdaptivity(({ viewWidth }) => {
 });
 
 ReactDOM.createRoot(document.getElementById('root')).render(<AdaptivityProvider><AppRoot><App/></AppRoot></AdaptivityProvider>);
-
-// if (islocalStorage && process?.env?.NODE_ENV === "development") {
-// 	import("./eruda").then(({ default: eruda }) => {});
-// }

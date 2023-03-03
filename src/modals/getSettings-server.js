@@ -6,8 +6,10 @@ import {
 	PanelHeaderSubmit,
 	PanelHeaderBack,
 	Radio,
-	ModalPage
+	ModalPage,
+	SimpleCell
 } from '@vkontakte/vkui';
+import { Icon28DocumentTextOutline } from '@vkontakte/icons';
 
 class MODAL extends React.Component {
 	constructor(props) {
@@ -40,8 +42,9 @@ class MODAL extends React.Component {
 						{this.props.state.serverHub.map(server => <Radio key={server.id} name="type"
 							defaultChecked={key == server.id}
 							onChange={() => this.setState({ key: server.id })}
-						>{server.name} ({server.site})</Radio>)}
+						>{server.name}</Radio>)}
 					</FormItem>
+					<SimpleCell href="https://vk.com/@wiki.warlord-authorization?anchor=vybor-servera" target="_blank" subtitle="Статья" before={<Icon28DocumentTextOutline/>} expandable>Выбор сервера</SimpleCell>
 				</Div>
 			</ModalPage>
 		);

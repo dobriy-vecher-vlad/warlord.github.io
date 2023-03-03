@@ -1,5 +1,5 @@
 {
-  "name": "WarlordWiki",
+  "name": "Warlord Helper",
   "version": "1.0.0",
   "description": "",
   "homepage": "./",
@@ -18,27 +18,15 @@
   "devDependencies": {
     "@vkontakte/vk-miniapps-deploy": "^0.0.26",
     "cross-env": "^7.0.3",
-    "gh-pages": "^4.0.0",
-    "react-hot-loader": "^4.13.0",
     "react-scripts": "^5.0.1"
   },
   "dependencies": {
-    "@vkontakte/icons": "^1.195.0",
-    "@vkontakte/vk-bridge": "^2.7.0",
-    "@vkontakte/vk-tunnel": "^0.1.0",
-    "@vkontakte/vkui": "^4.37.4",
-    "babel-eslint": "^10.1.0",
-    "chalk": "^5.0.1",
-    "core-js": "^3.25.3",
-    "cors": "^2.8.5",
-    "eruda": "^2.5.0",
-    "eruda-code": "^2.0.0",
-    "eruda-dom": "^2.0.0",
-    "prop-types": "^15.8.1",
+    "@vkontakte/icons": "^1.213.0",
+    "@vkontakte/vk-bridge": "^2.7.2",
+    "@vkontakte/vkui": "^4.42.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-infinite-scroll-component": "^6.1.0",
-    "smooth-scrollbar-react": "^2.3.0"
+    "react-infinite-scroll-component": "^6.1.0"
   },
   "browserslist": {
     "production": [
