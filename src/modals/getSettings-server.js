@@ -42,7 +42,7 @@ class MODAL extends React.Component {
 						{this.props.state.serverHub.map(server => <Radio key={server.id} name="type"
 							defaultChecked={key == server.id}
 							onChange={() => this.setState({ key: server.id })}
-						>{server.name}</Radio>)}
+						>{server.name} <span style={{ color: 'var(--text_secondary,var(--vkui--color_text_secondary))' }}>на сайте {server.company}</span></Radio>)}
 					</FormItem>
 					<SimpleCell href="https://vk.com/@wiki.warlord-authorization?anchor=vybor-servera" target="_blank" subtitle="Статья" before={<Icon28DocumentTextOutline/>} expandable>Выбор сервера</SimpleCell>
 				</Div>

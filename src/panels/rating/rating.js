@@ -133,7 +133,7 @@ class PANEL extends React.Component {
 				let dataRating;
 				if (!ratingProfilesTime) {
 					dataRating = this._isMounted && await getData(`https://dobriy-vecher-vlad.github.io/warlord/data/users/${['ermun', 'antares'][this.state.server-1]}/${time}.json`);
-					if (dataRating) {
+					if (dataRating && typeof dataRating === 'object') {
 						ratingProfilesData[0].items = dataRating.sort((a, b) => {
 							return b.exp - a.exp
 						}).map(user => ({
@@ -205,7 +205,7 @@ class PANEL extends React.Component {
 				let dataRating;
 				if (!ratingGuildsTime) {
 					dataRating = this._isMounted && await getData(`https://dobriy-vecher-vlad.github.io/warlord/data/guilds/${['ermun', 'antares'][this.state.server-1]}/${time}.json`);
-					if (dataRating) {
+					if (dataRating && typeof dataRating === 'object') {
 						for (let guild of dataRating) {
 							guild.leader = guild?.users?.find(user => user.id == guild.leader)?.vkId || guild.leader;
 							guild.tag = await this.calcTag(guild.users.find(user => user.id == guild.leader)?.name, guild.users[0].name);

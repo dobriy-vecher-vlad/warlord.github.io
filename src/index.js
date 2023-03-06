@@ -109,8 +109,22 @@ let queryParams = null;
 let hashParams = null;
 
 let api_id = 5536422;
-let clan_id = 292859277;
-let clan_auth = 'de73003f6d508e583e9c7f316024abbf';
+let DEFAULT_AUTHORIZATION = [{
+	login: '292859277',
+	password: 'de73003f6d508e583e9c7f316024abbf',
+}, {
+	login: '292859277',
+	password: 'de73003f6d508e583e9c7f316024abbf',
+}, {
+	login: '292859277',
+	password: 'de73003f6d508e583e9c7f316024abbf',
+}, {
+	login: '584840646046,597549694242',
+	password: 'cdc92c8ca6e8c9952ea67ff053b47f8c,-s-7XnteVPUNZrXe5I-oUoTg-Iao0KTcWMWL0uvB5RWmXLxg8P8nyLyc4IYmwsxD6LYqxOxE6u7MxK1iWv3uxNwdUI5',
+}, {
+	login: '584840646046,628130888',
+	password: '5e59fc5fc09e430606dbdf926d43f78e,-s-dznWeVx3M1l1EVM7N-rYeUIUKzoW-Ws4MxovBWPUsyuYidt7NVKVd7Kamxmyi6tXlWnTfYvdrxMwfWN6KzkxcXIc',
+}];
 let syncUser = null;
 let syncUserGame = null;
 let isDonut = false;
@@ -150,7 +164,7 @@ const parseQueryString = (string = '') => {
 };
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
-const wikiVersion = '1.8.0';
+const wikiVersion = '1.7.6';
 const pathImages = 'https://dobriy-vecher-vlad.github.io/warlord-helper/media/images/';
 const serverHub = [{
 	id: 1,
@@ -166,25 +180,27 @@ const serverHub = [{
 	site: 'vk.com',
 	company: 'ВКонтакте',
 	logo: `${pathImages}/main/logo_vk.svg`,
-// }, {
-// 	id: 3,
-// 	name: 'Эрмун',
-// 	api: 'ok1',
-// 	site: 'ok.ru',
-// 	logo: `${pathImages}/main/logo_ok.svg`,
-// }, {
-// 	id: 4,
-// 	name: 'Антарес',
-// 	api: 'ok2',
-// 	site: 'ok.ru',
-// 	logo: `${pathImages}/main/logo_ok.svg`,
 }, {
 	id: 3,
-	name: 'Яндекс',
+	name: 'Эрмун',
 	api: 'ya',
 	site: 'yandex.ru',
 	company: 'Яндекс',
 	logo: `${pathImages}/main/logo_yandex.svg`,
+}, {
+	id: 4,
+	name: 'Эрмун',
+	api: 'ok1',
+	site: 'ok.ru',
+	company: 'Одноклассники',
+	logo: `${pathImages}/main/logo_ok.svg`,
+}, {
+	id: 5,
+	name: 'Антарес',
+	api: 'ok2',
+	site: 'ok.ru',
+	company: 'Одноклассники',
+	logo: `${pathImages}/main/logo_ok.svg`,
 }];
 
 
@@ -213,7 +229,7 @@ import PANEL_profile__7 from './panels/profile/7';
 // import PANEL_profile__8 from './panels/profile/8';
 import PANEL_profile__9 from './panels/profile/9';
 import PANEL_profile__10 from './panels/profile/10';
-import PANEL_profile__11 from './panels/profile/11';
+// import PANEL_profile__11 from './panels/profile/11';
 
 import VIEW_rating from './panels/rating/rating';
 
@@ -323,12 +339,28 @@ const App = withAdaptivity(({ viewWidth }) => {
 		}
 		return data;
 	};
+	const getFormData = (link) => {
+		const body = parseQueryString(new URL(link).search);
+		let data = new FormData();
+		for (let [key, value] of Object.entries(body)) data.append(key, value);
+		return data;
+	};
 	const getData = async(type, link) => {
 		if (link == null) link = type;
 		if (type && link) {
 			try {
-				let data = await fetch(link.replace(/%2B/g, '+').replace(/%3D/g, '='));
+				link = link.replace(/%2B/g, '+').replace(/%3D/g, '=');
+				let data;
+				if (link.includes('tmp1-fb.geronimo.su')) {
+					data = await fetch(new URL(link).origin + new URL(link).pathname, {
+						method: 'POST',
+						body: getFormData(link),
+					});
+				} else {
+					data = await fetch(link);
+				}
 				data = await data.text();
+				let text = data.toString();
 				if (data == 'Err. More than 1 request per second' || data == 'Too many requests per second.') {
 					await wait(1000);
 					return await getData(type, link);
@@ -340,14 +372,14 @@ const App = withAdaptivity(({ viewWidth }) => {
 					data = await x2js.xml_str2json(data);
 				}
 				if (data && data.data != undefined) data = data.data;
-				return data;
+				return data || text;
 			} catch (error) {
 				// console.log(error);
 				return null;
 			}
 		}
 	}
-	const getGame = async(server = 'vk1', body = {}, auth = {}, type = 1) => {
+	const getGame = async(server = 'vk1', body = {}, auth = {}, type = 1, completeData = false) => {
 		// console.warn(server, body, auth);
 		/*
 			type = 1, стандартный запрос
@@ -418,34 +450,6 @@ const App = withAdaptivity(({ viewWidth }) => {
 				...body,
 			};
 		}
-		// if (server == 'ok1' || server == 3) {
-		// 	host = 'tmp1-fb.geronimo.su/';
-		// 	request = {
-		// 		api_type: 'ok',
-		// 	};
-		// 	if (type == 1) {
-		// 		host += 'OK_WARLORD/game.php';
-		// 		request = {
-		// 			...request,
-		// 			sslt: 0,
-		// 			session_key: '-s-a.oWD-vWmWp.j7KXPxm1laRcLzsxFXIbLuKYecMUuvtTcbx5lyK0fWwal2Nyj3KbnzOwf4u-oYNTgWu3r0p.GUa',
-		// 			api_uid: auth.id || auth.login,
-		// 			auth_sig: auth.password,
-		// 		};
-		// 		if (Object.keys(body).length) request.UID = 0;
-		// 	}
-		// 	if (type == 2) {
-		// 		host += 'gameHubOk/index.php';
-		// 		request = {
-		// 			...request,
-		// 			api_uid: auth.login,
-		// 		};
-		// 	}
-		// 	request = {
-		// 		...request,
-		// 		...body,
-		// 	};
-		// }
 		if (server == 'ya' || server == 3) {
 			host = 'gs1.geronimo.su/';
 			request = {
@@ -474,12 +478,74 @@ const App = withAdaptivity(({ viewWidth }) => {
 				...body,
 			};
 		}
+		if (server == 'ok1' || server == 4) {
+			host = 'tmp1-fb.geronimo.su/';
+			request = {
+				api_type: 'ok',
+			};
+			if (type == 1) {
+				host += 'OK_WARLORD/game.php';
+				request = {
+					...request,
+					sslt: 0,
+					session_key: auth.password.split(',')[1],
+					api_uid: auth.login.split(',')[0],
+					auth_sig: auth.password.split(',')[0],
+					UID: auth.login.split(',')[1],
+				};
+				if (Object.keys(body).length) request.UID = auth.login.split(',')[1];
+			}
+			if (type == 2) {
+				host += 'gameHubOk/index.php';
+				request = {
+					...request,
+					api_uid: auth.login.split(',')[0],
+				};
+			}
+			request = {
+				...request,
+				...body,
+			};
+		}
+		if (server == 'ok2' || server == 5) {
+			host = 'tmp1-fb.geronimo.su/';
+			request = {
+				api_type: 'ok',
+			};
+			if (type == 1) {
+				host += 'OK_WARLORD2/game.php';
+				request = {
+					...request,
+					sslt: 0,
+					session_key: auth.password.split(',')[1],
+					api_uid: auth.login.split(',')[0],
+					auth_sig: auth.password.split(',')[0],
+					UID: auth.login.split(',')[1],
+				};
+				if (Object.keys(body).length) request.UID = auth.login.split(',')[1];
+			}
+			if (type == 2) {
+				host += 'gameHubOk/index.php';
+				request = {
+					...request,
+					api_uid: auth.login.split(',')[0],
+				};
+			}
+			request = {
+				...request,
+				...body,
+			};
+		}
 		if (!host) return 'Укажите хост запроса';
 		if (!request) return 'Укажите запрос запроса';
 		let data = await getData(`https://${host}?${new URLSearchParams(request).toString()}`);
 		if (type == 2) {
 			if (data?.s) typeof data?.s?.length == 'undefined' ? data.s = [data?.s] : [];
-			data = data?.s?.find(s => s._n == serverHub[server-1]?.name);
+			if (!completeData) {
+				data = data?.s?.find(s => s._n == serverHub[server-1]?.name);
+			} else {
+				data = data?.s;
+			}
 		}
 		return data;
 	}
@@ -1816,8 +1882,8 @@ const App = withAdaptivity(({ viewWidth }) => {
 								i: 39,
 								t: dataGame?._uid,
 							}, {
-								login: clan_id,
-								password: clan_auth,
+								login: DEFAULT_AUTHORIZATION[this.state.server-1]?.login,
+								password: DEFAULT_AUTHORIZATION[this.state.server-1]?.password,
 							});
 							if (dataGameItems?.u) {
 								syncUserGame = dataGameItems.u;
@@ -1989,8 +2055,8 @@ const App = withAdaptivity(({ viewWidth }) => {
 							i: 39,
 							t: dataGame?._uid,
 						}, {
-							login: clan_id,
-							password: clan_auth,
+							login: DEFAULT_AUTHORIZATION[server-1]?.login,
+							password: DEFAULT_AUTHORIZATION[server-1]?.password,
 						});
 						if (dataGameItems?.u) {
 							syncUserGame = dataGameItems.u;
@@ -2273,8 +2339,8 @@ const App = withAdaptivity(({ viewWidth }) => {
 				<MODAL_getSettings__password id='getSettings-password' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} />
 				<MODAL_getSettings__server id='getSettings-server' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} />
 				<MODAL_getSettings__order id='getSettings-order' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} storeProfiles={this.state.storeProfiles} storeProfilesFull={this.state.storeProfilesFull} storeProfilesSize={this.state.storeProfilesSize} />
-				<MODAL_mediaArenaItems id='mediaArenaItems' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} clan_id={clan_id} api_id={api_id} clan_auth={clan_auth} />
-				<MODAL_mediaEventsItems id='mediaEventsItems' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} clan_id={clan_id} api_id={api_id} clan_auth={clan_auth} />
+				<MODAL_mediaArenaItems id='mediaArenaItems' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} clan_id={DEFAULT_AUTHORIZATION[this.state.server-1]?.login} api_id={api_id} clan_auth={DEFAULT_AUTHORIZATION[this.state.server-1]?.password} />
+				<MODAL_mediaEventsItems id='mediaEventsItems' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} clan_id={DEFAULT_AUTHORIZATION[this.state.server-1]?.login} api_id={api_id} clan_auth={DEFAULT_AUTHORIZATION[this.state.server-1]?.password} />
 				<MODAL_mediaSales id='mediaSales' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} />
 			</ModalRoot>
 		);
@@ -2586,7 +2652,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 														<Spacing size={8} />
 														<Title level="2" weight="2">{this.state.storeProfilesFull[x].first_name ? `${this.state.storeProfilesFull[x].first_name}\n${this.state.storeProfilesFull[x].last_name}` : `Player\n${item.id}`}</Title>
 														<Link style={{ marginTop: 6, color: 'var(--text_link)' }} href={`https://vk.com/id${this.state.storeProfilesFull[x].id}`} target="_blank">@id{this.state.storeProfilesFull[x].id}</Link>
-														<Text style={{ marginTop: 2, color: 'var(--text_secondary)' }}>королевство {serverHub[item.server-1]?.name}</Text>
+														<Text style={{ marginTop: 2, color: 'var(--text_secondary)' }}>{serverHub[item.server-1]?.name}, {serverHub[item.server-1]?.company}</Text>
 													</div>:<div key={x}>
 														<Avatar size={96} shadow={false}><Icon56FaceIdOutline/></Avatar>
 														<Spacing size={8} />
@@ -2598,7 +2664,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 													<Spacing size={8} />
 													<Title level="2" weight="2">{this.state.storeProfilesFull[0].first_name ? `${this.state.storeProfilesFull[0].first_name}\n${this.state.storeProfilesFull[0].last_name}` : `Player\n${this.state.storeProfilesFull[0].id}`}</Title>
 													<Link style={{ marginTop: 6, color: 'var(--text_link)' }} href={`https://vk.com/id${this.state.storeProfilesFull[0].id}`} target="_blank">@id{this.state.storeProfilesFull[0].id}</Link>
-													<Text style={{ marginTop: 2, color: 'var(--text_secondary)' }}>королевство {serverHub[this.state.storeProfilesFull[0].server-1]?.name}</Text>
+													<Text style={{ marginTop: 2, color: 'var(--text_secondary)' }}>{serverHub[this.state.storeProfilesFull[0].server-1]?.name}, {serverHub[this.state.storeProfilesFull[0].server-1]?.company}</Text>
 												</div>}
 											</Gallery>
 											<div>
@@ -2606,10 +2672,10 @@ const App = withAdaptivity(({ viewWidth }) => {
 											</div>
 											<Spacing separator size={12} />
 											<React.Fragment>
-												<SimpleCell onClick={() => setActivePanel('11', true)} before={<Avatar mode="app" src={`${pathImages}labels/20.png`} />} description="Генератор изображений" expandable indicator={<React.Fragment>
+												{/* <SimpleCell onClick={() => setActivePanel('11', true)} before={<Avatar mode="app" src={`${pathImages}labels/20.png`} />} description="Генератор изображений" expandable indicator={<React.Fragment>
 													<span className="Text">{!isDonut&&<Icon28DonateCircleFillYellow width={24} height={24}/>}</span>
 												</React.Fragment>}>Коллекции</SimpleCell>
-												<Spacing separator size={12} />
+												<Spacing separator size={12} /> */}
 												{/* <SimpleCell onClick={() => setActivePanel('8', true)} before={<Avatar mode="app" src={`${pathImages}labels/29.png`} />} description="Автоматизация" expandable indicator={<React.Fragment>
 													<span className="Text">{!isDonut&&<Icon28DonateCircleFillYellow width={24} height={24}/>}</span>
 												</React.Fragment>}>Боссы</SimpleCell> */}
@@ -2661,7 +2727,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 								{/* <PANEL_profile__8 id='8' parent='profile' state={this.state} options={this} /> */}
 								<PANEL_profile__9 id='9' parent='profile' state={this.state} options={this} />
 								<PANEL_profile__10 id='10' parent='profile' state={this.state} options={this} />
-								<PANEL_profile__11 id='11' parent='profile' state={this.state} options={this} />
+								{/* <PANEL_profile__11 id='11' parent='profile' state={this.state} options={this} /> */}
 							</View>
 
 

@@ -46,7 +46,6 @@ class MODAL extends React.Component {
 							type="text"
 							name="password_key"
 							placeholder="password_key"
-							maxLength={44}
 							value={key}
 							onChange={e => this.setState({ key: e.target.value })}
 							after={<IconButton hoverMode="opacity" aria-label="Очистить поле" onClick={() => this.setState({ key: '' })}><Icon16Clear/></IconButton>}

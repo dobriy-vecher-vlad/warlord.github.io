@@ -56,7 +56,7 @@ class MODAL extends React.Component {
 						<span className="Subhead">{state.auth ? String(state.auth).length > 9 ? `${String(state.auth).substring(0, 9)}...` : String(state.auth) : `установить`}</span>
 					</React.Fragment>}>Пароль авторизации</SimpleCell>
 					<SimpleCell onClick={() => options.OpenModal('getSettings-server')} before={<Icon28GlobeOutline/>} expandable indicator={<React.Fragment>
-						<span className="Subhead">{state.server ? this.props.state.serverHub[state.server-1]?.name : `выбрать`}</span>
+						<span className="Subhead">{state.server ? `${this.props.state.serverHub[state.server-1]?.name}, ${this.props.state.serverHub[state.server-1]?.company}` : `выбрать`}</span>
 					</React.Fragment>}>Игровой сервер</SimpleCell>
 					<Div style={{ padding: state.isDesktop ? '12px 0 0 0' : 12 }}>
 						{data.mode == 'add' ? <React.Fragment>
