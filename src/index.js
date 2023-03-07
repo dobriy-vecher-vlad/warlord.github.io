@@ -164,7 +164,7 @@ const parseQueryString = (string = '') => {
 };
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
-const wikiVersion = '1.7.6';
+const wikiVersion = '1.7.6 fix';
 const pathImages = 'https://dobriy-vecher-vlad.github.io/warlord-helper/media/images/';
 const serverHub = [{
 	id: 1,
@@ -349,8 +349,8 @@ const App = withAdaptivity(({ viewWidth }) => {
 		if (link == null) link = type;
 		if (type && link) {
 			try {
-				link = link.replace(/%2B/g, '+').replace(/%3D/g, '=');
 				let data;
+				link = link.replace(/%2B/g, '+').replace(/%3D/g, '=');
 				if (link.includes('tmp1-fb.geronimo.su')) {
 					data = await fetch(new URL(link).origin + new URL(link).pathname, {
 						method: 'POST',
@@ -372,13 +372,13 @@ const App = withAdaptivity(({ viewWidth }) => {
 					data = await x2js.xml_str2json(data);
 				}
 				if (data && data.data != undefined) data = data.data;
-				return data || text;
+				return data || text || null;
 			} catch (error) {
 				// console.log(error);
 				return null;
 			}
 		}
-	}
+	};
 	const getGame = async(server = 'vk1', body = {}, auth = {}, type = 1, completeData = false) => {
 		// console.warn(server, body, auth);
 		/*
@@ -548,7 +548,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 			}
 		}
 		return data;
-	}
+	};
 
 	bridge.subscribe(({ detail: { type, data }}) => {
 		switch (type) {
@@ -2335,12 +2335,12 @@ const App = withAdaptivity(({ viewWidth }) => {
 				<MODAL_item id='item' onClose={() => this.BackModal()} state={this.state} options={this} data={this.state.dataModal} />
 				<MODAL_getSettings id='getSettings' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} data={this.state.dataModal} isDonut={isDonut} />
 				<MODAL_getSettings__id id='getSettings-id' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} />
-				<MODAL_getSettings__login id='getSettings-login' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} />
+				<MODAL_getSettings__login dynamicContentHeight id='getSettings-login' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} />
 				<MODAL_getSettings__password id='getSettings-password' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} />
 				<MODAL_getSettings__server id='getSettings-server' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} />
-				<MODAL_getSettings__order id='getSettings-order' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} storeProfiles={this.state.storeProfiles} storeProfilesFull={this.state.storeProfilesFull} storeProfilesSize={this.state.storeProfilesSize} />
-				<MODAL_mediaArenaItems id='mediaArenaItems' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} clan_id={DEFAULT_AUTHORIZATION[this.state.server-1]?.login} api_id={api_id} clan_auth={DEFAULT_AUTHORIZATION[this.state.server-1]?.password} />
-				<MODAL_mediaEventsItems id='mediaEventsItems' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} clan_id={DEFAULT_AUTHORIZATION[this.state.server-1]?.login} api_id={api_id} clan_auth={DEFAULT_AUTHORIZATION[this.state.server-1]?.password} />
+				<MODAL_getSettings__order dynamicContentHeight id='getSettings-order' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} storeProfiles={this.state.storeProfiles} storeProfilesFull={this.state.storeProfilesFull} storeProfilesSize={this.state.storeProfilesSize} />
+				<MODAL_mediaArenaItems dynamicContentHeight id='mediaArenaItems' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} clan_id={DEFAULT_AUTHORIZATION[this.state.server-1]?.login} api_id={api_id} clan_auth={DEFAULT_AUTHORIZATION[this.state.server-1]?.password} />
+				<MODAL_mediaEventsItems dynamicContentHeight id='mediaEventsItems' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} clan_id={DEFAULT_AUTHORIZATION[this.state.server-1]?.login} api_id={api_id} clan_auth={DEFAULT_AUTHORIZATION[this.state.server-1]?.password} />
 				<MODAL_mediaSales id='mediaSales' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} />
 			</ModalRoot>
 		);
@@ -2567,7 +2567,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 												<CardGrid className={`CardsNews withIcon CardGrid--xs`}>
 													{isEmbedded&&<Card onClick={() => this.OpenModal('mediaSales')}><HorizontalCell size='l' header="Акция"><Icon28LikeOutline style={{['--fill']: 'var(--systemRed)' }}/></HorizontalCell></Card>}
 													{isEmbedded&&<Card onClick={() => this.OpenModal('donut')}><HorizontalCell size='l' header="Подписка"><Icon28LikeOutline style={{['--fill']: 'var(--systemTeal)' }}/></HorizontalCell></Card>}
-													{isEmbedded&&<Card><Link href={`https://vk.com/@wiki.warlord-authorization`} target="_blank"><HorizontalCell size='l' header="Ключ"><Icon28KeyOutline style={{['--fill']: 'var(--systemTeal)' }}/></HorizontalCell></Link></Card>}
+													{isEmbedded&&<Card><Link href={`https://vk.com/@wiki.warlord-authorization`} target="_blank"><HorizontalCell size='l' header="Вход"><Icon28KeyOutline style={{['--fill']: 'var(--systemTeal)' }}/></HorizontalCell></Link></Card>}
 													<Card><Link href={`https://vk.com/@wiki.warlord-faq`} target="_blank"><HorizontalCell size='l' header="Помощь"><Icon28HelpOutline style={{['--fill']: 'var(--systemTeal)' }}/></HorizontalCell></Link></Card>
 													{!isEmbedded&&<Card><HorizontalCell disabled size='l' header=" "><Icon28GridSquareOutline style={{['--fill']: '#505050' }}/></HorizontalCell></Card>}
 													{!isEmbedded&&<Card><HorizontalCell disabled size='l' header=" "><Icon28GridSquareOutline style={{['--fill']: '#505050' }}/></HorizontalCell></Card>}

@@ -53,7 +53,7 @@ class MODAL extends React.Component {
 							after={<IconButton hoverMode="opacity" aria-label="Очистить поле" onClick={() => this.setState({ key: '' })}><Icon16Clear/></IconButton>}
 						/>
 					</FormItem>
-					<SimpleCell href="https://vk.com/@wiki.warlord-authorization?anchor=poluchenie-identifikatora" target="_blank" subtitle="Статья" before={<Icon28DocumentTextOutline/>} expandable>Получение идентификатора</SimpleCell>
+					<SimpleCell href="https://vk.com/@wiki.warlord-authorization?anchor=navigatsia" target="_blank" subtitle="Статья" before={<Icon28DocumentTextOutline/>} expandable>Получение идентификатора</SimpleCell>
 				</Div>
 			</ModalPage>
 		);

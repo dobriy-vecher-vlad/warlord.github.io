@@ -194,7 +194,6 @@ class PANEL extends React.Component {
 				return;
 			}
 		}
-		console.error({auth_key});
 		let getGameAuth = {
 			login: api_uid,
 			password: auth_key,

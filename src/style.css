@@ -817,7 +817,10 @@ div.Scroll::-webkit-scrollbar-track {
 }
 .ModalCard#donut .Cell .Counter,
 .ModalCard#mediaSales .Cell .Counter {
-	border-radius: 4px;
+	padding-bottom: 1px;
+}
+.ModalCard#donut .Cell .Counter--primary,
+.ModalCard#mediaSales .Cell .Counter--primary {
 	background: var(--vkui--color_background_accent);
 	color: var(--vkui--color_text_contrast);
 }

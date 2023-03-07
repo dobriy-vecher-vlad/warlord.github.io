@@ -12,7 +12,8 @@ import {
 	Spacing,
 	Button,
 	FormLayoutGroup,
-	FormStatus
+	FormStatus,
+	withModalRootContext
 } from '@vkontakte/vkui';
 import {
 	Icon16Clear, Icon28DocumentTextOutline
@@ -28,20 +29,20 @@ class MODAL extends React.Component {
 		};
 	};
 	async checkUID() {
-		this.setState({ loading: true });
+		this.setState({ loading: true }, () => this.props.updateModalHeight());
 		let servers = await this.props.state.getGame(this.props.state.server, null, {
 			login: this.state.key,
 		}, 2, true);
-		if (servers?.filter(server => server._uid != '0')?.length) {
+		if (Array.isArray(servers) && servers?.filter(server => server._uid != '0')?.length) {
 			this.setState({ servers: servers.filter(server => server._uid != '0').map(server => ({
 				ID: this.state.key,
 				UID: server._uid,
 				name: server._n,
-			})) });
+			})) }, () => this.props.updateModalHeight());
 		} else {
-			this.setState({ servers: this.state.key });
+			this.setState({ servers: this.state.key }, () => this.props.updateModalHeight());
 		}
-		this.setState({ loading: false });
+		this.setState({ loading: false }, () => this.props.updateModalHeight());
 	};
 	async componentDidMount() {
 		console.log('[MODAL] >', this.props.id);
@@ -75,7 +76,7 @@ class MODAL extends React.Component {
 								after={<IconButton hoverMode="opacity" aria-label="Очистить поле" onClick={() => this.setState({ key: '' })}><Icon16Clear/></IconButton>}
 							/>
 						</FormItem>
-						<Button size="l" style={{ marginTop: '-5px', marginLeft: '8px' }} appearance="accent" mode="secondary" loading={this.state.loading} onClick={() => this.checkUID()}>Проверить</Button>
+						{this.props.state.server&&<Button disabled={!this.state.key} size="l" style={{ marginTop: state.isDesktop ? '-5px' : 0, marginLeft: '8px' }} appearance="accent" mode="secondary" loading={this.state.loading} onClick={() => this.checkUID()}>Проверить</Button>}
 					</FormLayoutGroup>
 					{this.state.servers && <>
 						{Array.isArray(this.state.servers) ? 
@@ -84,10 +85,10 @@ class MODAL extends React.Component {
 						}
 						<Spacing size={12} />
 					</>}
-					<SimpleCell href="https://vk.com/@wiki.warlord-authorization?anchor=poluchenie-logina" target="_blank" subtitle="Статья" before={<Icon28DocumentTextOutline/>} expandable>Получение логина</SimpleCell>
+					<SimpleCell href="https://vk.com/@wiki.warlord-authorization?anchor=navigatsia" target="_blank" subtitle="Статья" before={<Icon28DocumentTextOutline/>} expandable>Получение логина</SimpleCell>
 				</Div>
 			</ModalPage>
 		);
 	};
 };
-export default MODAL;
+export default withModalRootContext(MODAL);

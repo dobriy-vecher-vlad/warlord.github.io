@@ -15,6 +15,7 @@ import {
 	Icon24TshirtOutline,
 	Icon24MoneyCircleOutline,
 	Icon24PollOutline,
+	Icon24HammerOutline,
 } from '@vkontakte/icons';
 
 class MODAL extends React.Component {
@@ -38,7 +39,8 @@ class MODAL extends React.Component {
 					<div style={{ margin: '8px 8px 16px 8px', gap: 8, display: 'flex', flexDirection: 'column'}}>
 						<Cell className="DescriptionWiki" before={<Icon24AddCircleDottedOutline />} description="Привязывай профили и получай выгоду на всех">Профили</Cell>
 						<Cell className="DescriptionWiki" before={<Icon24SkullOutline />} description="Проходите в автоматическом режиме выбранный рейд всего за 2 минуты">Автоматическое прохождение рейдов</Cell>
-						<Cell className="DescriptionWiki" before={<Icon24CupOutline />} description="Набирайте в автоматическом режиме очки арены">Автоматическое прохождение арены</Cell>
+						<Cell className="DescriptionWiki" before={<Icon24CupOutline />} description="Набирайте в автоматическом режиме очки арены и занимайте первые места">Автоматическое прохождение арены</Cell>
+						<Cell className="DescriptionWiki" before={<Icon24HammerOutline />} description="Удобно сортируйте и улучшайте в один клик любой предмет">Автоматическая кузница</Cell>
 						<Cell className="DescriptionWiki onlyIcons" before={<><Icon24Users3Outline /><Icon24TshirtOutline /><Icon24MoneyCircleOutline /><Icon24PollOutline /></>}></Cell>
 					</div>
 					<div style={{display: 'flex', flexDirection: 'column', margin: 16}}>
