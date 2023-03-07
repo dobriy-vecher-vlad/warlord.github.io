@@ -164,7 +164,7 @@ const parseQueryString = (string = '') => {
 };
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
-const wikiVersion = '1.7.6 fix';
+const wikiVersion = '1.7.6';
 const pathImages = 'https://dobriy-vecher-vlad.github.io/warlord-helper/media/images/';
 const serverHub = [{
 	id: 1,
@@ -801,7 +801,8 @@ const App = withAdaptivity(({ viewWidth }) => {
 				islocalStorage: islocalStorage,
 				isVK: true
 			};
-			this.storeProfilesRef = React.createRef();
+			this.storeProfilesGalleryMainRef = React.createRef();
+			this.storeProfilesGalleryChildRef = React.createRef();
 		};
 		updateFixedLayout = () => {
 			try {
@@ -1013,6 +1014,15 @@ const App = withAdaptivity(({ viewWidth }) => {
 		};
 		numberRandom = (min = 1, max = 2) => {
 			return Math.floor(Math.random() * (Math.floor(max) - Math.ceil(min) + 1)) + Math.ceil(min);
+		};
+		getMatrix = (element) => {
+			const values = element.style.transform.split(/\w+\(|\);?/);
+			const transform = values[1]?.split(/,\s?/g)?.map(parseInt) || [0, 0, 0];
+			return {
+				x: transform[0],
+				y: transform[1],
+				z: transform[2]
+			};
 		};
 		getRealTime = () => {
 			return new Date().toLocaleString("ru", {
@@ -1738,17 +1748,15 @@ const App = withAdaptivity(({ viewWidth }) => {
 					this.state.auth = to.auth;
 					this.state.server = to.server;
 					syncUser = null;
+					document.body.setAttribute('platformAccent', ['vk', 'vk', 'yandex', 'ok', 'ok'][this.state.server-1]);
 					await this.loadProfile(false, true, server, true);
-					for (let [x, item] of this.storeProfilesRef.current.querySelectorAll('.Gallery__slide').entries()) {
-						item.querySelector('*').classList.remove("selected");
-						if (x == id) item.querySelector('*').classList.add("selected");
-					}
 				} else {
 					if (isDonut) {
 						this.state.id = null;
 						this.state.login = null;
 						this.state.auth = null;
 						this.state.server = null;
+						document.body.setAttribute('platformAccent', ['vk', 'vk', 'yandex', 'ok', 'ok'][this.state.server-1]);
 						this.OpenModal(`getSettings`, {mode: 'add'});
 					} else {
 						this.OpenModal('donut');
@@ -1823,6 +1831,8 @@ const App = withAdaptivity(({ viewWidth }) => {
 				} else {
 					dataVK = await getBridge('VKWebAppGetUserInfo');
 				}
+				dataVK.last_name = dataVK.first_name == 'DELETED' ? dataVK.id : dataVK.last_name;
+				dataVK.first_name = dataVK.first_name == 'DELETED' ? 'Player' : dataVK.first_name;
 				if (!reload) {
 					syncUser = true;
 					let dataDonut = await getBridge('VKWebAppCallAPIMethod', {"method": "execute.getMembers", "params": {"v": '5.130', "access_token": "9942dca8c434ee910f1745a2989105b6b66d712e4f6d96b474278ca18ea7e6d7a8db5f4e569b16c6d1d20"}});
@@ -2217,8 +2227,8 @@ const App = withAdaptivity(({ viewWidth }) => {
 					if (storeProfile != -1) {
 						this.state.storeProfilesFull[storeProfile] = {
 							...this.state.storeProfiles[storeProfile],
-							first_name: storeProfileData.first_name,
-							last_name: storeProfileData.last_name,
+							first_name: storeProfileData.first_name == 'DELETED' ? 'Player' : storeProfileData.first_name,
+							last_name: storeProfileData.first_name == 'DELETED' ? storeProfileData.id : storeProfileData.last_name,
 							photo_100: storeProfileData.photo_100,
 							photo_200: storeProfileData.photo_200,
 							photo_max_orig: storeProfileData.photo_max_orig
@@ -2638,35 +2648,100 @@ const App = withAdaptivity(({ viewWidth }) => {
 										<PullToRefresh onRefresh={() => this.storeProfilesRefresh()} isFetching={this.state.fetching}>
 											<Spacing size={6} />
 											<Gallery
-												getRef={this.storeProfilesRef}
+												getRef={this.storeProfilesGalleryMainRef}
+												onDragStart={(event) => {
+													const main = this.storeProfilesGalleryChildRef.current.childNodes[0];
+													const child = this.storeProfilesGalleryMainRef.current.childNodes[0];
+													if (!main || !child) return;
+													let start = Number(child.getAttribute('start')) || 0;
+													if (start == 0) {
+														start = Math.abs(this.getMatrix(child).x);
+														main.setAttribute('start', main.style.transform);
+														child.setAttribute('start', start);
+													} else {
+														let end = main.scrollWidth / 100 * ((start - event.shiftX) / (child.scrollWidth / 100)) * -1;
+														if (end > 0) end = 0;
+														main.style.transform = `translateX(${end}px)`;
+													}
+												}}
+												onDragEnd={(event) => {
+													const main = this.storeProfilesGalleryMainRef.current.childNodes[0];
+													const child = this.storeProfilesGalleryChildRef.current.childNodes[0];
+													if (!main || !child) return;
+													if ((event.shiftXAbs <= 6 && event.shiftXAbs != 0) || ((event.shiftXAbs + Math.abs(this.getMatrix(main).x)) > (main.scrollWidth - main.offsetWidth))) child.style.transform = child.getAttribute('start');
+													main.removeAttribute('start');
+													child.removeAttribute('start');
+												}}
 												className="GradientGallery"
 												bullets={false}
 												showArrows
 												onChange={(e) => isDonut&&this.storeProfiles(e)}
 												slideIndex={isDonut?this.state.storeProfilesIndex:0}
-												slideWidth={isDesktop ? '35%' : '50%'}
+												slideWidth={isDesktop ? '25%' : '35%'}
 												align="center"
 											>
-												{isDonut?this.state.storeProfiles.map((item, x) => item.id?<div className={x == this.state.storeProfilesIndex ? "selected" : ""} key={x}>
-														<Avatar badge={<div style={{ backgroundImage: `url(${serverHub[item.server-1]?.logo})`, backgroundSize: 'cover', backgroundPosition: 'center', width: 24, height: 24, }}/>} size={96} src={this.state.storeProfilesFull[x].photo_200 ? this.state.storeProfilesFull[x].photo_200 : 'https://vk.com/images/camera_200.png'} />
-														<Spacing size={8} />
+												{isDonut ? this.state.storeProfiles.map((item, x) => item.id ? <React.Fragment key={x}>
+													<div className={x == this.state.storeProfilesIndex ? "selected" : ""} key={x}>
+														<Avatar className={['vk', 'vk', 'yandex', 'ok', 'ok'][serverHub[item.server-1]?.id-1]} badge={<div style={{ backgroundImage: `url(${serverHub[item.server-1]?.logo})`, backgroundSize: 'cover', backgroundPosition: 'center', width: 24, height: 24, }}/>} size={96} src={this.state.storeProfilesFull[x].photo_200 ? this.state.storeProfilesFull[x].photo_200 : 'https://vk.com/images/camera_200.png'} />
+													</div>
+												</React.Fragment> : <React.Fragment key={x}>
+													<div>
+														<Avatar size={96} shadow={false}><Icon56FaceIdOutline/></Avatar>
+													</div>
+												</React.Fragment>) : <div className="selected">
+													<Avatar className={['vk', 'vk', 'yandex', 'ok', 'ok'][serverHub[this.state.storeProfilesFull[0].server-1]?.id-1]} badge={<div style={{ backgroundImage: `url(${serverHub[this.state.storeProfilesFull[0].server-1]?.logo})`, backgroundSize: 'cover', backgroundPosition: 'center', width: 24, height: 24, }}/>} size={96} src={this.state.storeProfilesFull[0].photo_200 ? this.state.storeProfilesFull[0].photo_200 : 'https://vk.com/images/camera_200.png'} />
+												</div>}
+											</Gallery>
+											<Gallery
+												getRef={this.storeProfilesGalleryChildRef}
+												onDragStart={(event) => {
+													const main = this.storeProfilesGalleryMainRef.current.childNodes[0];
+													const child = this.storeProfilesGalleryChildRef.current.childNodes[0];
+													if (!main || !child) return;
+													let start = Number(child.getAttribute('start')) || 0;
+													if (start == 0) {
+														start = Math.abs(this.getMatrix(child).x);
+														main.setAttribute('start', main.style.transform);
+														child.setAttribute('start', start);
+													} else {
+														let end = main.scrollWidth / 100 * ((start - event.shiftX) / (child.scrollWidth / 100)) * -1;
+														if (end > 0) end = 0;
+														main.style.transform = `translateX(${end}px)`;
+													}
+												}}
+												onDragEnd={(event) => {
+													const main = this.storeProfilesGalleryMainRef.current.childNodes[0];
+													const child = this.storeProfilesGalleryChildRef.current.childNodes[0];
+													if (!main || !child) return;
+													if ((event.shiftXAbs <= 6 && event.shiftXAbs != 0) || ((event.shiftXAbs + Math.abs(this.getMatrix(child).x)) > (child.scrollWidth - child.offsetWidth))) main.style.transform = main.getAttribute('start');
+													main.removeAttribute('start');
+													child.removeAttribute('start');
+												}}
+												className="GradientGallery GradientGallery--nav"
+												bullets={false}
+												onChange={(e) => isDonut&&this.storeProfiles(e)}
+												slideIndex={isDonut?this.state.storeProfilesIndex:0}
+												slideWidth={'100%'}
+												align="center"
+											>
+												{isDonut ? this.state.storeProfiles.map((item, x) => item.id ? <React.Fragment key={x}>
+													<div className={x == this.state.storeProfilesIndex ? "selected" : ""} key={x}>
 														<Title level="2" weight="2">{this.state.storeProfilesFull[x].first_name ? `${this.state.storeProfilesFull[x].first_name}\n${this.state.storeProfilesFull[x].last_name}` : `Player\n${item.id}`}</Title>
 														<Link style={{ marginTop: 6, color: 'var(--text_link)' }} href={`https://vk.com/id${this.state.storeProfilesFull[x].id}`} target="_blank">@id{this.state.storeProfilesFull[x].id}</Link>
 														<Text style={{ marginTop: 2, color: 'var(--text_secondary)' }}>{serverHub[item.server-1]?.name}, {serverHub[item.server-1]?.company}</Text>
-													</div>:<div key={x}>
-														<Avatar size={96} shadow={false}><Icon56FaceIdOutline/></Avatar>
-														<Spacing size={8} />
+													</div>
+												</React.Fragment> : <React.Fragment key={x}>
+													<div>
 														<Title level="2" weight="2">Профиль</Title>
 														<Link style={{ marginTop: 8, color: 'var(--text_secondary)' }}>Свободный слот</Link>
 													</div>
-												):<div className="selected">
-													<Avatar badge={<div style={{ backgroundImage: `url(${serverHub[this.state.storeProfilesFull[0].server-1]?.logo})`, backgroundSize: 'cover', backgroundPosition: 'center', width: 24, height: 24, }}/>} size={96} src={this.state.storeProfilesFull[0].photo_200 ? this.state.storeProfilesFull[0].photo_200 : 'https://vk.com/images/camera_200.png'} />
-													<Spacing size={8} />
+												</React.Fragment>) : <div className="selected">
 													<Title level="2" weight="2">{this.state.storeProfilesFull[0].first_name ? `${this.state.storeProfilesFull[0].first_name}\n${this.state.storeProfilesFull[0].last_name}` : `Player\n${this.state.storeProfilesFull[0].id}`}</Title>
 													<Link style={{ marginTop: 6, color: 'var(--text_link)' }} href={`https://vk.com/id${this.state.storeProfilesFull[0].id}`} target="_blank">@id{this.state.storeProfilesFull[0].id}</Link>
 													<Text style={{ marginTop: 2, color: 'var(--text_secondary)' }}>{serverHub[this.state.storeProfilesFull[0].server-1]?.name}, {serverHub[this.state.storeProfilesFull[0].server-1]?.company}</Text>
 												</div>}
 											</Gallery>
+											<Spacing size={12} />
 											<div>
 												<Button stretched size="m" mode="tertiary" onClick={() => this.BotAPI('getAuth', null, null, null, {stage: 'modal'})}>Настройки профиля</Button>
 											</div>
