@@ -356,6 +356,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 						method: 'POST',
 						body: getFormData(link),
 					});
+					if (data.status == 500) data = await fetch(link);
 				} else {
 					data = await fetch(link);
 				}

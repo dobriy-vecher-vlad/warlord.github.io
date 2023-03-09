@@ -229,7 +229,7 @@ class PANEL extends React.Component {
 					avatar: message.type,
 					title: 'Босс',
 					time: this.props.options.getRealTime(),
-					message: `Успешно убит босс с ${this.props.options.numberSpaces(message._mhp)} HP и ${this.props.options.numberSpaces(message._dmg)} DMG`
+					message: `Убит босс с ${this.props.options.numberSpaces(message._mhp)} HP и ${this.props.options.numberSpaces(message._dmg)} DMG`
 				} });
 			}
 			if (type == 'chest' && color == null) {
@@ -297,7 +297,7 @@ class PANEL extends React.Component {
 				syncBot.raids.energy = energy;
 				this._isMounted && this.setState({ isLoad: false });
 				this._isMounted && needSnackbar&&await this.props.options.Storage({key: 'raidSettings', value: JSON.stringify(botRaidsSettings)});
-				needSnackbar&&openSnackbar({text: `Настройки успешно применены, на рейд необходимо ${energy} ${numberForm(energy, ['энергия', 'энергии', 'энергии'])}`, icon: 'done'});
+				needSnackbar&&openSnackbar({text: `Настройки применены, на рейд необходимо ${energy} ${numberForm(energy, ['энергия', 'энергии', 'энергии'])}`, icon: 'done'});
 			}
 			return;
 		}
@@ -791,7 +791,7 @@ class PANEL extends React.Component {
 							i: 81,
 						}, getGameAuth);
 						// console.log(dataGame);
-						this._isMounted && setBotLog(`Успешно переместились в точку ${to}`, 'text');
+						this._isMounted && setBotLog(`Переместились в точку ${to}`, 'text');
 						data.point = to;
 						this._isMounted && await updatePath('barrel', null, null, null);
 						this._isMounted && await updatePath('chest', null, null, null);
@@ -813,7 +813,7 @@ class PANEL extends React.Component {
 							}, getGameAuth);
 							// console.log(dataGame);
 							barrel.status = 0;
-							// setBotLog(`Успешно открыли бочку {point: ${barrel.point}, status: ${barrel.status}}`);
+							// setBotLog(`Открыли бочку {point: ${barrel.point}, status: ${barrel.status}}`);
 							this._isMounted && setBotLog(dataGame, 'barrel');
 						} else {
 							this._isMounted && setBotLog(`Не хватает энергии на открытие бочки`, 'text', 'red');
@@ -937,7 +937,7 @@ class PANEL extends React.Component {
 									// console.log(dataGame);
 									if (dataGame && dataGame.fight && Number(dataGame.fight._hp) <= 0) {
 										boss.status = 1;
-										// setBotLog(`Успешно убили босса {point: ${boss.point}, status: ${boss.status}}`);
+										// setBotLog(`Убили босса {point: ${boss.point}, status: ${boss.status}}`);
 										this._isMounted && setBotLog({...dataGame.fight, type: boss.type}, 'boss');
 										return true;
 									} else {
@@ -1003,7 +1003,7 @@ class PANEL extends React.Component {
 							}, getGameAuth);
 							// console.log(dataGame);
 							chests.status = 0;
-							// setBotLog(`Успешно открыли сундук {point: ${chests.point}, status: ${chests.status}, type: ${chests.type}}`);
+							// setBotLog(`Открыли сундук {point: ${chests.point}, status: ${chests.status}, type: ${chests.type}}`);
 							dataGame.type = chests.type;
 							this._isMounted && setBotLog(dataGame, 'chest');
 						} else {
@@ -1071,7 +1071,7 @@ class PANEL extends React.Component {
 					syncBot.isStart = true;
 					this._isMounted && updateInfo(dataGame.uraid);
 					this._isMounted && this.BotRaids('energy');
-					this._isMounted && setBotLog(`Бот успешно запущен`, 'text', 'green');
+					this._isMounted && setBotLog(`Бот запущен`, 'text', 'green');
 					// console.warn(botRaidsSettings);
 					this._isMounted && await updatePath('navigation', botRaidsSettings.selectedRaid, 1, null);
 				} else {
@@ -1084,7 +1084,7 @@ class PANEL extends React.Component {
 				syncBot.isStart = true;
 				this._isMounted && updateInfo(dataGame);
 				this._isMounted && this.BotRaids('energy');
-				this._isMounted && setBotLog(`Бот успешно запущен`, 'text', 'green');
+				this._isMounted && setBotLog(`Бот запущен`, 'text', 'green');
 				this._isMounted && await updatePath('navigation', data.id, data.point, null);
 			} else {
 				// this.setState({ popout: null });
@@ -1145,7 +1145,7 @@ class PANEL extends React.Component {
 							i: 80,
 						}, getGameAuth);
 						if (Number(dataGame.res._v) == 1) {
-							this._isMounted && setBotLog(`Рейд успешно завершён`, 'text', 'green');
+							this._isMounted && setBotLog(`Рейд завершён`, 'text', 'green');
 							this._isMounted && await this.BotRaids('reload');
 							this._isMounted && this.setBotLog('clear');
 							this.state.botRaidsSettings = {

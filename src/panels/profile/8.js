@@ -235,7 +235,7 @@ class PANEL extends React.Component {
 					syncBot.arena.player._en = this._isMounted && syncBot.arena.player._en - 4;
 					this._isMounted && await getData('xml', `https://tmp1-fb.geronimo.su/${server === 1 ? 'warlord_vk' : 'warlord_vk2'}/game.php?api_uid=${api_uid}&api_type=vk&api_id=${api_id}&auth_key=${auth_key}&sslt=${sslt}&i=121&UID=${player._id}`);
 					syncBot.arena.try++;
-					this._isMounted && syncBot.isStart && setBotLog(`Успешно пропустили противника ${syncBot.arena.try}/${this.state.tryLimit}`, 'text', 'green');
+					this._isMounted && syncBot.isStart && setBotLog(`Пропустили противника ${syncBot.arena.try}/${this.state.tryLimit}`, 'text', 'green');
 				} else {
 					this._isMounted && syncBot.isStart && setBotLog(`Не хватает энергии на пропуск противника`, 'text', 'red');
 					this._isMounted && this.BotArena('pause');
@@ -381,12 +381,12 @@ class PANEL extends React.Component {
 						syncBot.arena.player._exp = Number(syncBot.arena.player._exp) + (Number.isInteger(Number(reward._exp)) ? Number(reward._exp) : 0);
 						let league = this.getLeague(syncBot.arena.player._ap);
 						syncBot.arena.player._al = league.id;
-						this._isMounted && syncBot.isStart && setBotLog(`Успешно убили противника`, 'text', 'green');
+						this._isMounted && syncBot.isStart && setBotLog(`Убили противника`, 'text', 'green');
 						return true;
 					} else {
 						isAlive = true;
 						// console.warn('isAlive', isAlive);
-						// this._isMounted && setBotLog(`Успешно ударили противника`, 'text');
+						// this._isMounted && setBotLog(`Ударили противника`, 'text');
 						return true;
 					}
 				} else {
@@ -421,7 +421,7 @@ class PANEL extends React.Component {
 		};
 		if (mode == 'start') {
 			syncBot.isStart = true;
-			this._isMounted && setBotLog(`Бот успешно запущен`, 'text', 'green');
+			this._isMounted && setBotLog(`Бот запущен`, 'text', 'green');
 			do {
 				this._isMounted && await startFight(auth_key, api_uid, sslt, Number(player._id));
 			} while (this._isMounted && syncBot.isStart && syncBot.arena.try < this.state.tryLimit);

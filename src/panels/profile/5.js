@@ -47,22 +47,26 @@ class PANEL extends React.Component {
 							password: clan_auth,
 							id: this.props.state.user?.vk?.id,
 						});
-						typeof dataGame.u == 'undefined' ? dataGame.u = [] : '';
-						typeof dataGame.u.length == 'undefined' ? dataGame.u = [dataGame.u] : '';
-						dataGame.u.map((item, x) => {
-							syncFriends.push({
-								id: Number(item._vkId),
-								name: item._name == '' ? `Player${item._id}` : item._name,
-								vk: data.response.items.find(x => x.id === Number(item._vkId)),
-								dmg: Number(item._dmgi),
-								hp: (Number(item._endi) + Number(item._end)) * 15,
-								lvl: Number(item._lvl),
-								exp: Number(item._exp),
-								skills: [Number(item._s1), Number(item._s2), Number(item._s3), Number(item._s4)],
-								active: [new Date - Number(item._bd) * 1000, new Date - Number(item._l_t) * 1000]
+						if (dataGame?.u) {
+							typeof dataGame.u == 'undefined' ? dataGame.u = [] : '';
+							typeof dataGame.u.length == 'undefined' ? dataGame.u = [dataGame.u] : '';
+							dataGame.u.map((item, x) => {
+								syncFriends.push({
+									id: Number(item._vkId),
+									name: item._name == '' ? `Player${item._id}` : item._name,
+									vk: data.response.items.find(x => x.id === Number(item._vkId)),
+									dmg: Number(item._dmgi),
+									hp: (Number(item._endi) + Number(item._end)) * 15,
+									lvl: Number(item._lvl),
+									exp: Number(item._exp),
+									skills: [Number(item._s1), Number(item._s2), Number(item._s3), Number(item._s4)],
+									active: [new Date - Number(item._bd) * 1000, new Date - Number(item._l_t) * 1000]
+								});
 							});
-						});
-						syncFriends.splice(syncFriends.findIndex(x => x.id === this.props.state.user?.vk?.id), 1);
+							syncFriends.splice(syncFriends.findIndex(x => x.id === this.props.state.user?.vk?.id), 1);
+						} else {
+							this._isMounted && this.setState({syncFriends: []});
+						}
 					}
 				}
 				syncFriends.sort(function(a, b) {

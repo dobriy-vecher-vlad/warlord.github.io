@@ -267,7 +267,7 @@ class PANEL extends React.Component {
 						i: 121,
 					}, getGameAuth);
 					syncBot.arena.try++;
-					this._isMounted && syncBot.isStart && setBotLog(`Успешно пропустили противника${botSettings.useLoss ? ` ${syncBot.arena.try}/${this.state.tryLimit}` : ''}`, 'text', 'green');
+					this._isMounted && syncBot.isStart && setBotLog(`Пропустили противника${botSettings.useLoss ? ` ${syncBot.arena.try}/${this.state.tryLimit}` : ''}`, 'text', 'green');
 				} else {
 					this._isMounted && syncBot.isStart && setBotLog(`Не хватает энергии на пропуск противника`, 'text', 'red');
 					this._isMounted && this.BotArena('pause');
@@ -410,17 +410,16 @@ class PANEL extends React.Component {
 						isAlive = false;
 						// console.warn(syncBot.arena.player._ap, syncBot.arena.player._ap, reward._ap);
 						if (isChest) syncBot.arena.player.chests++;
-						syncBot.arena.player._ap = Number(syncBot.arena.player._ap) + 19;
+						syncBot.arena.player._ap = Math.max(0, Number(syncBot.arena.player._ap) + 19);
 						syncBot.arena.player._exp = Number(syncBot.arena.player._exp) + (Number.isInteger(Number(reward._exp)) ? Number(reward._exp) : 0);
 						let league = this.getLeague(syncBot.arena.player._ap);
 						syncBot.arena.player._al = league.id;
-						this._isMounted && syncBot.isStart && setBotLog(`Успешно убили противника`, 'text', 'green');
+						this._isMounted && syncBot.isStart && setBotLog(`Убили противника`, 'text', 'green');
 						return true;
 					} else if (Number(fight._myhp) <= 0) {
 						// console.warn('endFight', fight);
 						isAlive = false;
-						// console.warn(syncBot.arena.player._ap, syncBot.arena.player._ap);
-						syncBot.arena.player._ap = Number(syncBot.arena.player._ap) - 16;
+						syncBot.arena.player._ap = Math.max(0, Number(syncBot.arena.player._ap) - 16);
 						let league = this.getLeague(syncBot.arena.player._ap);
 						syncBot.arena.player._al = league.id;
 						syncBot.arena.try++;
@@ -429,7 +428,7 @@ class PANEL extends React.Component {
 					} else {
 						isAlive = true;
 						// console.warn('isAlive', isAlive);
-						// this._isMounted && setBotLog(`Успешно ударили противника`, 'text');
+						// this._isMounted && setBotLog(`Ударили противника`, 'text');
 						return true;
 					}
 				} else {
@@ -453,7 +452,7 @@ class PANEL extends React.Component {
 		};
 		if (mode == 'start') {
 			syncBot.isStart = true;
-			this._isMounted && setBotLog(`Бот успешно запущен`, 'text', 'green');
+			this._isMounted && setBotLog(`Бот запущен`, 'text', 'green');
 			if (botSettings.useChest && syncBot.arena.player.chests == 3) {
 				this._isMounted && setBotLog(`Лимит сундуков`, 'text', 'red');
 				this._isMounted && this.BotArena('pause');
