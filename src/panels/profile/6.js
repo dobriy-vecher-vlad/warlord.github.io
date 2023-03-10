@@ -176,6 +176,12 @@ class PANEL extends React.Component {
 							title: 'Камень',
 							message: itemFull.title
 						});
+					} else if (Number(item._type) == 1) {
+						returnData.push({
+							avatar: `rooms/${Number(item._id)}.png`,
+							title: 'Новый фон',
+							message: 'Окружение'
+						});
 					} else {
 						let itemFull = Items.find(x => x.id === Number(item._id));
 						returnData.push({
@@ -190,7 +196,6 @@ class PANEL extends React.Component {
 				}
 			}
 		}
-		console.warn(returnData);
 		reward.hasOwnProperty('_m1')&&Number(reward._m1)!=0&&returnData.push({
 			avatar: 'bot/raids/12.png',
 			title: 'Серебро',
@@ -1816,6 +1821,8 @@ class PANEL extends React.Component {
 												} else if (Number(data._type) == 11) {
 													let item = Stones.find(x => x.id === Number(data._id));
 													return (<Card key={x} className='DescriptionCardWiki'><SimpleCell before={<Avatar className="Item" size={32} mode="app" src={`${pathImages}stones/${Number(data._id)}.png`} />} description="Камень">{item.title}</SimpleCell></Card>);
+												} else if (Number(data._type) == 1) {
+													return (<Card key={x} className='DescriptionCardWiki'><SimpleCell before={<Avatar className="Item" size={32} mode="app" src={`${pathImages}rooms/${Number(data._id)}.png`} />} description="Окружение">Новый фон</SimpleCell></Card>);
 												} else {
 													let item = Items.find(x => x.id === Number(data._id));
 													return (<Card key={x} className='DescriptionCardWiki'><SimpleCell before={<Avatar className="Item" size={32} mode="app" src={`${pathImages}${item.icon}`} />} description="Предмет">{item.title}</SimpleCell></Card>);

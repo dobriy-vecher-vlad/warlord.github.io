@@ -206,6 +206,12 @@ class PANEL extends React.Component {
 							title: 'Камень',
 							message: itemFull.title
 						});
+					} else if (Number(item._type) == 1) {
+						returnData.push({
+							avatar: `rooms/${Number(item._id)}.png`,
+							title: 'Новый фон',
+							message: 'Окружение'
+						});
 					} else {
 						let itemFull = Items.find(x => x.id === Number(item._id));
 						returnData.push({

@@ -33,14 +33,14 @@ class MODAL extends React.Component {
 				id={this.props.id}
 				header={<ModalPageHeader
 					before={<PanelHeaderBack onClick={() => options.BackModal()}/>}
-					after={<PanelHeaderSubmit disabled={!(String(key).length > 0)} onClick={() => setState({ auth: key }, options.BackModal())}/>}
+					after={<PanelHeaderSubmit disabled={!(String(key.trim()).length > 0)} onClick={() => setState({ auth: String(key).trim() }, options.BackModal())}/>}
 				>Пароль авторизации</ModalPageHeader>}
 			>
 				<Div>
 					<FormItem
 						top="Пароль авторизации игры" 
-						status={String(key).length != 0 ? 'valid' : 'error'}
-						bottom={String(key).length != 0 ? 'Пароль введён верно!' : 'Пожалуйста, введите пароль'}
+						status={String(key).trim().length != 0 ? 'valid' : 'error'}
+						bottom={String(key).trim().length != 0 ? 'Пароль введён верно!' : 'Пожалуйста, введите пароль'}
 					>
 						<Input
 							type="text"
