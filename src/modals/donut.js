@@ -31,7 +31,7 @@ class MODAL extends React.Component {
 	};
 	shouldComponentUpdate() {
 		return false;
-	}
+	};
 	render() {
 		return (
 			<ModalCard id={this.props.id}>

@@ -28,7 +28,7 @@ class MODAL extends React.Component {
 	};
 	shouldComponentUpdate() {
 		return false;
-	}
+	};
 	render() {
 		const { state, options, data } = this.props;
 		const item = Items[data.id];

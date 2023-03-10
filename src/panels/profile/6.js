@@ -130,12 +130,33 @@ class PANEL extends React.Component {
 	};
 	parseReward = (reward) => {
 		let returnData = [];
+		if (Array.isArray(reward)) {
+			let newReward = {
+				i: []
+			};
+			for (let item of reward) {
+				if (item.hasOwnProperty('_type')) {
+					newReward.i.push({...item, _id: item._item});
+				} else {
+					newReward = {...newReward, ...item};
+				}
+			}
+			reward = newReward;
+		}
+		if (reward.hasOwnProperty('_item')&&Number(reward._item)!=0&&reward.hasOwnProperty('_type')) {
+			typeof reward?.i?.length == 'undefined' ? reward.i = [] : '';
+			reward.i.push({
+				_type: Number(reward._type),
+				_id: Number(reward._item),
+			});
+		}
 		if (reward.i) {
 			typeof reward.i.length == 'undefined' ? reward.i = [reward.i] : '';
 			for (let item of reward.i) {
 				try {
 					if (Number(item._type) == 6) {
 						let itemFull = Items.find(x => x.fragments.includes(Number(item._id)));
+						if (!itemFull) itemFull = Resources.find(x => x.fragments.includes(Number(item._id)));
 						returnData.push({
 							avatar: `collections/${Number(item._id)}.png`,
 							title: 'Коллекция',
@@ -169,45 +190,76 @@ class PANEL extends React.Component {
 				}
 			}
 		}
-		Number(reward._exp)!==0&&returnData.push({
-			avatar: 'bot/raids/10.png',
-			title: 'Опыт',
-			message: `${this.props.options.numberSpaces(Number(reward._exp))} ед.`
-		});
-		Number(reward._m1)!==0&&returnData.push({
+		console.warn(returnData);
+		reward.hasOwnProperty('_m1')&&Number(reward._m1)!=0&&returnData.push({
 			avatar: 'bot/raids/12.png',
 			title: 'Серебро',
 			message: `${this.props.options.numberSpaces(Number(reward._m1))} ед.`
 		});
-		Number(reward._m3)!==0&&returnData.push({
+		reward.hasOwnProperty('_m2')&&Number(reward._m2)!=0&&returnData.push({
+			avatar: 'bot/raids/13.png',
+			title: 'Рубины',
+			message: `${this.props.options.numberSpaces(Number(reward._m2))} ед.`
+		});
+		reward.hasOwnProperty('_m3')&&Number(reward._m3)!=0&&returnData.push({
 			avatar: 'bot/raids/11.png',
 			title: 'Золото',
 			message: `${this.props.options.numberSpaces(Number( reward._m3))} ед.`
 		});
-		Number(reward._m6)!==0&&returnData.push({
+		reward.hasOwnProperty('_m4')&&Number(reward._m4)!=0&&returnData.push({
+			avatar: 'bot/raids/15.png',
+			title: 'Аметисты',
+			message: `${this.props.options.numberSpaces(Number( reward._m4))} ед.`
+		});
+		reward.hasOwnProperty('_m5')&&Number(reward._m5)!=0&&returnData.push({
+			avatar: 'bot/raids/14.png',
+			title: 'Топазы',
+			message: `${this.props.options.numberSpaces(Number( reward._m5))} ед.`
+		});
+		reward.hasOwnProperty('_m6')&&Number(reward._m6)!=0&&returnData.push({
 			avatar: 'bot/raids/21.png',
 			title: 'Турмалины',
 			message: `${this.props.options.numberSpaces(Number(reward._m6))} ед.`
 		});
-		Number(reward._pf1)!==0&&returnData.push({
-			avatar: 'bot/raids/20.png',
-			title: 'Еда',
-			message: `${this.props.options.numberSpaces(Number(reward._pf1))} ед.`
+		reward.hasOwnProperty('_m7')&&Number(reward._m7)!=0&&returnData.push({
+			avatar: 'bot/raids/22.png',
+			title: 'Пергаменты',
+			message: `${this.props.options.numberSpaces(Number(reward._m7))} ед.`
 		});
-		Number(reward._i2)!==0&&returnData.push({
+		reward.hasOwnProperty('_m9')&&Number(reward._m9)!=0&&returnData.push({
+			avatar: 'bot/raids/112.png',
+			title: 'Редкие жемчужины',
+			message: `${this.props.options.numberSpaces(Number(reward._m9))} ед.`
+		});
+		reward.hasOwnProperty('_i2')&&Number(reward._i2)!=0&&returnData.push({
 			avatar: 'bot/raids/18.png',
 			title: 'Целебные зелья',
 			message: `${this.props.options.numberSpaces(Number(reward._i2))} ед.`
 		});
-		Number(reward._i1)!==0&&returnData.push({
+		reward.hasOwnProperty('_i1')&&Number(reward._i1)!=0&&returnData.push({
 			avatar: 'bot/raids/17.png',
 			title: 'Свитки молнии',
 			message: `${this.props.options.numberSpaces(Number(reward._i1))} ед.`
 		});
-		Number(reward._i3)!==0&&returnData.push({
+		reward.hasOwnProperty('_i3')&&Number(reward._i3)!=0&&returnData.push({
 			avatar: 'bot/raids/16.png',
 			title: 'Свитки огня',
 			message: `${this.props.options.numberSpaces(Number(reward._i3))} ед.`
+		});
+		reward.hasOwnProperty('_pf1')&&Number(reward._pf1)!=0&&returnData.push({
+			avatar: 'bot/raids/20.png',
+			title: 'Еда',
+			message: `${this.props.options.numberSpaces(Number(reward._pf1))} ед.`
+		});
+		reward.hasOwnProperty('_en')&&Number(reward._en)!=0&&returnData.push({
+			avatar: 'bot/raids/19.png',
+			title: 'Энергия',
+			message: `${this.props.options.numberSpaces(Number(reward._en))} ед.`
+		});
+		reward.hasOwnProperty('_exp')&&Number(reward._exp)!=0&&returnData.push({
+			avatar: 'bot/raids/10.png',
+			title: 'Опыт',
+			message: `${this.props.options.numberSpaces(Number(reward._exp))} ед.`
 		});
 		return returnData;
 	};
@@ -1266,7 +1318,7 @@ class PANEL extends React.Component {
 		if (nextProps.state.snackbar!=this.state.snackbar&&nextState.snackbar==this.state.snackbar) this.setState({ snackbar: nextProps.state.snackbar });
 		if (nextState.snackbar!=this.state.snackbar) return true;
 		return false;
-	}
+	};
 	render() {
 		const { state, options, parent } = this.props;
 		const { botRaidsSettings } = this.state;

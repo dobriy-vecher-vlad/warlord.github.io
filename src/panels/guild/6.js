@@ -30,7 +30,7 @@ class PANEL extends React.Component {
 		if (nextProps.state.snackbar!=this.state.snackbar&&nextState.snackbar==this.state.snackbar) this.setState({ snackbar: nextProps.state.snackbar });
 		if (nextState.snackbar!=this.state.snackbar) return true;
 		return false;
-	}
+	};
 	render() {
 		const { state, options, parent } = this.props;
 		const pathImages = 'https://dobriy-vecher-vlad.github.io/warlord-helper/media/images/';

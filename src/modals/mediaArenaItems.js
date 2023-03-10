@@ -72,7 +72,7 @@ class MODAL extends React.Component {
 	shouldComponentUpdate(nextProps, nextState) {
 		if (this.state.isLoad != nextState.isLoad) return true;
 		return false;
-	}
+	};
 	render() {
 		const { isLoad, items, days } = this.state;
 		const totalItemsIs = items&&items.filter(item => item.is).length;

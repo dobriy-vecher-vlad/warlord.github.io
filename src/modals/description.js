@@ -101,7 +101,7 @@ class MODAL extends React.Component {
 	};
 	shouldComponentUpdate() {
 		return false;
-	}
+	};
 	render() {
 		const { setState, state, options, data } = this.props;
 		const pathImages = 'https://dobriy-vecher-vlad.github.io/warlord-helper/media/images/';

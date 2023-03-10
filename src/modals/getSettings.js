@@ -30,7 +30,7 @@ class MODAL extends React.Component {
 	shouldComponentUpdate(nextProps, nextState) {
 		if (nextState && nextState.isDelete) return true;
 		return false;
-	}
+	};
 	render() {
 		const { setState, state, options, data, isDonut } = this.props;
 		return (
