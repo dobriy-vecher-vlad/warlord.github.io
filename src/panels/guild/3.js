@@ -10,6 +10,8 @@ import {
 	Avatar
 } from '@vkontakte/vkui';
 
+import Items from '../../data/items.json';
+import dataOther from '../../data/other.json';
 import dataGuild from '../../data/guild.json';
 
 class PANEL extends React.Component {
@@ -46,16 +48,11 @@ class PANEL extends React.Component {
 						{options.getRichCellDescription(<React.Fragment>Аметисты и Топазы можно получить только вкладываясь в улучшения навыков и при пополнении казны<br/>Заточки можно купить после покупки самого предмета</React.Fragment>)}
 						<Spacing size={8} />
 					</div>
-					<CardGrid size="s" className={`Horizontal__Cells ${state.isDesktop&&"size-x4 auto"}`}>
-						{dataGuild.items.map((data, x) =>
-							<Card key={x} id={`modal_${x+1}`} onClick={() => options.OpenModal(`description`, (data.modal = x+1, data), 20)}>
-								<HorizontalCell size='m' header={data.title} subtitle={`Cтаж от ${data.days} ${options.numberForm(data.days, ['день', 'дней', 'дней'])}`}>
-									<Spinner size="regular" className="Horizontal__imagePreload" />
-									<Avatar size={88} mode='app' src={`${pathImages}${data.icon}`}/>
-								</HorizontalCell>
-							</Card>
-						)}
-					</CardGrid>
+					{dataGuild.items && <CardGrid size={state.isDesktop ? "m" : "l"}>
+						{dataGuild.items.map((data, x) => {
+							return options.getItemPreview(Items[data.id], x, `Cтаж от ${data.days} ${options.numberForm(data.days, ['день', 'дней', 'дней'])}`, 'enable', false, false, () => options.OpenModal(`description`, (data.modal = x+1, data), 20));
+						})}
+					</CardGrid>}
 				</Group>
 				{this.state.snackbar}
 			</Panel>

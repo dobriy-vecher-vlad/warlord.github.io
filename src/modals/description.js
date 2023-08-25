@@ -14,13 +14,23 @@ import {
 	FormItem,
 	Input,
 	Button,
-	ModalPage
+	ModalPage,
+	Search,
+	Footer,
+	Checkbox,
+	FixedLayout,
+	Counter
 } from '@vkontakte/vkui';
 import {
+	Icon16Flash,
 	Icon24ChainOutline,
+	Icon24ChecksOutline,
 	Icon24Dismiss,
+	Icon24Done,
+	Icon24Favorite,
 	Icon28ChevronBack
 } from '@vkontakte/icons';
+import InfiniteScroll from "react-infinite-scroll-component";
 
 import Items from '../data/items.json';
 import Bosses from '../data/bosses.json';
@@ -94,12 +104,47 @@ class DescriptionRichCell extends React.Component {
 class MODAL extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {};
+		this.state = {
+			search: "",
+			searchOptions: this.props.data.options || [
+				{ id: 3201, label: "Аренда автомобилей" },
+				{ id: 3273, label: "Автотовары" },
+				{ id: 3205, label: "Автосалон" },
+				{ id: 3282, label: "Автосервис" },
+				{ id: 3283, label: "Услуги для автовладельцев" },
+				{ id: 3284, label: "Велосипеды" },
+				{ id: 3285, label: "Мотоциклы и другая мототехника" },
+				{ id: 3286, label: "Водный транспорт" },
+				{ id: 3287, label: "Автопроизводитель" },
+				{ id: 3288, label: "Автомойка" },
+				{ id: 3117, label: "Автошкола" },
+				{ id: 3118, label: "Детский сад" },
+				{ id: 3119, label: "Гимназия" },
+				{ id: 3120, label: "Колледж" },
+				{ id: 3121, label: "Лицей" },
+				{ id: 3122, label: "Техникум" },
+				{ id: 3123, label: "Университет" },
+				{ id: 3124, label: "Школа" },
+				{ id: 3125, label: "Институт" },
+				{ id: 3126, label: "Обучающие курсы" },
+				{ id: 3276, label: "Дополнительное образование" },
+				{ id: 3275, label: "Тренинг, семинар" },
+				{ id: 3127, label: "Танцевальная школа" },
+			],
+			searchOptionsPage: 0,
+		};
 	};
+	get searchOptions() {
+		return this.state.searchOptions.filter(
+			({ label }) => label.toLowerCase().indexOf(this.state.search.toLowerCase()) > -1
+		);
+	};
+
 	async componentDidMount() {
 		console.log('[MODAL] >', this.props.id, this.props.data.modalIndex);
 	};
-	shouldComponentUpdate() {
+	shouldComponentUpdate(nextProps, nextState) {
+		if (nextState.search != undefined) return true;
 		return false;
 	};
 	render() {
@@ -669,12 +714,66 @@ class MODAL extends React.Component {
 			</ModalPage>
 			||
 
+
+			data.modalIndex == 'search' && <ModalPage
+				className="ModalPage--classic"
+				id={this.props.id}
+				header={<Search
+					value={this.state.search}
+					onChange={(event) => {
+						document.getElementById('searchOptions')?.scrollTo({ top: 0 })
+						this.setState({ search: event.target.value, searchOptionsPage: 0 });
+					}}
+					after={null}
+				/>}
+			>
+				<Div style={{ paddingTop: 0 }}>
+					{this.searchOptions && this.searchOptions.length > 0 ? <>
+						<div className="Scroll" id="searchOptions" style={{maxHeight: state.isDesktop ? '372px' : 'unset'}}>
+							<InfiniteScroll
+								dataLength={(this.state.searchOptionsPage + 1) * 30}
+								next={() => this.setState({ searchOptionsPage: this.state.searchOptionsPage+1 })}
+								hasMore={true}
+								loader={<Spinner size="regular" style={{ margin: '20px 0' }} />}
+								scrollableTarget={"searchOptions"}
+							>
+								{this.searchOptions.slice(0, (this.state.searchOptionsPage + 1) * 30).map((option, key) => (
+									<Cell key={key} after={option.count ? <Counter size="s">{option.count}</Counter> : false} checked={option.checked} value={option.value} onChange={(event) => this.setState({ searchOptions: this.state.searchOptions.map(option => ({
+										...option,
+										checked: event.target.value == option.value ? event.target.checked : option.checked,
+									})) }, () => this.props.data.setState({ searchItemsUsed: this.state.searchOptions.filter(option => option.checked).map(option => option.value) }))} mode="selectable" before={<Avatar mode="app" size={32} src={pathImages+option.src} />} subtitle={option.description}>
+										{option.label}
+									</Cell>
+								))}
+							</InfiniteScroll>
+						</div>
+						{this.state.searchOptions.filter(option => option.count).length ? <>
+							<Spacing size={1} separator />
+							<Button 
+								size="l"
+								align="center"
+								stretched={true}
+								mode="secondary"
+								onClick={() => this.setState({ searchOptions: this.state.searchOptions.map(option => ({
+									...option,
+									checked: option.count ? true : option.checked,
+								})) }, () => this.props.data.setState({ searchItemsUsed: this.state.searchOptions.filter(option => option.checked).map(option => option.value) }))}
+								style={{ marginTop: 12 }}
+							>Выбрать все элементы в наличии</Button>
+						</> : false}
+					</>:<Cell disabled className="DescriptionWiki" style={{textAlign: 'center'}} description="Ничего не найдено"></Cell>}
+				</Div>
+			</ModalPage>
+			||
+
 			
 			<ModalPage
 				id={this.props.id}
 				header={<ModalPageHeader>{data.title || data.name}</ModalPageHeader>}
+				className='Modal--placeholderLoading'
 			>
 				<Div>
+					{JSON.stringify(data)}
 				</Div>
 			</ModalPage>
 		);

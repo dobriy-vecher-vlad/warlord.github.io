@@ -12,7 +12,7 @@ import Skeleton from '../../components/skeleton';
 import TableCell from '../../components/tableCell';
 
 let api_id = 5536422;
-let clan_id = 292859277;
+let clan_id = 628113656;
 let clan_auth = 'de73003f6d508e583e9c7f316024abbf';
 
 class PANEL extends React.Component {

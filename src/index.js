@@ -110,12 +110,15 @@ let hashParams = null;
 
 let api_id = 5536422;
 let DEFAULT_AUTHORIZATION = [{
+	id: '628113656',
 	login: '292859277',
 	password: 'de73003f6d508e583e9c7f316024abbf',
 }, {
+	id: '628128530',
 	login: '292859277',
 	password: 'de73003f6d508e583e9c7f316024abbf',
 }, {
+	id: '628113656',
 	login: '292859277',
 	password: 'de73003f6d508e583e9c7f316024abbf',
 }, {
@@ -162,9 +165,18 @@ const parseQueryString = (string = '') => {
 		return null;
 	}
 };
+Object.defineProperty(Array.prototype, 'includesArray', {
+	value: function(searchElement) {
+		let elements = Object(this);
+		if ((elements.length >>> 0) === 0) return false;
+		if ((searchElement.length >>> 0) === 0) return false;
+		for (let element of searchElement) if (elements.includes(element)) return true;
+		return false;
+	}
+});
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
-const wikiVersion = '1.7.6';
+const wikiVersion = '1.7.7';
 const pathImages = 'https://dobriy-vecher-vlad.github.io/warlord-helper/media/images/';
 const serverHub = [{
 	id: 1,
@@ -229,7 +241,6 @@ import PANEL_profile__7 from './panels/profile/7';
 // import PANEL_profile__8 from './panels/profile/8';
 import PANEL_profile__9 from './panels/profile/9';
 import PANEL_profile__10 from './panels/profile/10';
-// import PANEL_profile__11 from './panels/profile/11';
 
 import VIEW_rating from './panels/rating/rating';
 
@@ -1096,6 +1107,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 							disabled
 							className="ItemCell__main"
 							before={<Avatar size={75} src={`${pathImages}${item.icon}`} />}
+							// before={<Avatar size={75} src={`${pathImages}items/${item.id}x.png`} />}
 							caption={<React.Fragment>
 								<span>DMG</span>
 								<span>{numberSpaces(item.dmg)}</span>
@@ -1148,7 +1160,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 			if (levels && !syncItem) {
 				return;
 			}
-			let after = tooltip ? false : (!isDonut ? item && <Icon24TshirtOutline width={24} height={24}/> || coll && <Icon24CubeBoxOutline width={24} height={24}/> : syncItem ? <Icon28CheckCircleOutline width={24} height={24} style={{color: 'var(--dynamic_green)'}}/> : <Icon28CancelCircleOutline width={24} height={24} style={{color: 'var(--destructive)'}}/>);
+			let after = (tooltip && item != 'enable') ? false : (!isDonut ? item && <Icon24TshirtOutline width={24} height={24}/> || coll && <Icon24CubeBoxOutline width={24} height={24}/> : syncItem ? <Icon28CheckCircleOutline width={24} height={24} style={{color: 'var(--dynamic_green)'}}/> : <Icon28CancelCircleOutline width={24} height={24} style={{color: 'var(--destructive)'}}/>);
 			return (
 				<Card key={x} id={`modal_${x+1}`} onClick={action ? () => {} : onClick ? onClick : () => OpenModal(`item`, {id: Items.findIndex(item => item.id == data.id), item: item, collection: coll, description: data.description})} className={`Card__Item${after ? ' Card__Item--after' : ''}${className ? ` ${className}` : ''}${action ? ` Card__Item--action` : ''}`}>
 					<RichCell 
@@ -1230,12 +1242,6 @@ const App = withAdaptivity(({ viewWidth }) => {
 				}
 			}
 			if (name == '10' && activeStory == 'profile') {
-				if (!isDonut) {
-					// this.OpenModal('donut');
-					return this.OpenModal('donut');
-				}
-			}
-			if (name == '11' && activeStory == 'profile') {
 				if (!isDonut) {
 					// this.OpenModal('donut');
 					return this.OpenModal('donut');
@@ -1892,10 +1898,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 							let dataGameItems = await getGame(this.state.server, {
 								i: 39,
 								t: dataGame?._uid,
-							}, {
-								login: DEFAULT_AUTHORIZATION[this.state.server-1]?.login,
-								password: DEFAULT_AUTHORIZATION[this.state.server-1]?.password,
-							});
+							}, DEFAULT_AUTHORIZATION[this.state.server-1]);
 							if (dataGameItems?.u) {
 								syncUserGame = dataGameItems.u;
 								dataGameItems.i = dataGameItems.i.filter(item => Number(item._o) == 1);
@@ -2065,10 +2068,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 						let dataGameItems = await getGame(server, {
 							i: 39,
 							t: dataGame?._uid,
-						}, {
-							login: DEFAULT_AUTHORIZATION[server-1]?.login,
-							password: DEFAULT_AUTHORIZATION[server-1]?.password,
-						});
+						}, DEFAULT_AUTHORIZATION[this.state.server-1]);
 						if (dataGameItems?.u) {
 							syncUserGame = dataGameItems.u;
 							dataGameItems.i = dataGameItems.i.filter(item => Number(item._o) == 1);
@@ -2350,8 +2350,8 @@ const App = withAdaptivity(({ viewWidth }) => {
 				<MODAL_getSettings__password id='getSettings-password' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} />
 				<MODAL_getSettings__server id='getSettings-server' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} />
 				<MODAL_getSettings__order dynamicContentHeight id='getSettings-order' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} storeProfiles={this.state.storeProfiles} storeProfilesFull={this.state.storeProfilesFull} storeProfilesSize={this.state.storeProfilesSize} />
-				<MODAL_mediaArenaItems dynamicContentHeight id='mediaArenaItems' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} clan_id={DEFAULT_AUTHORIZATION[this.state.server-1]?.login} api_id={api_id} clan_auth={DEFAULT_AUTHORIZATION[this.state.server-1]?.password} />
-				<MODAL_mediaEventsItems dynamicContentHeight id='mediaEventsItems' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} clan_id={DEFAULT_AUTHORIZATION[this.state.server-1]?.login} api_id={api_id} clan_auth={DEFAULT_AUTHORIZATION[this.state.server-1]?.password} />
+				<MODAL_mediaArenaItems dynamicContentHeight id='mediaArenaItems' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} authorization={DEFAULT_AUTHORIZATION[this.state.server-1] || {}} api_id={api_id} />
+				<MODAL_mediaEventsItems dynamicContentHeight id='mediaEventsItems' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} authorization={DEFAULT_AUTHORIZATION[this.state.server-1] || {}} api_id={api_id} />
 				<MODAL_mediaSales id='mediaSales' onClose={() => this.BackModal()} setState={this.transmittedSetState} state={this.state} options={this} />
 			</ModalRoot>
 		);
@@ -2421,7 +2421,6 @@ const App = withAdaptivity(({ viewWidth }) => {
 										data-story="profile"
 										onClick={onStoryChange}
 										before={<Icon28UserOutline />}
-										// after={<Counter size="s" mode="prominent">НОВОЕ</Counter>}
 									>Мой профиль</RichCell>}
 									{(this.state.storeProfiles[this.state.storeProfilesIndex]?.server == 1 || this.state.storeProfiles[this.state.storeProfilesIndex]?.server == 2)&&<RichCell
 										className="RichCell--Context"
@@ -2429,7 +2428,6 @@ const App = withAdaptivity(({ viewWidth }) => {
 										data-story="rating"
 										onClick={onStoryChange}
 										before={<Icon28UserCardOutline />}
-										// after={<Counter size="s" mode="prominent">НОВОЕ</Counter>}
 									>Рейтинг</RichCell>}
 									{/* {isEmbedded && <RichCell
 										className="RichCell--Context"
@@ -2463,7 +2461,6 @@ const App = withAdaptivity(({ viewWidth }) => {
 										onClick={onStoryChange}
 										before={<Icon28Smiles2Outline />}
 										description="Сезоны, сундуки"
-										// after={isEmbedded&&<Counter size="s" mode="prominent">НОВОЕ</Counter>}
 									>Арена</RichCell>
 									<RichCell
 										className="RichCell--Context"

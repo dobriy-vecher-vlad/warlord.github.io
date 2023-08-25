@@ -6,7 +6,7 @@
 	--systemIndigo: rgb(88, 86, 214);
 	--systemMint: rgb(0, 199, 190);
 	--systemOrange: rgb(255, 149, 0);
-	--systemPink: rgb(255, 45, 85);
+	--systemPink: rgb(255, 45, 185);
 	--systemPurple: rgb(175, 82, 222);
 	--systemRed: rgb(255, 59, 48);
 	--systemTeal: rgb(48, 176, 199);
@@ -23,10 +23,10 @@
 	--systemBrown: rgb(172, 142, 104);
 	--systemCyan: rgb(100, 210, 255);
 	--systemGreen: rgb(48, 209, 88);
-	--systemIndigo: rgb(94, 92, 230);
+	--systemIndigo: rgb(114, 104, 255);
 	--systemMint: rgb(102, 212, 207);
 	--systemOrange: rgb(255, 159, 10);
-	--systemPink: rgb(255, 55, 95);
+	--systemPink: rgb(255, 55, 165);
 	--systemPurple: rgb(191, 90, 242);
 	--systemRed: rgb(255, 69, 58);
 	--systemTeal: rgb(64, 200, 224);
@@ -567,6 +567,20 @@ div.Scroll::-webkit-scrollbar-track {
 .CustomSelectOption__before .Avatar__img {
 	transform: scale(1.15);
 }
+.Chip__before .Avatar {
+	overflow: hidden;
+	-webkit-transform: translate3d(0, 0, 0);
+}
+.Chip__before .Avatar__img {
+	transform: scale(1.15);
+}
+#searchOptions .Avatar {
+	overflow: hidden;
+	-webkit-transform: translate3d(0, 0, 0);
+}
+#searchOptions .Avatar__img {
+	transform: scale(1.15);
+}
 
 
 .CardsNews .vkuiLink {
@@ -884,16 +898,24 @@ div.Scroll::-webkit-scrollbar-track {
 	list-style: none;
 	cursor: pointer;
 }
+.DetailsWiki > summary .Icon {
+	top: unset;
+}
 .DetailsWiki > summary .Icon > svg {
 	transform: rotate(90deg);
 }
 .DetailsWiki[open] > summary .Icon > svg {
 	transform: rotate(-90deg);
 }
-
 .DetailsWiki[open] > summary .Tappable__hoverShadow {
 	background: var(--background_hover);
 	transition: background-color .15s ease-out;
+}
+.DetailsWiki summary .Header {
+	align-items: center;
+}
+.DetailsWiki summary .Header .Header__main {
+	margin: 9px 0 9px;
 }
 
 
@@ -2794,14 +2816,14 @@ body[scheme=space_gray] .ActionCard::after {
 	padding: 0 12px;
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	gap: 20px;
 }
 .CustomFormLayoutGroup .FormLayoutGroup > .Text + * {
 	width: 40%;
 	flex: unset;
 }
-.CustomFormLayoutGroup .File .Button__content,
-.CustomFormLayoutGroup .File .Button__after {
+.CustomFormLayoutGroup .Button__content,
+.CustomFormLayoutGroup .Button__after {
 	font-size: var(--vkui--font_text--font_size--compact, 15px);
 	line-height: var(--vkui--font_text--line_height--compact, 20px);
 	font-weight: var(--vkui--font_text--font_weight--regular, 400);
@@ -2817,10 +2839,17 @@ body[scheme=space_gray] .ActionCard::after {
 .ImagePreview {
 	position: relative;
 	border-radius: var(--vkui--size_border_radius--regular, 8px);
+	user-select: none;
+	width: fit-content;
+	height: fit-content;
+	max-width: 100%;
+	--color: #000000;
+}
+.ImagePreview--dark {
+	--color: #e1e3e6;
 }
 .ImagePreview:before {
-	border: 1px solid rgba(0,0,0,.08);
-	border: var(--thin-border) solid var(--image_border, var(--vkui--color_image_border_alpha));
+	border: var(--thin-border) solid rgba(0, 0, 0, .08);
 	border-radius: inherit;
 	box-sizing: border-box;
 	content: '';
@@ -2830,47 +2859,75 @@ body[scheme=space_gray] .ActionCard::after {
 	pointer-events: none;
 	position: absolute;
 	top: 0;
+	bottom: 0;
 	width: 100%;
 	z-index: 3;
-
-
-
-	position: relative;
-	z-index: 2;
-
 }
-.ImagePreview__container {
+.ImagePreview.ImagePreview--dark:before {
+	border: var(--thin-border) solid rgba(255, 255, 255, 0.08);
+}
+.ImagePreview__scroll {
 	overflow: overlay;
+	width: fit-content;
+	height: fit-content;
+	max-width: 100%;
+	max-height: 400px;
 	border-radius: inherit;
 }
-.ImagePreview__container::-webkit-scrollbar {
+.ImagePreview__scroll::-webkit-scrollbar {
 	width: 6px;
 	height: 6px;
 }
-.ImagePreview__container::-webkit-scrollbar {
+.ImagePreview__scroll::-webkit-scrollbar {
 	display: block;
 	width: 6px;
 }
-.ImagePreview__container::-webkit-scrollbar-button,
-.ImagePreview__container::-webkit-scrollbar-corner,
-.ImagePreview__container::-webkit-resizer {
+.ImagePreview__scroll::-webkit-scrollbar-button,
+.ImagePreview__scroll::-webkit-scrollbar-corner,
+.ImagePreview__scroll::-webkit-resizer {
 	display: none;
 }
-.ImagePreview__container::-webkit-scrollbar-thumb {
+.ImagePreview__scroll::-webkit-scrollbar-thumb {
 	border-radius: 12px;
 	background-color: rgba(0,0,0,0.28);
 }
-[scheme=space_gray] .ImagePreview__container::-webkit-scrollbar-thumb {
+.ImagePreview.ImagePreview--dark .ImagePreview__scroll::-webkit-scrollbar-thumb {
 	background-color: rgba(255,255,255,0.28);
 }
-.ImagePreview__container::-webkit-scrollbar-thumb:hover {
+.ImagePreview__scroll::-webkit-scrollbar-thumb:hover {
 	background-color: rgba(0,0,0,0.56);
 }
-[scheme=space_gray] .ImagePreview__container::-webkit-scrollbar-thumb:hover {
+.ImagePreview.ImagePreview--dark .ImagePreview__scroll::-webkit-scrollbar-thumb:hover {
 	background-color: rgba(255,255,255,0.56);
 }
-.ImagePreview__container::-webkit-scrollbar-track {
+.ImagePreview__scroll::-webkit-scrollbar-track {
 	background: transparent;
+}
+.ImagePreview__container {
+	min-width: fit-content;
+	width: fit-content;
+	min-height: fit-content;
+	height: fit-content;
+	position: relative;
+	padding: 20px;
+	pointer-events: none;
+}
+.ImagePreview__title {
+	color: var(--color);
+	font-size: 23px;
+	font-weight: 500;
+	position: relative;
+	z-index: 3;
+}
+.ImagePreview__text {
+	color: var(--color);
+	font-size: 18px;
+	font-weight: 400;
+	position: relative;
+	z-index: 3;
+}
+.ImagePreview__text:not(:first-child) {
+	margin-top: 10px;
 }
 .ImagePreview__in {
 	display: grid;
@@ -2878,10 +2935,11 @@ body[scheme=space_gray] .ActionCard::after {
 	grid-row-gap: 10px;
 	width: fit-content;
 	height: fit-content;
-	padding: 20px;
 	position: relative;
 	z-index: 2;
-	border-radius: inherit;
+}
+.ImagePreview__in:not(:first-child) {
+	margin-top: 40px;
 }
 .ImagePreview__image {
 	position: absolute;
@@ -2890,13 +2948,12 @@ body[scheme=space_gray] .ActionCard::after {
 	bottom: 0;
 	left: 0;
 	right: 0;
-	background-color: rgba(0,28,61,.015);
-	border-radius: inherit;
+	background-color: #fbfbfc;
 	overflow: hidden;
 	pointer-events: none;
 	user-select: none;
 }
-body[scheme=space_gray] .ImagePreview__image {
+.ImagePreview--dark .ImagePreview__image {
 	background-color: #232324;
 }
 .ImagePreview__image img {
@@ -2909,19 +2966,28 @@ body[scheme=space_gray] .ImagePreview__image {
 	height: 100%;
 	object-position: center;
 	object-fit: cover;
+	transform-origin: center;
+	transition: .2s;
 }
 .CollectionStack {
 	z-index: 2;
 	position: relative;
+	white-space: nowrap;
 }
 .CollectionStack__in {
 	display: flex;
+}
+.CollectionStack--stretched .CollectionStack__in {
+	min-width: 315px;
+}
+.CollectionStack--stretched.CollectionStack--compact .CollectionStack__in {
+	min-width: 240px;
 }
 .CollectionStack__header {
 	font-size: var(--vkui--font_headline1--font_size--regular,16px);
 	font-weight: var(--vkui--font_headline1--font_weight--regular,500);
 	line-height: var(--vkui--font_headline1--line_height--regular,20px);
-	color: var(--text_primary,var(--vkui--color_text_primary));
+	color: var(--color);
 	min-width: 0;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -2938,7 +3004,7 @@ body[scheme=space_gray] .ImagePreview__image {
 	filter: grayscale(1) brightness(0.75);
 	-webkit-filter: grayscale(1) brightness(0.75);
 }
-body[scheme=space_gray] .CollectionStack__item--missing {
+.ImagePreview--dark .CollectionStack__item--missing {
 	filter: grayscale(1) brightness(0.5);
 	-webkit-filter: grayscale(1) brightness(0.5);
 }
@@ -2988,10 +3054,10 @@ body[scheme=space_gray] .CollectionStack__item--missing {
 	background-position: center right;
 	background-size: auto;
 }
-body[scheme=space_gray] .CollectionStack__item:after {
+.ImagePreview--dark .CollectionStack__item:after {
 	background-image: url('data:image/svg+xml,<svg width="59" height="62" viewBox="0 0 59 62" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="58" height="61" rx="11.5" stroke="white" stroke-opacity="0.08"/></svg>');
 }
-body[scheme=space_gray] .CollectionStack--compact .CollectionStack__item:not(:first-child):after {
+.ImagePreview--dark .CollectionStack--compact .CollectionStack__item:not(:first-child):after {
 	background-image: url('data:image/svg+xml,<svg width="44" height="62" viewBox="0 0 44 62" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M43.5 50C43.5 56.3513 38.3513 61.5 32 61.5H0.6625C0.572751 61.5 0.5 61.4272 0.5 61.3375C0.5 61.2538 0.537618 61.211 0.570378 61.1932C4.67718 59.1456 7.5 54.9029 7.5 50V12C7.5 7.09712 4.6772 2.85446 0.570433 0.806862C0.537657 0.789047 0.5 0.746278 0.5 0.662498C0.5 0.572754 0.572752 0.5 0.6625 0.5H32C38.3513 0.5 43.5 5.64873 43.5 12V50Z" stroke="white" stroke-opacity="0.08"/></svg>');
 }
 .CollectionStack__item .Avatar__badge {
@@ -3118,7 +3184,7 @@ body[scheme=space_gray] .CollectionStack--compact .CollectionStack__item:not(:fi
 
 	.Epic .Group--card > .Group__inner {
 		box-shadow: inset 0 0 0 var(--thin-border) var(--input_border), 0 0 2px rgba(65, 47, 47, 0.02), 0 0 16px rgba(0, 0, 0, 0.04);
-		border-radius: 12px;
+		border-radius: 16px;
 	}
 	.BannerWiki.Scroll {
 		width: 25%!important;
@@ -4017,4 +4083,255 @@ body[scheme=space_gray] .CollectionStack--compact .CollectionStack__item:not(:fi
 .Tabbar .TabbarItem {
 	padding: 0 20px;
 	box-sizing: border-box;
+}
+
+
+
+.ModalPage__header .Search {
+	background: transparent;
+	padding: 12px;
+}
+
+
+
+.View[id="profile"] .Panel[id="11"] .Group:nth-of-type(2) > .Group__inner {
+	border-bottom-right-radius: 8px;
+	border-bottom-left-radius: 8px;
+}
+.View[id="profile"] .Panel[id="11"] .Group:nth-of-type(2) > .Spacing {
+	height: 8px!important;
+}
+.View[id="profile"] .Panel[id="11"] .Group:nth-of-type(3) > .Group__inner {
+	border-bottom-right-radius: 8px;
+	border-bottom-left-radius: 8px;
+	border-top-left-radius: 8px;
+	border-top-right-radius: 8px;
+}
+.View[id="profile"] .Panel[id="11"] .Group:nth-of-type(3) > .Spacing {
+	height: 8px!important;
+}
+.View[id="profile"] .Panel[id="11"] .Group:nth-of-type(4) > .Group__inner {
+	border-top-left-radius: 8px;
+	border-top-right-radius: 8px;
+}
+
+
+
+
+
+
+.RichCards {
+	display: grid;
+	grid-column-gap: 6px;
+	grid-row-gap: 6px;
+}
+.Gallery ~ .RichCards {
+	padding: 8px 0 0 0;
+}
+@media screen and (orientation: landscape) {
+	.RichCards {
+		grid-template-columns: repeat(3, 1fr);
+	}
+}
+@media screen and (orientation: portrait) {
+	.RichCards {
+		grid-template-columns: repeat(2, 1fr);
+	}
+	.Gallery ~ .RichCards {
+		padding: 12px 12px 4px 12px;
+	}
+}
+.RichCard {
+	background: rgb(245, 245, 245);
+	border-radius: 12px;
+	--input_border: rgb(185 185 185 / 20%);
+}
+[scheme=space_gray] .RichCard {
+	background: rgb(35, 35, 35);
+	--input_border: rgb(110 110 110 / 20%);
+}
+.RichCard > .Card__in {
+	position: relative;
+	z-index: 1;
+	user-select: none;
+}
+.RichCard > .Card__in > button {
+	width: 100%;
+	height: 100%;
+	display: block;
+	text-align: unset;
+	align-items: unset;
+	cursor: unset;
+	box-sizing: border-box;
+	background-color: transparent;
+	margin: unset;
+	padding: unset;
+	border-width: unset;
+	border-style: unset;
+	border-color: unset;
+	border-image: unset;
+	border-radius: inherit;
+}
+.RichCard__content {
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	position: absolute;
+	z-index: 10;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	padding: 12px;
+	border-radius: inherit;
+	text-align: left;
+}
+.RichCard__placeholder .Tappable {
+	padding-bottom: 105%;
+	border-radius: inherit;
+}
+.RichCard__content:before {
+	border: 1px solid #e1e3e6;
+	border: var(--thin-border) solid var(--input_border,var(--vkui--color_image_border_alpha));
+	border-radius: inherit;
+	box-sizing: border-box;
+	content: "";
+	display: block;
+	height: 100%;
+	left: 0;
+	position: absolute;
+	top: 0;
+	width: 100%;
+	z-index: 2;
+}
+.RichCard__content--shadow {
+	background: radial-gradient(370% 370% at 50% -280%, rgba(244, 244, 244, 0) 85%, rgba(244, 244, 244, 0.55) 88%, rgba(244, 244, 244, 0.75) 90%, rgba(244, 244, 244, 1) 100%);
+}
+[scheme=space_gray] .RichCard__content--shadow {
+	background: radial-gradient(370% 370% at 50% -280%, rgba(35, 35, 36, 0) 85%, rgba(35, 35, 36, 0.55) 88%, rgba(35, 35, 36, 0.75) 90%, rgba(35, 35, 36, 1) 100%);
+}
+.RichCard__content-title {
+	font-size: 18px;
+	font-weight: 500;
+	line-height: 22px;
+	/* font-family: var(--font-display); */
+	color: var(--text_primary,var(--vkui--color_text_primary));
+}
+.RichCard__content-text {
+	font-size: 13px;
+	font-weight: 400;
+	line-height: 16px;
+	/* font-family: var(--font-display); */
+	color: var(--vkui--color_text_secondary);
+}
+* + .RichCard__content-text {
+	margin-top: 2px;
+}
+.RichCard__placeholder {
+	position: relative;
+	z-index: 20;
+}
+.RichCard__avatar,
+.RichCard__image {
+	position: absolute;
+	z-index: 2;
+	top: 0;
+	bottom: 5%;
+	left: 0;
+	right: 0;
+}
+.RichCard__avatar {
+	padding: 12px;
+}
+.RichCard__avatar > .RichCardAvatar {
+	width: 55%!important;
+	height: 55%!important;
+}
+.RichCard__avatar .RichCardAvatarGrid {
+	width: 55%!important;
+	height: 55%!important;
+	padding: 0;
+}
+.RichCard__avatar .RichCardAvatar {
+	padding: 4px;
+	border-radius: 12px!important;
+	box-shadow: var(--vkui--elevation3,0 2px 24px 0 rgba(0,0,0,.08),0 0 2px 0 rgba(0,0,0,.08));
+	background: rgb(255, 255, 255);
+	box-sizing: border-box;
+	--scale: 125%;
+}
+[scheme=space_gray] .RichCard__avatar .RichCardAvatar {
+	background: rgb(45, 45, 45);
+}
+.RichCard__avatar .RichCardAvatarGrid > .RichCardAvatar {
+	width: 100%;
+	height: 100%;
+	padding: 2px;
+	border-radius: 8px!important;
+}
+.RichCard__avatar .RichCardAvatar img {
+	border: none;
+	display: block;
+	height: 100%;
+	object-fit: cover;
+	position: relative;
+	width: 100%;
+	border-radius: 10px!important;
+}
+.RichCard__avatar .RichCardAvatarGrid > .RichCardAvatar img {
+	border-radius: 6px!important;
+}
+.RichCard__image {
+	bottom: 12px;
+}
+.RichCard__image img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: center;
+}
+.RichCardAvatarGrid {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	grid-gap: 4px;
+}
+.RichCardAvatar {
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.RichCardAvatar > div {
+	border-radius: 8px;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+}
+.RichCardAvatarGrid .RichCardAvatar > div {
+	border-radius: 6px;
+}
+.RichCard img {
+	user-select: none;
+	font-size: 0;
+	line-height: 0;
+}
+
+
+.AvatarItem {
+	--scale: 115%;
+	overflow: hidden;
+	-webkit-transform: translate3d(0, 0, 0);
+}
+.AvatarItem img {
+	transform: scale(var(--scale));
+}
+
+
+.Modal--placeholderLoading {
+	opacity: 0!important;
+	visibility: hidden!important;
+	pointer-events: none!important;
+	user-select: none!important;
 }
