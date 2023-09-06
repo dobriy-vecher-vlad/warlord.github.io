@@ -118,15 +118,14 @@ let DEFAULT_AUTHORIZATION = [{
 	login: '292859277',
 	password: 'de73003f6d508e583e9c7f316024abbf',
 }, {
-	id: '628113656',
-	login: '292859277',
-	password: 'de73003f6d508e583e9c7f316024abbf',
+	login: 'KGnXPZ/t46SDZ46xPer1buo3SxqTFRrUSi9L2B8JW/o=',
+	password: 'GI35gYrUj8YOaE8+V3RYiOm7yn+QWroYrvN1cSt8lZ0=',
 }, {
-	login: '584840646046,597549694242',
-	password: 'cdc92c8ca6e8c9952ea67ff053b47f8c,-s-7XnteVPUNZrXe5I-oUoTg-Iao0KTcWMWL0uvB5RWmXLxg8P8nyLyc4IYmwsxD6LYqxOxE6u7MxK1iWv3uxNwdUI5',
+	login: '584840646046,597549694268',
+	password: '60a2b68552999dcb1126611e6e008d48,-s-7Un0j3I8qVnwDYKbr1o2C-PWrwtvcXMUP.rydZR3qxL0eaLcK1oUE6t-KUpwdYQTMwswgVPcOWp2CdJaNxnveYM2',
 }, {
-	login: '584840646046,628130888',
-	password: '5e59fc5fc09e430606dbdf926d43f78e,-s-dznWeVx3M1l1EVM7N-rYeUIUKzoW-Ws4MxovBWPUsyuYidt7NVKVd7Kamxmyi6tXlWnTfYvdrxMwfWN6KzkxcXIc',
+	login: '584840646046,628131408',
+	password: '60a2b68552999dcb1126611e6e008d48,-s-7Un0j3I8qVnwDYKbr1o2C-PWrwtvcXMUP.rydZR3qxL0eaLcK1oUE6t-KUpwdYQTMwswgVPcOWp2CdJaNxnveYM2',
 }];
 let syncUser = null;
 let syncUserGame = null;
@@ -176,7 +175,7 @@ Object.defineProperty(Array.prototype, 'includesArray', {
 });
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
-const wikiVersion = '1.7.7';
+const wikiVersion = '1.7.8';
 const pathImages = 'https://dobriy-vecher-vlad.github.io/warlord-helper/media/images/';
 const serverHub = [{
 	id: 1,
