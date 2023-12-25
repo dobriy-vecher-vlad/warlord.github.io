@@ -243,7 +243,7 @@ div.Scroll {
 		transform: scaleY(.33);
 	}
 }
-.ModalPage__content .Group__inner {
+.ModalPage__content .Group {
 	padding-top: unset;
 	padding-bottom: 12px;
 }
@@ -1040,10 +1040,10 @@ div.Scroll::-webkit-scrollbar-track {
 }
 
 
-.Group__inner > .Header {
+.Group > .Header {
 	padding: 0;
 }
-.Group__inner > .Header > .Header__main {
+.Group > .Header > .Header__main {
 	margin: 0px 0 8px;
 }
 
@@ -1402,7 +1402,7 @@ div.Scroll::-webkit-scrollbar-track {
 }
 
 
-.Group__inner > .Div {
+.Group > .Div {
 	padding: 0 12px;
 }
 .Div > .Header {
@@ -2085,6 +2085,10 @@ body[scheme=space_gray] {
 }
 .CustomRadioForm .Radio__input:checked ~ .Radio__container {
 	/* background-color: var(--content_tint_background); */
+}
+.CustomRadioForm img.CustomRadioForm__cell--shadow,
+.CustomRadioForm img.CustomRadioForm__cell--image {
+	object-fit: contain;
 }
 .CustomRadioForm .CustomRadioForm__cell--shadow {
 	opacity: 0;
@@ -3106,24 +3110,24 @@ body[scheme=space_gray] .ActionCard::after {
 		font-weight: 500;
 	}
 
-	.SplitCol__fixedInner .Group__inner {
+	.SplitCol__fixedInner .Group {
 		background: transparent;
 		box-shadow: unset;
 		padding: 16px 16px 16px 0!important;
 		--separator_common: #e0e0e0!important;
 	}
-	body[scheme=space_gray] .SplitCol__fixedInner .Group__inner {
+	body[scheme=space_gray] .SplitCol__fixedInner .Group {
 		--separator_common: #151515!important;
 	}
 	.SplitCol--spaced {
 		margin: 0;
 		padding: 0;
 	}
-	.SplitCol__fixedInner .Group__inner .Spacing--separator {
+	.SplitCol__fixedInner .Group .Spacing--separator {
 		mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 20%, rgba(0, 0, 0, 1) 80%, rgba(0, 0, 0, 0) 100%);
 		-webkit-mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 20%, rgba(0, 0, 0, 1) 80%, rgba(0, 0, 0, 0) 100%);
 	}
-	.SplitCol__fixedInner .Group__inner::after {
+	.SplitCol__fixedInner .Group::after {
 		display: none;
 	}
 
@@ -3182,7 +3186,7 @@ body[scheme=space_gray] .ActionCard::after {
 		line-height: var(--vkui--font_paragraph--line_height--regular,20px);
 	}
 
-	.Epic .Group--card > .Group__inner {
+	.Epic .Group--card {
 		box-shadow: inset 0 0 0 var(--thin-border) var(--input_border), 0 0 2px rgba(65, 47, 47, 0.02), 0 0 16px rgba(0, 0, 0, 0.04);
 		border-radius: 16px;
 	}
@@ -3282,7 +3286,7 @@ body[scheme=space_gray] .ActionCard::after {
 	.vkuiPanelHeader__after {
 		margin-right: -7px;
 	}
-	.View .Group__inner .Card.DescriptionCardWiki .vkuiSimpleCell>.vkuiAvatar {
+	.View .Group .Card.DescriptionCardWiki .vkuiSimpleCell>.vkuiAvatar {
 		margin-top: 10px;
 		margin-bottom: 10px;
 		margin-right: 16px;
@@ -3354,12 +3358,12 @@ body[scheme=space_gray] .ActionCard::after {
 	}
 
 
-	.View .Group__inner .SimpleCell {
+	.View .Group .SimpleCell {
 		padding-left: 8px;
 		padding-right: 8px;
 		user-select: none;
 	}
-	.View .Group__inner .SimpleCell > .Avatar {
+	.View .Group .SimpleCell > .Avatar {
 		margin: 8px 16px 8px 0;
 	}
 
@@ -3536,7 +3540,7 @@ body[scheme=space_gray] .ActionCard::after {
 		padding: 0!important;
 		margin: 0!important;
 	}
-	#modal-warlord-page .vkuiGroup__inner {
+	#modal-warlord-page .vkuiGroup {
 		padding: 0;
 	} */
 	.CardWithAvatar .vkuiAvatar:not(.withPreload) {
@@ -3615,19 +3619,19 @@ body[scheme=space_gray] .ActionCard::after {
 	.Tabbar .Avatar {
 		background: currentColor;
 	}
-	.RoundSeparators > .Group__inner > section {
+	.RoundSeparators > .Group > section {
 		position: relative;
 		z-index: 1;
 		background-color: var(--background_content);
 		border-radius: 20px;
 	}
-	.RoundSeparators > .Group__inner > section > .Group__separator {
+	.RoundSeparators > .Group > section > .Group__separator {
 		display: none;
 	}
-	.RoundSeparators > .Group__inner > section:first-of-type(1) {
+	.RoundSeparators > .Group > section:first-of-type(1) {
 		border-radius: 0 0 20px 20px;
 	}
-	.RoundSeparators > .Group__inner > section:last-of-type(2n) {
+	.RoundSeparators > .Group > section:last-of-type(2n) {
 		border-radius: 20px 20px 0 0;
 	}
 	.RoundSeparators .Spacing--separator {
@@ -4094,14 +4098,14 @@ body[scheme=space_gray] .ActionCard::after {
 
 
 
-.View[id="profile"] .Panel[id="11"] .Group:nth-of-type(2) > .Group__inner {
+.View[id="profile"] .Panel[id="11"] .Group:nth-of-type(2) > .Group {
 	border-bottom-right-radius: 8px;
 	border-bottom-left-radius: 8px;
 }
 .View[id="profile"] .Panel[id="11"] .Group:nth-of-type(2) > .Spacing {
 	height: 8px!important;
 }
-.View[id="profile"] .Panel[id="11"] .Group:nth-of-type(3) > .Group__inner {
+.View[id="profile"] .Panel[id="11"] .Group:nth-of-type(3) > .Group {
 	border-bottom-right-radius: 8px;
 	border-bottom-left-radius: 8px;
 	border-top-left-radius: 8px;
@@ -4110,7 +4114,7 @@ body[scheme=space_gray] .ActionCard::after {
 .View[id="profile"] .Panel[id="11"] .Group:nth-of-type(3) > .Spacing {
 	height: 8px!important;
 }
-.View[id="profile"] .Panel[id="11"] .Group:nth-of-type(4) > .Group__inner {
+.View[id="profile"] .Panel[id="11"] .Group:nth-of-type(4) > .Group {
 	border-top-left-radius: 8px;
 	border-top-right-radius: 8px;
 }

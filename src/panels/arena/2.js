@@ -56,17 +56,30 @@ class PANEL extends React.Component {
 							<Header indicator={<Counter size="s" mode="prominent">{data.month.length}</Counter>}>{data.name}</Header>
 							<CardScroll size="s" className="Horizontal__Cells">
 								{data.month.map((data, y) => {
-									data.items.sort((a, b) => a.id < b.id ? -1 : 1);
-									let hp = data.items.map(item => Items[item.id].hp).reduce((x, y) => x + y)*15;
-									let dmg = data.items.map(item => Items[item.id].dmg).reduce((x, y) => x + y);
-									return <Card key={y} id={`modal_${x+1}${y+1}`} onClick={() => options.OpenModal(`description`, (data.modal = Number((x+1)+""+(y+1)), data), 10)}>
-										<HorizontalCell size='m' header={data.name} subtitle={`${Items[data.items[0].id].title} и ${Items[data.items[1].id].title}`}>
-											{dmg?<span className="Horizontal__imageTitle">{`DMG ${options.numberSpaces(dmg)}`}</span>:null}
-											{hp?<span className="Horizontal__imageTitle">{`HP ${options.numberSpaces(hp)}`}</span>:null}
-											<Spinner size="regular" className="Horizontal__imagePreload" />
-											<Avatar size={88} mode='app' src={`${pathImages}${data.icon}`}/>
-										</HorizontalCell>
-									</Card>
+									if (data.items.length > 1) {
+										data.items.sort((a, b) => a.id < b.id ? -1 : 1);
+										let hp = data.items.map(item => Items[item.id].hp).reduce((x, y) => x + y)*15;
+										let dmg = data.items.map(item => Items[item.id].dmg).reduce((x, y) => x + y);
+										return <Card key={y} id={`modal_${x+1}${y+1}`} onClick={() => options.OpenModal(`description`, (data.modal = Number((x+1)+""+(y+1)), data), 10)}>
+											<HorizontalCell size='m' header={data.name} subtitle={`${Items[data.items[0].id].title} и ${Items[data.items[1].id].title}`}>
+												{dmg?<span className="Horizontal__imageTitle">{`DMG ${options.numberSpaces(dmg)}`}</span>:null}
+												{hp?<span className="Horizontal__imageTitle">{`HP ${options.numberSpaces(hp)}`}</span>:null}
+												<Spinner size="regular" className="Horizontal__imagePreload" />
+												<Avatar size={88} mode='app' src={`${pathImages}${data.icon}`}/>
+											</HorizontalCell>
+										</Card>
+									} else {
+										let hp = data.items[0].hp*15;
+										let dmg = data.items[0].dmg;
+										return <Card key={y} id={`modal_${x+1}${y+1}`} onClick={() => options.OpenModal(`description`, (data.modal = Number((x+1)+""+(y+1)), data), 10)}>
+											<HorizontalCell size='m' header={data.name} subtitle={`${Items[data.items[0].id].title}`}>
+												{dmg?<span className="Horizontal__imageTitle">{`DMG ${options.numberSpaces(dmg)}`}</span>:null}
+												{hp?<span className="Horizontal__imageTitle">{`HP ${options.numberSpaces(hp)}`}</span>:null}
+												<Spinner size="regular" className="Horizontal__imagePreload" />
+												<Avatar size={88} mode='app' src={`${pathImages}${data.icon}`}/>
+											</HorizontalCell>
+										</Card>
+									}
 								})}
 							</CardScroll>
 						</div>

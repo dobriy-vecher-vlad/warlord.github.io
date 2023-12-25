@@ -35,6 +35,7 @@ class PANEL extends React.Component {
 		} else if (data.access_token) {
 			data = this._isMounted && await this.props.state.getBridge("VKWebAppCallAPIMethod", {"method": "friends.get", "params": {"user_id": this.props.state.user?.vk?.id, "fields": "photo_50", "count": 5000, "v": "5.130", "access_token": data.access_token}});
 			if (data?.response?.count && data?.response?.count !== 0) {
+				console.warn(data.response);
 				for (let i = 0; i < Math.ceil(data.response.count/300); i++) {
 					if (this._isMounted) {
 						let dataGame = this._isMounted && await this.props.state.getGame(this.props.state.server, {
@@ -42,11 +43,7 @@ class PANEL extends React.Component {
 							f_data: `<data>${data.response.items.slice(i*300, (i+1)*300).map((item, x) => {
 								return `<u>${item.id}</u>`;
 							}).join('')}</data>`,
-						}, {
-							login: clan_id,
-							password: clan_auth,
-							id: this.props.state.user?.vk?.id,
-						});
+						}, this.props.authorization);
 						if (dataGame?.u) {
 							typeof dataGame.u == 'undefined' ? dataGame.u = [] : '';
 							typeof dataGame.u.length == 'undefined' ? dataGame.u = [dataGame.u] : '';

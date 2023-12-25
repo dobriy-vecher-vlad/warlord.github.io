@@ -43,7 +43,7 @@ class PANEL extends React.Component {
 				<Group>
 					<div className='Sticky Sticky__top withSeparator'>
 						{state.isDesktop && options.getPanelHeader(title, description, avatar, this.props.id, parent)}
-						{options.getRichCellDescription(<React.Fragment>Всего в игре 4 вида навыков и каждый можно прокачать до 9.999 уровня, цена с каждым разом увеличивается<br/>Также за определённые уровни прокачки навыка можно получить достижение</React.Fragment>)}
+						{options.getRichCellDescription(<React.Fragment>Всего в игре 4 вида навыков и каждый можно прокачать до 9 999 уровня, цена с каждым разом увеличивается<br/>Также за определённые уровни прокачки навыка можно получить достижение</React.Fragment>)}
 						<Spacing size={8} />
 					</div>
 					<CardGrid size="s" className={`Horizontal__Cells ${state.isDesktop&&"size-x4 auto"}`}>

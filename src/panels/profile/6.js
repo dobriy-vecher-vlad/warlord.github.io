@@ -17,9 +17,9 @@ import {
 	Placeholder
 } from '@vkontakte/vkui';
 import { Icon20ErrorCircleOutline, Icon28ListOutline } from '@vkontakte/icons';
-import { ReactComponent as SVG_turmalin } from '../../svg/turmalin.svg';
-import { ReactComponent as SVG_stone } from '../../svg/stone.svg';
-import { ReactComponent as SVG_web } from '../../svg/web.svg';
+import SVG_turmalins from '../../svg/turmalins.png';
+import SVG_stones from '../../svg/stones.png';
+import SVG_panda from '../../svg/panda.png';
 import { ReactComponent as SVG_numberI } from '../../svg/I.svg';
 import { ReactComponent as SVG_numberII } from '../../svg/II.svg';
 import { ReactComponent as SVG_numberIII } from '../../svg/III.svg';
@@ -1999,9 +1999,8 @@ class PANEL extends React.Component {
 								<Card>
 									<Radio name="selectedRaid" value="1">
 										<div className="CustomRadioForm__cell">
-											{/* <Avatar mode="app" size={96} src={`${pathImages}bot/raids/109.png`} /> */}
-											<SVG_turmalin className="CustomRadioForm__cell--shadow" style={{height: 75, width: 100}}/>
-											<SVG_turmalin className="CustomRadioForm__cell--image" style={{height: 75, width: 100, zIndex: 1}}/>
+											<img src={SVG_turmalins} width={128} className="CustomRadioForm__cell--shadow" style={{height: 75, width: 100}}/>
+											<img src={SVG_turmalins} width={128} className="CustomRadioForm__cell--image" style={{height: 75, width: 100, zIndex: 1}}/>
 											<Title level="2" weight="2" style={{zIndex: 1}}>{botRaidsSettings.selectRaid[0].title}</Title>
 											<Text style={{ marginTop: 8, color: 'var(--text_secondary)', zIndex: 1 }}>турмалины</Text>
 										</div>
@@ -2010,9 +2009,8 @@ class PANEL extends React.Component {
 								<Card>
 									<Radio name="selectedRaid" value="2" >
 										<div className="CustomRadioForm__cell">
-											{/* <Avatar mode="app" size={96} src={`${pathImages}bot/raids/110.png`} /> */}
-											<SVG_stone className="CustomRadioForm__cell--shadow" style={{height: 75, width: 100}}/>
-											<SVG_stone className="CustomRadioForm__cell--image" style={{height: 75, width: 100, zIndex: 1}}/>
+											<img src={SVG_stones} width={128} className="CustomRadioForm__cell--shadow" style={{height: 75, width: 100}}/>
+											<img src={SVG_stones} width={128} className="CustomRadioForm__cell--image" style={{height: 75, width: 100, zIndex: 1}}/>
 											<Title level="2" weight="2" style={{zIndex: 1}}>{botRaidsSettings.selectRaid[1].title}</Title>
 											<Text style={{ marginTop: 8, color: 'var(--text_secondary)', zIndex: 1 }}>камни</Text>
 										</div>
@@ -2021,8 +2019,8 @@ class PANEL extends React.Component {
 								<Card>
 									<Radio name="selectedRaid" value="3">
 										<div className="CustomRadioForm__cell">
-											<SVG_web className="CustomRadioForm__cell--shadow" style={{height: 75, width: 100}}/>
-											<SVG_web className="CustomRadioForm__cell--image" style={{height: 75, width: 100, zIndex: 1}}/>
+											<img src={SVG_panda} width={128} className="CustomRadioForm__cell--shadow" style={{height: 75, width: 100}}/>
+											<img src={SVG_panda} width={128} className="CustomRadioForm__cell--image" style={{height: 75, width: 100, zIndex: 1}}/>
 											<Title level="2" weight="2">{botRaidsSettings.selectRaid[2].title}</Title>
 											<Text style={{ marginTop: 8, color: 'var(--text_secondary)' }}>питомец</Text>
 										</div>

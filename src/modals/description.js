@@ -587,7 +587,7 @@ class MODAL extends React.Component {
 					{data.levels.map((level, x) => {
 						if ((data.title === 'Стража Форта' || data.title === 'Таран') && x === data.levels.length-1) {
 							return (<Card key={x} className="DescriptionCardWiki">
-								<DescriptionRichCell label={<React.Fragment>+2.000<Spinner size="small" className="DescriptionPricePreloadWiki" /><i style={{backgroundImage: `url(${pathImages}currency/1.png)`}}/><br/>+5.000<Spinner size="small" className="DescriptionPricePreloadWiki" /><i style={{backgroundImage: `url(${pathImages}currency/3.png)`}}/></React.Fragment>} text={`За каждый уровень`} counter={x+1}/>
+								<DescriptionRichCell label={<React.Fragment>+2 000<Spinner size="small" className="DescriptionPricePreloadWiki" /><i style={{backgroundImage: `url(${pathImages}currency/1.png)`}}/><br/>+5 000<Spinner size="small" className="DescriptionPricePreloadWiki" /><i style={{backgroundImage: `url(${pathImages}currency/3.png)`}}/></React.Fragment>} text={`За каждый уровень`} counter={x+1}/>
 							</Card>);
 						} else {
 							return (<Card key={x} className="DescriptionCardWiki">
@@ -678,6 +678,18 @@ class MODAL extends React.Component {
 					{state.checkItems.null && 
 						<Cell className="DescriptionWiki" style={{textAlign: 'center'}} description="Нет предметов"></Cell>
 					}
+				</Div>
+			</ModalPage>
+			||
+			data.modalIndex == 26 && <ModalPage
+				id={this.props.id}
+				header={!state.isDesktop&&<ModalHeader avatar={`${pathImages}${data.icon}`} state={state} options={options} data={data} header={data.title} description="Гильдия — Звания"/>}
+			>
+				<Div>
+					{!state.isDesktop?<Spacing size={8} />:<DescriptionHeader avatar={`${pathImages}${data.icon}`} state={state} options={options} data={data} header={data.title} description="Гильдия — Звания"/>}
+					<DescriptionCell label={`Описание`} text={data.description}/>
+					<DescriptionCell label={`Доступ`} text={data.bonus}/>
+					{!state.isDesktop&&<Spacing size={8} />}
 				</Div>
 			</ModalPage>
 			||

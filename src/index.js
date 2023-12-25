@@ -175,7 +175,7 @@ Object.defineProperty(Array.prototype, 'includesArray', {
 });
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
-const wikiVersion = '1.7.8';
+const wikiVersion = '1.7.9';
 const pathImages = 'https://dobriy-vecher-vlad.github.io/warlord-helper/media/images/';
 const serverHub = [{
 	id: 1,
@@ -272,6 +272,7 @@ import PANEL_guild__3 from './panels/guild/3';
 import PANEL_guild__4 from './panels/guild/4';
 import PANEL_guild__5 from './panels/guild/5';
 import PANEL_guild__6 from './panels/guild/6';
+import PANEL_guild__7 from './panels/guild/7';
 
 import PANEL_other__1 from './panels/other/1';
 import PANEL_other__2 from './panels/other/2';
@@ -1015,7 +1016,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 			this.setState(name);
 			// this.setState(name, callback());
 		};
-		numberSpaces = (number = 0, symbol = '.') => {
+		numberSpaces = (number = 0, symbol = ' ') => {
 			return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, symbol);
 		};
 		numberForm = (number, titles) => {
@@ -2793,7 +2794,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 								<PANEL_profile__2 id='2' parent='profile' state={this.state} options={this} syncItems={syncItems} />
 								<PANEL_profile__3 id='3' parent='profile' state={this.state} options={this} syncItems={syncItemsFull} />
 								<PANEL_profile__4 id='4' parent='profile' state={this.state} options={this} dataDonutUser={dataDonutUser} />
-								<PANEL_profile__5 id='5' parent='profile' state={this.state} options={this} />
+								<PANEL_profile__5 id='5' parent='profile' state={this.state} options={this} authorization={DEFAULT_AUTHORIZATION[this.state.server-1] || {}} api_id={api_id}/>
 								<PANEL_profile__6 id='6' parent='profile' state={this.state} options={this} />
 								<PANEL_profile__7 id='7' parent='profile' state={this.state} options={this} />
 								{/* <PANEL_profile__8 id='8' parent='profile' state={this.state} options={this} /> */}
@@ -3028,6 +3029,10 @@ const App = withAdaptivity(({ viewWidth }) => {
 											{isEmbedded&&serverStatus&&<SimpleCell onClick={() => setActivePanel('1', true)} before={<Avatar mode="app" src={`${pathImages}labels/18.png`} />} description="Затраты на казну гильдии" expandable indicator={<React.Fragment>
 												<span className="Text">{!isDonut&&<Icon28DonateCircleFillYellow width={24} height={24}/>}</span>
 											</React.Fragment>}>Калькулятор</SimpleCell>}
+											<SimpleCell onClick={() => setActivePanel('7')} before={<Avatar mode="app" src={`${pathImages}labels/28.png`} />} description="Значение званий" expandable indicator={<React.Fragment>
+												<span className="Text">{dataGuild.rangs.length}</span>
+												<span className="Subhead">{numberForm(dataGuild.rangs.length, ['звание', 'звания', 'званий'])}</span>
+											</React.Fragment>}>Звания</SimpleCell>
 											<SimpleCell onClick={() => setActivePanel('2')} before={<Avatar mode="app" src={`${pathImages}labels/19.png`} />} description="Улучшения и их уровни" expandable indicator={<React.Fragment>
 												<span className="Text">{dataGuild.builds.length}</span>
 												<span className="Subhead">{numberForm(dataGuild.builds.length, ['постройка', 'постройки', 'построек'])}</span>
@@ -3058,6 +3063,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 								<PANEL_guild__4 id='4' parent='guild' state={this.state} options={this} />
 								<PANEL_guild__5 id='5' parent='guild' state={this.state} options={this} />
 								<PANEL_guild__6 id='6' parent='guild' state={this.state} options={this} />
+								<PANEL_guild__7 id='7' parent='guild' state={this.state} options={this} />
 							</View>
 
 

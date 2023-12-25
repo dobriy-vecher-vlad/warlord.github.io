@@ -34,32 +34,28 @@ class PANEL extends React.Component {
 	render() {
 		const { state, options, parent } = this.props;
 		const pathImages = 'https://dobriy-vecher-vlad.github.io/warlord-helper/media/images/';
-		const title = 'Рейды';
+		const title = 'Звания';
 		const description = 'Гильдия';
-		const avatar = 'labels/23.png';
+		const avatar = 'labels/28.png';
 		return (
 			<Panel id={this.props.id}>
 				{!state.isDesktop && options.getPanelHeader(title, description, avatar, this.props.id, parent)}
 				<Group>
 					<div className='Sticky Sticky__top withSeparator'>
 						{state.isDesktop && options.getPanelHeader(title, description, avatar, this.props.id, parent)}
-						{options.getRichCellDescription(<React.Fragment>Лидер гильдии или её генералы могут создавать рейдовых боссов гильдии<br/>Золото и серебро, требуемое для создания, взимается с казны гильдии</React.Fragment>)}
+						{options.getRichCellDescription(<React.Fragment>Всего в гильдии 6 рангов, но только три из них имеют доступ к действиям в гильдии<br/>Лидер не может покинуть гильдию не передав свои полномочия другому игроку</React.Fragment>)}
 						<Spacing size={8} />
 					</div>
 					<CardGrid size="s" className={`Horizontal__Cells ${state.isDesktop&&"size-x4 auto"}`}>
-						{dataGuild.bosses.map((data, x) =>
-							<Card key={x} id={`modal_${x+1}`} onClick={() => options.OpenModal(`description`, (data.modal = x+1, data), 23)}>
-								<HorizontalCell size='m' header={data.title} subtitle={data.description}>
+						{dataGuild.rangs.map((data, x) =>
+							<Card key={x} id={`modal_${x+1}`} onClick={() => options.OpenModal(`description`, (data.modal = x+1, data), 26)}>
+								<HorizontalCell size='m' header={data.title} subtitle={data.bonus}>
 									<Spinner size="regular" className="Horizontal__imagePreload" />
 									<Avatar size={88} mode='app' src={`${pathImages}${data.icon}`}/>
 								</HorizontalCell>
 							</Card>
 						)}
 					</CardGrid>
-					<div className='Sticky Sticky__bottom withSeparator'>
-						<Spacing size={8} />
-						{options.SortableItems()}
-					</div>
 				</Group>
 				{this.state.snackbar}
 			</Panel>

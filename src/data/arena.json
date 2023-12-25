@@ -999,6 +999,15 @@
 					}
 				],
 				"icon": "arena/season_2022_11.png"
+			}, {
+				"name": "Декабрь 2022",
+				"items": [
+					{
+						"id": 14,
+						"item": true
+					}
+				],
+				"icon": "arena/season_2022_12.png"
 			}
 		]
 	}],
