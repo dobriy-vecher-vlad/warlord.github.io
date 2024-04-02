@@ -638,7 +638,7 @@ class PANEL extends React.Component {
 				this._isMounted && needReload && await this.BotResources({ profile });
 			}
 		}
-		if (mode == 'guildReward' && action == 'collect') {
+		if (mode == 'guildReward' && action == 'collect' && profile.main) {
 			if (Number(dataProfile?.u?._clan_id) != 0) {
 				let data;
 				data = this._isMounted && await getGame(this.props.state.server, {
@@ -806,7 +806,7 @@ class PANEL extends React.Component {
 					auth: profile.auth,
 					server: profile.server,
 				} });
-				this._isMounted && this.setBotLog(`все ресурсы собраны на аккаунте ${profile.login}`, 'text');
+				this._isMounted && this.setBotLog(`все ресурсы собраны на аккаунте ${profile.login || profile.id}`, 'text');
 			}
 		}
 
