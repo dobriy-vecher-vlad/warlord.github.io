@@ -10,6 +10,7 @@ import {
 	Input,
 	CardScroll,
 	Card,
+	Counter,
 } from '@vkontakte/vkui';
 import { Icon28ListOutline } from '@vkontakte/icons';
 import Skeleton from '../../components/skeleton';
@@ -28,6 +29,7 @@ class PANEL extends React.Component {
 			snackbar: null,
 
 			isLoad: false,
+			storeProfiles: [],
 
 			times: {
 				map: '0/0',
@@ -173,129 +175,131 @@ class PANEL extends React.Component {
 			}
 			reward = newReward;
 		}
-		if (reward.hasOwnProperty('_item')&&Number(reward._item)!=0&&reward.hasOwnProperty('_type')) {
-			typeof reward?.i?.length == 'undefined' ? reward.i = [] : '';
-			reward.i.push({
-				_type: Number(reward._type),
-				_id: Number(reward._item),
-			});
-		}
-		if (reward.i) {
-			typeof reward.i.length == 'undefined' ? reward.i = [reward.i] : '';
-			for (let item of reward.i) {
-				try {
-					if (Number(item._type) == 6) {
-						let itemFull = Items.find(x => x.fragments.includes(Number(item._id)));
-						if (!itemFull) itemFull = Resources.find(x => x.fragments.includes(Number(item._id)));
-						returnData.push({
-							avatar: `collections/${Number(item._id)}.png`,
-							title: 'Коллекция',
-							message: itemFull.title
-						});
-					} else if (Number(item._type) == 8) {
-						let itemFull = Items.find(x => x.id === Number(item._id));
-						returnData.push({
-							avatar: itemFull.icon,
-							title: 'Заточка',
-							message: itemFull.title
-						});
-					} else if (Number(item._type) == 11) {
-						let itemFull = Stones.find(x => x.id === Number(item._id));
-						returnData.push({
-							avatar: `stones/${Number(item._id)}.png`,
-							title: 'Камень',
-							message: itemFull.title
-						});
-					} else if (Number(item._type) == 1) {
-						returnData.push({
-							avatar: `rooms/${Number(item._id)}.png`,
-							title: 'Новый фон',
-							message: 'Окружение'
-						});
-					} else {
-						let itemFull = Items.find(x => x.id === Number(item._id));
-						returnData.push({
-							avatar: itemFull.icon,
-							title: 'Предмет',
-							message: itemFull.title
-						});
+		if (reward) {
+			if (reward.hasOwnProperty('_item')&&Number(reward._item)!=0&&reward.hasOwnProperty('_type')) {
+				typeof reward?.i?.length == 'undefined' ? reward.i = [] : '';
+				reward.i.push({
+					_type: Number(reward._type),
+					_id: Number(reward._item),
+				});
+			}
+			if (reward.i) {
+				typeof reward.i.length == 'undefined' ? reward.i = [reward.i] : '';
+				for (let item of reward.i) {
+					try {
+						if (Number(item._type) == 6) {
+							let itemFull = Items.find(x => x.fragments.includes(Number(item._id)));
+							if (!itemFull) itemFull = Resources.find(x => x.fragments.includes(Number(item._id)));
+							returnData.push({
+								avatar: `collections/${Number(item._id)}.png`,
+								title: 'Коллекция',
+								message: itemFull.title
+							});
+						} else if (Number(item._type) == 8) {
+							let itemFull = Items.find(x => x.id === Number(item._id));
+							returnData.push({
+								avatar: itemFull.icon,
+								title: 'Заточка',
+								message: itemFull.title
+							});
+						} else if (Number(item._type) == 11) {
+							let itemFull = Stones.find(x => x.id === Number(item._id));
+							returnData.push({
+								avatar: `stones/${Number(item._id)}.png`,
+								title: 'Камень',
+								message: itemFull.title
+							});
+						} else if (Number(item._type) == 1) {
+							returnData.push({
+								avatar: `rooms/${Number(item._id)}.png`,
+								title: 'Новый фон',
+								message: 'Окружение'
+							});
+						} else {
+							let itemFull = Items.find(x => x.id === Number(item._id));
+							returnData.push({
+								avatar: itemFull.icon,
+								title: 'Предмет',
+								message: itemFull.title
+							});
+						}
+					} catch (error) {
+						console.error(error);
+						console.warn(item);
 					}
-				} catch (error) {
-					console.error(error);
-					console.warn(item);
 				}
 			}
+			reward.hasOwnProperty('_m1')&&Number(reward._m1)!=0&&returnData.push({
+				avatar: 'bot/raids/12.png',
+				title: 'Серебро',
+				message: `${this.props.options.numberSpaces(Number(reward._m1))} ед.`
+			});
+			reward.hasOwnProperty('_m2')&&Number(reward._m2)!=0&&returnData.push({
+				avatar: 'bot/raids/13.png',
+				title: 'Рубины',
+				message: `${this.props.options.numberSpaces(Number(reward._m2))} ед.`
+			});
+			reward.hasOwnProperty('_m3')&&Number(reward._m3)!=0&&returnData.push({
+				avatar: 'bot/raids/11.png',
+				title: 'Золото',
+				message: `${this.props.options.numberSpaces(Number( reward._m3))} ед.`
+			});
+			reward.hasOwnProperty('_m4')&&Number(reward._m4)!=0&&returnData.push({
+				avatar: 'bot/raids/15.png',
+				title: 'Аметисты',
+				message: `${this.props.options.numberSpaces(Number( reward._m4))} ед.`
+			});
+			reward.hasOwnProperty('_m5')&&Number(reward._m5)!=0&&returnData.push({
+				avatar: 'bot/raids/14.png',
+				title: 'Топазы',
+				message: `${this.props.options.numberSpaces(Number( reward._m5))} ед.`
+			});
+			reward.hasOwnProperty('_m6')&&Number(reward._m6)!=0&&returnData.push({
+				avatar: 'bot/raids/21.png',
+				title: 'Турмалины',
+				message: `${this.props.options.numberSpaces(Number(reward._m6))} ед.`
+			});
+			reward.hasOwnProperty('_m7')&&Number(reward._m7)!=0&&returnData.push({
+				avatar: 'bot/raids/22.png',
+				title: 'Пергаменты',
+				message: `${this.props.options.numberSpaces(Number(reward._m7))} ед.`
+			});
+			reward.hasOwnProperty('_m9')&&Number(reward._m9)!=0&&returnData.push({
+				avatar: 'bot/raids/112.png',
+				title: 'Редкие жемчужины',
+				message: `${this.props.options.numberSpaces(Number(reward._m9))} ед.`
+			});
+			reward.hasOwnProperty('_i2')&&Number(reward._i2)!=0&&returnData.push({
+				avatar: 'bot/raids/18.png',
+				title: 'Целебные зелья',
+				message: `${this.props.options.numberSpaces(Number(reward._i2))} ед.`
+			});
+			reward.hasOwnProperty('_i1')&&Number(reward._i1)!=0&&returnData.push({
+				avatar: 'bot/raids/17.png',
+				title: 'Свитки молнии',
+				message: `${this.props.options.numberSpaces(Number(reward._i1))} ед.`
+			});
+			reward.hasOwnProperty('_i3')&&Number(reward._i3)!=0&&returnData.push({
+				avatar: 'bot/raids/16.png',
+				title: 'Свитки огня',
+				message: `${this.props.options.numberSpaces(Number(reward._i3))} ед.`
+			});
+			reward.hasOwnProperty('_pf1')&&Number(reward._pf1)!=0&&returnData.push({
+				avatar: 'bot/raids/20.png',
+				title: 'Еда',
+				message: `${this.props.options.numberSpaces(Number(reward._pf1))} ед.`
+			});
+			reward.hasOwnProperty('_en')&&Number(reward._en)!=0&&returnData.push({
+				avatar: 'bot/raids/19.png',
+				title: 'Энергия',
+				message: `${this.props.options.numberSpaces(Number(reward._en))} ед.`
+			});
+			reward.hasOwnProperty('_exp')&&Number(reward._exp)!=0&&returnData.push({
+				avatar: 'bot/raids/10.png',
+				title: 'Опыт',
+				message: `${this.props.options.numberSpaces(Number(reward._exp))} ед.`
+			});	
 		}
-		reward.hasOwnProperty('_m1')&&Number(reward._m1)!=0&&returnData.push({
-			avatar: 'bot/raids/12.png',
-			title: 'Серебро',
-			message: `${this.props.options.numberSpaces(Number(reward._m1))} ед.`
-		});
-		reward.hasOwnProperty('_m2')&&Number(reward._m2)!=0&&returnData.push({
-			avatar: 'bot/raids/13.png',
-			title: 'Рубины',
-			message: `${this.props.options.numberSpaces(Number(reward._m2))} ед.`
-		});
-		reward.hasOwnProperty('_m3')&&Number(reward._m3)!=0&&returnData.push({
-			avatar: 'bot/raids/11.png',
-			title: 'Золото',
-			message: `${this.props.options.numberSpaces(Number( reward._m3))} ед.`
-		});
-		reward.hasOwnProperty('_m4')&&Number(reward._m4)!=0&&returnData.push({
-			avatar: 'bot/raids/15.png',
-			title: 'Аметисты',
-			message: `${this.props.options.numberSpaces(Number( reward._m4))} ед.`
-		});
-		reward.hasOwnProperty('_m5')&&Number(reward._m5)!=0&&returnData.push({
-			avatar: 'bot/raids/14.png',
-			title: 'Топазы',
-			message: `${this.props.options.numberSpaces(Number( reward._m5))} ед.`
-		});
-		reward.hasOwnProperty('_m6')&&Number(reward._m6)!=0&&returnData.push({
-			avatar: 'bot/raids/21.png',
-			title: 'Турмалины',
-			message: `${this.props.options.numberSpaces(Number(reward._m6))} ед.`
-		});
-		reward.hasOwnProperty('_m7')&&Number(reward._m7)!=0&&returnData.push({
-			avatar: 'bot/raids/22.png',
-			title: 'Пергаменты',
-			message: `${this.props.options.numberSpaces(Number(reward._m7))} ед.`
-		});
-		reward.hasOwnProperty('_m9')&&Number(reward._m9)!=0&&returnData.push({
-			avatar: 'bot/raids/112.png',
-			title: 'Редкие жемчужины',
-			message: `${this.props.options.numberSpaces(Number(reward._m9))} ед.`
-		});
-		reward.hasOwnProperty('_i2')&&Number(reward._i2)!=0&&returnData.push({
-			avatar: 'bot/raids/18.png',
-			title: 'Целебные зелья',
-			message: `${this.props.options.numberSpaces(Number(reward._i2))} ед.`
-		});
-		reward.hasOwnProperty('_i1')&&Number(reward._i1)!=0&&returnData.push({
-			avatar: 'bot/raids/17.png',
-			title: 'Свитки молнии',
-			message: `${this.props.options.numberSpaces(Number(reward._i1))} ед.`
-		});
-		reward.hasOwnProperty('_i3')&&Number(reward._i3)!=0&&returnData.push({
-			avatar: 'bot/raids/16.png',
-			title: 'Свитки огня',
-			message: `${this.props.options.numberSpaces(Number(reward._i3))} ед.`
-		});
-		reward.hasOwnProperty('_pf1')&&Number(reward._pf1)!=0&&returnData.push({
-			avatar: 'bot/raids/20.png',
-			title: 'Еда',
-			message: `${this.props.options.numberSpaces(Number(reward._pf1))} ед.`
-		});
-		reward.hasOwnProperty('_en')&&Number(reward._en)!=0&&returnData.push({
-			avatar: 'bot/raids/19.png',
-			title: 'Энергия',
-			message: `${this.props.options.numberSpaces(Number(reward._en))} ед.`
-		});
-		reward.hasOwnProperty('_exp')&&Number(reward._exp)!=0&&returnData.push({
-			avatar: 'bot/raids/10.png',
-			title: 'Опыт',
-			message: `${this.props.options.numberSpaces(Number(reward._exp))} ед.`
-		});
 		return returnData;
 	};
 	setBotLog = async(message = 'update...', type = 'text', color = null) => {
@@ -321,23 +325,38 @@ class PANEL extends React.Component {
 		}
 		this._isMounted && this.setState({ botLog: log }, () => this._isMounted && document.querySelector('.BotLog.Scroll')&&document.querySelector('.BotLog.Scroll').scrollTo({ top: document.querySelector('.BotLog.Scroll').scrollHeight }));
 	};
-	BotResources = async(mode = '', action = '', needReload = true) => {
+	BotResources = async(props) => {
+		const {
+			mode = '',
+			action = '',
+			needReload = true,
+			profile = {
+				main: true,
+				login: this.props.state.login || this.props.state.user.vk.id,
+				auth: this.props.state.auth,
+				server: this.props.state.server,
+			},
+		} = props || {};
 		const { setBotLog } = this;
 		const { BotAPI, openSnackbar, setActivePanel, numberForm } = this.props.options;
-		const { state } = this.props;
-		const { getGame, server } = this.props.state;
+		const { getGame, storeProfiles } = this.props.state;
 		
 		this._isMounted && this.setState({ isLoad: true });
 
-		let api_uid = state.login || state.user.vk.id;
-		let auth_key = state.auth;
+		let api_uid = profile.login;
+		let auth_key = profile.auth;
 		if (!auth_key) {
-			auth_key = this._isMounted && await BotAPI('getAuth', null, null, null, {stage: 'modal', text: 'Для продолжения работы необходимо указать пароль авторизации'});
-			if (auth_key == 'modal') {
-				this._isMounted && setActivePanel('profile');
-				return;
-			} else if (!auth_key) {
-				this._isMounted && setActivePanel('profile');
+			if (profile.main) {
+				auth_key = this._isMounted && await BotAPI('getAuth', null, null, null, {stage: 'modal', text: 'Для продолжения работы необходимо указать пароль авторизации'});
+				if (auth_key == 'modal') {
+					this._isMounted && setActivePanel('profile');
+					return;
+				} else if (!auth_key) {
+					this._isMounted && setActivePanel('profile');
+					return;
+				}
+			} else {
+				this._isMounted && this.setBotLog(`На аккаунте ${profile.login} не указан пароль авторизации`, 'text');
 				return;
 			}
 		}
@@ -346,11 +365,11 @@ class PANEL extends React.Component {
 			login: api_uid,
 			password: auth_key,
 		};
-		let dataProfile = this._isMounted && await getGame(this.props.state.server, {}, getGameAuth);
+		let dataProfile = this._isMounted && await getGame(profile.server, {}, getGameAuth);
 		getGameAuth.id = dataProfile?.u?._id || api_uid;
 		let dataGuild = {};
 		if (Number(dataProfile?.u?._clan_id) != 0) {
-			dataGuild = this._isMounted && await getGame(this.props.state.server, {
+			dataGuild = this._isMounted && await getGame(profile.server, {
 				i: 49,
 				t1: dataProfile?.u?._clan_id || 0,
 			}, getGameAuth);
@@ -364,11 +383,20 @@ class PANEL extends React.Component {
 		// console.warn(dataProfile);
 		// console.warn(dataGuild);
 		if (!dataProfile?.u || dataGuild == null) {
-			openSnackbar({text: 'Пароль авторизации игры неисправен, введите новый', icon: 'error'});
-			this._isMounted && BotAPI('getAuth', null, null, null, {stage: 'modal', text: 'Пароль авторизации игры неисправен, введите новый', error: typeof dataProfile == 'string' ? dataProfile : dataProfile?.err_msg ? dataProfile?.err_msg : JSON.stringify(dataProfile)});
-			this._isMounted && setActivePanel('profile');
+			if (profile.main) {
+				openSnackbar({text: 'Пароль авторизации игры неисправен, введите новый', icon: 'error'});
+				this._isMounted && BotAPI('getAuth', null, null, null, {stage: 'modal', text: 'Пароль авторизации игры неисправен, введите новый', error: typeof dataProfile == 'string' ? dataProfile : dataProfile?.err_msg ? dataProfile?.err_msg : JSON.stringify(dataProfile)});
+				this._isMounted && setActivePanel('profile');
+			} else {
+				this._isMounted && this.setBotLog(`Пароль авторизации игры неисправен на аккаунте ${profile.login}`, 'text');
+			}
 			return;
 		}
+
+		let profiles = storeProfiles.filter(profile => profile.id);
+		profiles.push(profiles.shift());
+		this._isMounted && this.setState({ storeProfiles: profiles });
+
 		if (Number(dataProfile?.u?._va) == 0) {
 			this.state.times.vip = null;
 			this.state.hints.vip = 'Нет премиум статуса';
@@ -459,7 +487,7 @@ class PANEL extends React.Component {
 					message: this.parseReward(this.joinReward(reward)),
 				}, 'message');
 			} else this._isMounted && needReload && this.setBotLog(`Лимит обыска зданий`, 'text');
-			this._isMounted && needReload && await this.BotResources();
+			this._isMounted && needReload && await this.BotResources({ profile });
 		}
 		if (mode == 'map' && action == 'upgrade') {
 			let data;
@@ -482,7 +510,7 @@ class PANEL extends React.Component {
 				}
 			}
 			if (count == 0) this._isMounted && needReload && this.setBotLog(`Нет доступных зданий для улучшения`, 'text');
-			this._isMounted && needReload && await this.BotResources();
+			this._isMounted && needReload && await this.BotResources({ profile });
 		}
 		if (mode == 'chest' && action == 'collect') {
 			let data;
@@ -505,7 +533,7 @@ class PANEL extends React.Component {
 				this.state.times.chest = null;
 				this.state.hints.chest = 'Нет доступных сундуков';
 			}
-			this._isMounted && needReload && await this.BotResources();
+			this._isMounted && needReload && await this.BotResources({ profile });
 		}
 		if (mode == 'chest' && action == 'open') {
 			let data;
@@ -528,7 +556,7 @@ class PANEL extends React.Component {
 				this.state.times.chest = null;
 				this.state.hints.chest = 'Нет доступных сундуков';
 			}
-			this._isMounted && needReload && await this.BotResources();
+			this._isMounted && needReload && await this.BotResources({ profile });
 		}
 		if (mode == 'pet' && action == 'collect') {
 			if (Number(dataProfile?.u?._pet) != 0) {
@@ -544,7 +572,7 @@ class PANEL extends React.Component {
 						message: this.parseReward(data?.r),
 					}, 'message');
 				} else this._isMounted && needReload && this.setBotLog(`Питомец ещё в пути`, 'text');
-				this._isMounted && needReload && await this.BotResources();
+				this._isMounted && needReload && await this.BotResources({ profile });
 			}
 		}
 		if (mode == 'pet' && action == 'send') {
@@ -565,7 +593,7 @@ class PANEL extends React.Component {
 						this._isMounted && needReload && this.setBotLog(`На отправку питомца не хватает еды`, 'text');
 					} else this._isMounted && needReload && this.setBotLog(`Питомец ещё не прибыл`, 'text');
 				}
-				this._isMounted && needReload && await this.BotResources();
+				this._isMounted && needReload && await this.BotResources({ profile });
 			}
 		}
 		if (mode == 'lottery' && action == 'collect') {
@@ -586,7 +614,7 @@ class PANEL extends React.Component {
 					}, 'message');
 				} else this._isMounted && needReload && this.setBotLog(`Нет бесплатных попыток лотереи`, 'text');
 			} else this._isMounted && needReload && this.setBotLog(`Нет бесплатных попыток лотереи`, 'text');
-			this._isMounted && needReload && await this.BotResources();
+			this._isMounted && needReload && await this.BotResources({ profile });
 		}
 		if (mode == 'guildBuild' && action == 'collect') {
 			if (Number(dataProfile?.u?._clan_id) != 0) {
@@ -607,7 +635,7 @@ class PANEL extends React.Component {
 					}
 				}
 				if (count == 0) this._isMounted && needReload && this.setBotLog(`Нет доступных зданий для обыска`, 'text');
-				this._isMounted && needReload && await this.BotResources();
+				this._isMounted && needReload && await this.BotResources({ profile });
 			}
 		}
 		if (mode == 'guildReward' && action == 'collect') {
@@ -629,7 +657,7 @@ class PANEL extends React.Component {
 					this.state.times.guildReward = null;
 					this.state.hints.guildReward = 'Вы уже забрали свою долю на сегодня';
 				}
-				this._isMounted && needReload && await this.BotResources();
+				this._isMounted && needReload && await this.BotResources({ profile });
 			}
 		}
 		if (mode == 'guildWars' && action == 'collect') {
@@ -692,7 +720,7 @@ class PANEL extends React.Component {
 					}
 				}
 				if (count == 0) this._isMounted && needReload && this.setBotLog(`Нет доступных набегов для сбора`, 'text');
-				this._isMounted && needReload && await this.BotResources();
+				this._isMounted && needReload && await this.BotResources({ profile });
 			}
 		}
 		if (mode == 'daily' && action == 'collect') {
@@ -700,7 +728,7 @@ class PANEL extends React.Component {
 			data = this._isMounted && await getGame(this.props.state.server, {
 				i: 20,
 			}, getGameAuth);
-			if (Number(data.res._val) == 1) {
+			if (Number(data?.res?._val) == 1) {
 				this._isMounted && setBotLog({
 					avatar: `bot/resources/7.png`,
 					name: `Ежедневная награда`,
@@ -709,7 +737,7 @@ class PANEL extends React.Component {
 			} else this._isMounted && needReload && this.setBotLog(`Ежедневная награда уже собрана`, 'text');
 			this.state.times.daily = null;
 			this.state.hints.daily = 'Ежедневная награда уже собрана';
-			this._isMounted && needReload && await this.BotResources();
+			this._isMounted && needReload && await this.BotResources({ profile });
 		}
 		if (mode == 'vip' && action == 'collect') {
 			if (Number(dataProfile?.u?._va) != 0) {
@@ -727,7 +755,7 @@ class PANEL extends React.Component {
 				} else this._isMounted && needReload && this.setBotLog(`Премиум награда уже собрана`, 'text');
 				this.state.times.vip = null;
 				this.state.hints.vip = 'Премиум награда уже собрана';
-				this._isMounted && needReload && await this.BotResources();
+				this._isMounted && needReload && await this.BotResources({ profile });
 			}
 		}
 		if (mode == 'search' && action == 'collect') {
@@ -754,32 +782,45 @@ class PANEL extends React.Component {
 			} else this._isMounted && needReload && this.setBotLog(`Лимит обыска друзей`, 'text');
 			this.state.times.search = null;
 			this.state.hints.search = 'Лимит обыска друзей';
-			this._isMounted && needReload && await this.BotResources();
+			this._isMounted && needReload && await this.BotResources({ profile });
 		}
 		if (mode == 'all') {
-			this._isMounted && await this.BotResources('map', 'collect', false);
-			this._isMounted && await this.BotResources('chest', 'collect', false);
-			this._isMounted && await this.BotResources('chest', 'open', false);
-			this._isMounted && await this.BotResources('pet', 'collect', false);
-			this._isMounted && await this.BotResources('pet', 'send', false);
-			this._isMounted && await this.BotResources('lottery', 'collect', false);
-			this._isMounted && await this.BotResources('search', 'collect', false);
-			this._isMounted && await this.BotResources('daily', 'collect', false);
-			this._isMounted && await this.BotResources('vip', 'collect', false);
-			this._isMounted && await this.BotResources('guildBuild', 'collect', false);
-			this._isMounted && await this.BotResources('guildReward', 'collect', false);
-			this._isMounted && await this.BotResources('guildWars', 'collect', false);
+			this._isMounted && await this.BotResources({ mode: 'map', action: 'collect', needReload: false, profile });
+			this._isMounted && await this.BotResources({ mode: 'chest', action: 'collect', needReload: false, profile });
+			this._isMounted && await this.BotResources({ mode: 'chest', action: 'open', needReload: false, profile });
+			this._isMounted && await this.BotResources({ mode: 'pet', action: 'collect', needReload: false, profile });
+			this._isMounted && await this.BotResources({ mode: 'pet', action: 'send', needReload: false, profile });
+			this._isMounted && await this.BotResources({ mode: 'lottery', action: 'collect', needReload: false, profile });
+			this._isMounted && await this.BotResources({ mode: 'search', action: 'collect', needReload: false, profile });
+			this._isMounted && await this.BotResources({ mode: 'daily', action: 'collect', needReload: false, profile });
+			this._isMounted && await this.BotResources({ mode: 'vip', action: 'collect', needReload: false, profile });
+			this._isMounted && await this.BotResources({ mode: 'guildBuild', action: 'collect', needReload: false, profile });
+			this._isMounted && await this.BotResources({ mode: 'guildReward', action: 'collect', needReload: false, profile });
+			this._isMounted && await this.BotResources({ mode: 'guildWars', action: 'collect', needReload: false, profile });
+		}
+		if (mode == 'all-in-all') {
+			for (let profile of this.state.storeProfiles) {
+				this._isMounted && await this.BotResources({ mode: 'all', profile: {
+					main: false,
+					login: profile.login || profile.id,
+					auth: profile.auth,
+					server: profile.server,
+				} });
+				this._isMounted && this.setBotLog(`все ресурсы собраны на аккаунте ${profile.login}`, 'text');
+			}
 		}
 
-		this._isMounted && clearInterval(globalTimer);
-		globalTimer = this._isMounted && setInterval(() => {
-			let times = this.state.times;
-			if (times.chest > 0) times = {...times, chest: times.chest-1};
-			if (times.pet > 0) times = {...times, pet: times.pet-1};
-			if (times.lottery > 0) times = {...times, lottery: times.lottery-1};
-			if (times.guildBuilds > 0) times = {...times, guildBuilds: times.guildBuilds-1};
-			this.setState({times});
-		}, 1000);
+		{
+			this._isMounted && clearInterval(globalTimer);
+			globalTimer = this._isMounted && setInterval(() => {
+				let times = this.state.times;
+				if (times.chest > 0) times = {...times, chest: times.chest-1};
+				if (times.pet > 0) times = {...times, pet: times.pet-1};
+				if (times.lottery > 0) times = {...times, lottery: times.lottery-1};
+				if (times.guildBuilds > 0) times = {...times, guildBuilds: times.guildBuilds-1};
+				this.setState({ times });
+			}, 1000);
+		}
 
 		this._isMounted && this.setState({ isLoad: false });
 	};
@@ -841,8 +882,8 @@ class PANEL extends React.Component {
 											</div>
 											<div className='ActionCard__body'>Взаимодействие со зданиями на карте</div>
 											<div className='ActionCard__bottom'>
-												<Button mode="commerce" loading={this.state.isLoad} onClick={() => this.BotResources('map', 'collect')}>Собрать</Button>
-												<Button mode="secondary" loading={this.state.isLoad} onClick={() => this.BotResources('map', 'upgrade')}>Улучшить</Button>
+												<Button mode="commerce" loading={this.state.isLoad} onClick={() => this.BotResources({ mode: 'map', action: 'collect' })}>Собрать</Button>
+												<Button mode="secondary" loading={this.state.isLoad} onClick={() => this.BotResources({ mode: 'map', action: 'upgrade' })}>Улучшить</Button>
 											</div>
 										</div>
 									</div>
@@ -855,8 +896,8 @@ class PANEL extends React.Component {
 											</div>
 											<div className='ActionCard__body'>Взаимодействие с сундуками в профиле</div>
 											<div className='ActionCard__bottom'>
-												<Button mode="commerce" loading={this.state.isLoad} disabled={this.state.times.chest > 0 || this.state.times.chest == 'clear'} onClick={() => this.BotResources('chest', 'collect')}>Собрать</Button>
-												<Button mode="secondary" loading={this.state.isLoad} disabled={this.state.times.chest != 'clear'} onClick={() => this.BotResources('chest', 'open')}>Взломать</Button>
+												<Button mode="commerce" loading={this.state.isLoad} disabled={this.state.times.chest > 0 || this.state.times.chest == 'clear'} onClick={() => this.BotResources({ mode: 'chest', action: 'collect' })}>Собрать</Button>
+												<Button mode="secondary" loading={this.state.isLoad} disabled={this.state.times.chest != 'clear'} onClick={() => this.BotResources({ mode: 'chest', action: 'open' })}>Взломать</Button>
 											</div>
 										</div>
 									</div>
@@ -869,8 +910,8 @@ class PANEL extends React.Component {
 											</div>
 											<div className='ActionCard__body'>Взаимодействие с активным питомцем</div>
 											<div className='ActionCard__bottom'>
-												<Button mode="commerce" loading={this.state.isLoad} disabled={this.state.times.pet > 0 || this.state.times.pet == 'clear'} onClick={() => this.BotResources('pet', 'collect')}>Собрать</Button>
-												<Button mode="secondary" loading={this.state.isLoad} disabled={this.state.times.pet != 'clear'} onClick={() => this.BotResources('pet', 'send')}>Отправить</Button>
+												<Button mode="commerce" loading={this.state.isLoad} disabled={this.state.times.pet > 0 || this.state.times.pet == 'clear'} onClick={() => this.BotResources({ mode: 'pet', action: 'collect' })}>Собрать</Button>
+												<Button mode="secondary" loading={this.state.isLoad} disabled={this.state.times.pet != 'clear'} onClick={() => this.BotResources({ mode: 'pet', action: 'send' })}>Отправить</Button>
 											</div>
 										</div>
 									</div>
@@ -883,7 +924,7 @@ class PANEL extends React.Component {
 											</div>
 											<div className='ActionCard__body'>Получение награды за лотерею</div>
 											<div className='ActionCard__bottom'>
-												<Button mode="commerce" loading={this.state.isLoad} disabled={this.state.times.lottery > 0} onClick={() => this.BotResources('lottery', 'collect')}>Собрать</Button>
+												<Button mode="commerce" loading={this.state.isLoad} disabled={this.state.times.lottery > 0} onClick={() => this.BotResources({ mode: 'lottery', action: 'collect' })}>Собрать</Button>
 											</div>
 										</div>
 									</div>
@@ -895,7 +936,7 @@ class PANEL extends React.Component {
 											</div>
 											<div className='ActionCard__body'>Получение награды за обыск друзей</div>
 											<div className='ActionCard__bottom'>
-												<Button mode="commerce" loading={this.state.isLoad} onClick={() => this.BotResources('search', 'collect')}>Собрать</Button>
+												<Button mode="commerce" loading={this.state.isLoad} onClick={() => this.BotResources({ mode: 'search', action: 'collect' })}>Собрать</Button>
 											</div>
 										</div>
 									</div>
@@ -907,7 +948,7 @@ class PANEL extends React.Component {
 											</div>
 											<div className='ActionCard__body'>Получение награды за вход в игру</div>
 											<div className='ActionCard__bottom'>
-												<Button mode="commerce" loading={this.state.isLoad} onClick={() => this.BotResources('daily', 'collect')}>Собрать</Button>
+												<Button mode="commerce" loading={this.state.isLoad} onClick={() => this.BotResources({ mode: 'daily', action: 'collect' })}>Собрать</Button>
 											</div>
 										</div>
 									</div>
@@ -919,7 +960,7 @@ class PANEL extends React.Component {
 											</div>
 											<div className='ActionCard__body'>Получение награды за премиум статус</div>
 											<div className='ActionCard__bottom'>
-												<Button mode="commerce" loading={this.state.isLoad} onClick={() => this.BotResources('vip', 'collect')}>Собрать</Button>
+												<Button mode="commerce" loading={this.state.isLoad} onClick={() => this.BotResources({ mode: 'vip', action: 'collect' })}>Собрать</Button>
 											</div>
 										</div>
 									</div>
@@ -932,7 +973,7 @@ class PANEL extends React.Component {
 											</div>
 											<div className='ActionCard__body'>Получение награды за обыск зданий</div>
 											<div className='ActionCard__bottom'>
-												<Button mode="commerce" loading={this.state.isLoad} disabled={this.state.times.guildBuilds > 0} onClick={() => this.BotResources('guildBuild', 'collect')}>Собрать</Button>
+												<Button mode="commerce" loading={this.state.isLoad} disabled={this.state.times.guildBuilds > 0} onClick={() => this.BotResources({ mode: 'guildBuild', action: 'collect' })}>Собрать</Button>
 											</div>
 										</div>
 									</div>
@@ -944,7 +985,7 @@ class PANEL extends React.Component {
 											</div>
 											<div className='ActionCard__body'>Получение награды за захваченные районы</div>
 											<div className='ActionCard__bottom'>
-												<Button mode="commerce" loading={this.state.isLoad} onClick={() => this.BotResources('guildReward', 'collect')}>Собрать</Button>
+												<Button mode="commerce" loading={this.state.isLoad} onClick={() => this.BotResources({ mode: 'guildReward', action: 'collect' })}>Собрать</Button>
 											</div>
 										</div>
 									</div>
@@ -956,7 +997,7 @@ class PANEL extends React.Component {
 											</div>
 											<div className='ActionCard__body'>Получение награды за побеждённых врагов</div>
 											<div className='ActionCard__bottom'>
-												<Button mode="commerce" loading={this.state.isLoad} onClick={() => this.BotResources('guildWars', 'collect')}>Собрать</Button>
+												<Button mode="commerce" loading={this.state.isLoad} onClick={() => this.BotResources({ mode: 'guildWars', action: 'collect' })}>Собрать</Button>
 												<Input disabled={this.state.isLoad} placeholder='Начало' value={String(this.state.data.guildWars.start || '')} onChange={(e) => (this.state.data.guildWars.start = Number(e.target.value), this.setState({ data: this.state.data }))} type="number"/>
 												<Input disabled={this.state.isLoad} placeholder='Конец' value={String(this.state.data.guildWars.end || '')} onChange={(e) => (this.state.data.guildWars.end = Number(e.target.value), this.setState({ data: this.state.data }))} type="number"/>
 											</div>
@@ -1005,14 +1046,16 @@ class PANEL extends React.Component {
 								marginRight: 0,
 								marginLeft: 0
 							}}>
-								<Button size="m" onClick={() => this.BotResources('all').then(() => this.setBotLog(`все ресурсы собраны`, 'text'))} disabled={this.state.isLoad} loading={this.state.isLoad} stretched mode="commerce" style={{ marginRight: 8 }}>Собрать всё</Button>
+								<Button size="m" onClick={() => this.BotResources({ mode: 'all' }).then(() => this.setBotLog(`все ресурсы собраны`, 'text'))} disabled={this.state.isLoad} loading={this.state.isLoad} stretched mode="commerce" style={{ marginRight: 8 }}>Собрать всё</Button>
+								{(this.state.storeProfiles?.length > 1) && <Button size="m" after={<Counter size="s" mode="prominent">{this.state.storeProfiles.length}</Counter>} onClick={() => this.BotResources({ mode: 'all-in-all' }).then(() => this.setBotLog(`все ресурсы со всех профилей собраны`, 'text'))} disabled={this.state.isLoad} loading={this.state.isLoad} stretched mode="secondary" style={{ marginRight: 8 }}>Собрать со всех</Button>}
 								<Button size="m" onClick={() => this.BotResources().then(() => this.setBotLog(`данные обновлены`, 'text'))} disabled={this.state.isLoad} loading={this.state.isLoad} stretched mode="secondary">Обновить</Button>
 							</div>:<div style={{
 								display: 'flex',
 								marginRight: 8,
 								marginLeft: 8
 							}}>
-								<Button size="m" onClick={() => this.BotResources('all').then(() => this.setBotLog(`все ресурсы собраны`, 'text'))} disabled={this.state.isLoad} loading={this.state.isLoad} stretched mode="commerce" style={{ marginRight: 8 }}>Собрать всё</Button>
+								<Button size="m" onClick={() => this.BotResources({ mode: 'all' }).then(() => this.setBotLog(`все ресурсы собраны`, 'text'))} disabled={this.state.isLoad} loading={this.state.isLoad} stretched mode="commerce" style={{ marginRight: 8 }}>Собрать всё</Button>
+								{(this.state.storeProfiles?.length > 1) && <Button size="m" after={<Counter size="s" mode="prominent">{this.state.storeProfiles.length}</Counter>} onClick={() => this.BotResources({ mode: 'all-in-all' }).then(() => this.setBotLog(`все ресурсы со всех профилей собраны`, 'text'))} disabled={this.state.isLoad} loading={this.state.isLoad} stretched mode="secondary" style={{ marginRight: 8 }}>Собрать со всех</Button>}
 								<Button size="m" onClick={() => this.BotResources().then(() => this.setBotLog(`данные обновлены`, 'text'))} disabled={this.state.isLoad} loading={this.state.isLoad} stretched mode="secondary">Обновить</Button>
 							</div>}
 						</div>
@@ -1060,6 +1103,7 @@ class PANEL extends React.Component {
 								marginLeft: 0
 							}}>
 								<Skeleton height={32} width="100%" marginRight={8}/>
+								{(this.state.storeProfiles?.length > 1) && <Skeleton height={32} width="100%" marginRight={8}/>}
 								<Skeleton height={32} width="100%"/>
 							</div>:<div style={{
 								display: 'flex',
@@ -1067,6 +1111,7 @@ class PANEL extends React.Component {
 								marginLeft: 8
 							}}>
 								<Skeleton height={36} width="100%" marginRight={8}/>
+								{(this.state.storeProfiles?.length > 1) && <Skeleton height={36} width="100%" marginRight={8}/>}
 								<Skeleton height={36} width="100%"/>
 							</div>}
 					</div>

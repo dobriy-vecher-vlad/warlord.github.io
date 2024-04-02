@@ -7802,7 +7802,8 @@
 	"rewards": {
 		"exp": 95000,
 		"m1": 0,
-		"m2": 0
+		"m2": 0,
+		"m6": 25
 	},
 	"background": "bosses/backgrounds/4.png",
 	"image": "bosses/images/472.png",

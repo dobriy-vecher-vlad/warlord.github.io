@@ -853,6 +853,7 @@
 			}, {
 				"id": 459,
 				"collection": true,
+				"personal": true,
 				"scroll": true,
 				"tooltip": ["Любой сундук"]
 			}, {

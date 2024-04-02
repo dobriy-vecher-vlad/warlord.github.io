@@ -102,6 +102,148 @@ class PANEL extends React.Component {
 		};
 		this._isMounted = false;
 	};
+	convert = (word, symbols) => {
+		let answer = '';
+		for (let symbol of word.split('')) answer += symbols[symbol] == undefined ? symbol : symbols[symbol];
+		return answer;
+	};
+	convertLayout = (word, search) => {
+		let symbols = [{
+			'q': 'й',
+			'w': 'ц',
+			'e': 'у',
+			'r': 'к',
+			't': 'е',
+			'y': 'н',
+			'u': 'г',
+			'i': 'ш',
+			'o': 'щ',
+			'p': 'з',
+			'a': 'ф',
+			's': 'ы',
+			'd': 'в',
+			'f': 'а',
+			'g': 'п',
+			'h': 'р',
+			'j': 'о',
+			'k': 'л',
+			'l': 'д',
+			';': 'ж',
+			'\'': 'э',
+			'z': 'я',
+			'x': 'ч',
+			'c': 'с',
+			'v': 'м',
+			'b': 'и',
+			'n': 'т',
+			'm': 'ь',
+			',': 'б',
+			'.': 'ю',
+		}, {
+			'й': 'q',
+			'ц': 'w',
+			'у': 'e',
+			'к': 'r',
+			'е': 't',
+			'н': 'y',
+			'г': 'u',
+			'ш': 'i',
+			'щ': 'o',
+			'з': 'p',
+			'ф': 'a',
+			'ы': 's',
+			'в': 'd',
+			'а': 'f',
+			'п': 'g',
+			'р': 'h',
+			'о': 'j',
+			'л': 'k',
+			'д': 'l',
+			'ж': ';',
+			'э': '\'',
+			'я': 'z',
+			'ч': 'x',
+			'с': 'c',
+			'м': 'v',
+			'и': 'b',
+			'т': 'n',
+			'ь': 'm',
+			'б': ',',
+			'ю': '.',
+		}];
+		let answer = this.convert(word, symbols[0]);
+		if (search && !(new RegExp(answer, 'i').test(search))) answer = this.convert(word, symbols[1]);
+		return answer;
+	};
+	convertTranslit = (word, search) => {
+		let symbols = [{
+			'а': 'a',
+			'б': 'b',
+			'в': 'v',
+			'г': 'g',
+			'д': 'd',
+			'е': 'e',
+			'ё': 'e',
+			'ж': 'zh',
+			'з': 'z',
+			'и': 'i',
+			'й': 'y',
+			'к': 'k',
+			'л': 'l',
+			'м': 'm',
+			'н': 'n',
+			'о': 'o',
+			'п': 'p',
+			'р': 'r',
+			'с': 's',
+			'т': 't',
+			'у': 'u',
+			'ф': 'f',
+			'х': 'h',
+			'ц': 'c',
+			'ч': 'ch',
+			'ш': 'sh',
+			'щ': 'sch',
+			'ь': '',
+			'ы': 'y',
+			'ъ': '',
+			'э': 'e',
+			'ю': 'yu',
+			'я': 'ya',
+		}, {
+			'a': 'а',
+			'b': 'б',
+			'v': 'в',
+			'g': 'г',
+			'd': 'д',
+			'e': 'е',
+			'zh': 'ж',
+			'z': 'з',
+			'i': 'и',
+			'y': 'й',
+			'k': 'к',
+			'l': 'л',
+			'm': 'м',
+			'n': 'н',
+			'o': 'о',
+			'p': 'п',
+			'r': 'р',
+			's': 'с',
+			't': 'т',
+			'u': 'у',
+			'f': 'ф',
+			'h': 'х',
+			'c': 'ц',
+			'ch': 'ч',
+			'sh': 'ш',
+			'sch': 'щ',
+			'yu': 'ю',
+			'ya': 'я',
+		}];
+		let answer = this.convert(word, symbols[0]);
+		if (search && !(new RegExp(answer, 'i').test(search))) answer = this.convert(word, symbols[1]);
+		return answer;
+	};
 	calcTag = async(name, reserve) => {
 		if (name) {
 			let search = /^(.+?) /.exec(name.replace(/{|}|\[|]|-|_/g, ' ').replace(/ +/g, ' ').replace(/^\s/g, ''));
@@ -369,7 +511,7 @@ class PANEL extends React.Component {
 													}]}
 												/>)}
 												<Spacing size={16} separator />
-												{[this.state.mainUserID&&rating?.items?.find(user => user.id == this.state.mainUserID)?rating?.items?.find(user => user.id == this.state.mainUserID):rating?.items[rating?.items?.length-1]].map((user, x) => <TableCell
+												{this.state.mainUserID ? [this.state.mainUserID&&rating?.items?.find(user => user.id == this.state.mainUserID)?rating?.items?.find(user => user.id == this.state.mainUserID):rating?.items[rating?.items?.length-1]].map((user, x) => <TableCell
 													key={x}
 													count={options.numberSpaces(rating?.items?.indexOf(user)+1, ' ')}
 													href={`https://vk.com/id${user.id}`}
@@ -381,7 +523,17 @@ class PANEL extends React.Component {
 														title: Number.isInteger(user.title) ? options.numberSpaces(user.title, ' ') : user.title,
 														right: true
 													}]}
-												/>)}
+												/>) : <TableCell
+													count={'-'}
+													style={grid}
+													avatar={<InitialsAvatar size={32}>#</InitialsAvatar>}
+													rows={[{
+														title: '-'
+													}, {
+														title: '-',
+														right: true
+													}]}
+												/>}
 											</div>
 										</React.Fragment>:<React.Fragment>
 											<Header subtitle={<Skeleton height={14} width={125} marginTop={2}/>} mode="primary" aside={<Skeleton height={20} width={50}/>}><Skeleton height={20} width={100} marginBottom={2}/></Header>
@@ -417,13 +569,39 @@ class PANEL extends React.Component {
 										placeholder="Введите номер профиля"
 										align="center"
 										defaultValue={this.state.mainUserID}
-										onChange={e => {
-											let id = Number(e.target.value);
-											if (id != 0 && Number.isInteger(id) && this.state.rating.items.find(user => user.vkId == id || user.id == id)) {
-												this.setState({ mainUserID: id})
-											} else if (this.state.mainUserID!=undefined) {
-												this.setState({ mainUserID: undefined});
+										onChange={event => {
+											let id = Number(event.target.value);
+											if (id != 0 && id != NaN && Number.isInteger(id) && this.state.rating.items.find(user => user.vkId == id || user.id == id)) return this.setState({ mainUserID: id});
+											
+											let isFind = false;
+											let search = String(event.target.value || '').trim().toLowerCase().replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
+											if (search?.length) {
+												for (let option of this.state.rating.items) {
+													let value = String(option.name || '').trim().toLowerCase();
+													if (value?.length) {
+														if (new RegExp(search, 'i').test(value)) {
+															isFind = true;
+															this.setState({ mainUserID: option.id });
+															break;
+														} else if (new RegExp(search.replace(/\s/g, ''), 'i').test(value.replace(/\s/g, ''))) {
+															isFind = true;
+															this.setState({ mainUserID: option.id });
+															break;
+														} else if (search.length >= 1 && new RegExp(this.convertLayout(search, value), 'i').test(value)) {
+															isFind = true;
+															this.setState({ mainUserID: option.id });
+															break;
+														} else if (search.length >= 1 && new RegExp(this.convertTranslit(search, value), 'i').test(value)) {
+															isFind = true;
+															this.setState({ mainUserID: option.id });
+															break;
+														}
+													}
+												}
+												if (isFind) return;
 											}
+
+											return this.setState({ mainUserID: undefined });
 										}}
 									/>:<Skeleton height={36}/>)}
 								{state.isDesktop&&<Spacing size={8} />}
@@ -452,7 +630,7 @@ class PANEL extends React.Component {
 													}]}
 												/>)}
 												<Spacing size={16} separator />
-												{[this.state.mainGuildID&&rating?.items?.find(guild => guild.id == this.state.mainGuildID)?rating?.items?.find(guild => guild.id == this.state.mainGuildID):rating?.items[rating?.items?.length-1]].map((guild, x) => <TableCell
+												{this.state.mainGuildID ? [this.state.mainGuildID&&rating?.items?.find(guild => guild.id == this.state.mainGuildID)?rating?.items?.find(guild => guild.id == this.state.mainGuildID):rating?.items[rating?.items?.length-1]].map((guild, x) => <TableCell
 													key={x}
 													count={options.numberSpaces(rating?.items?.indexOf(guild)+1, ' ')}
 													href={`https://vk.com/id${guild.leader}`}
@@ -464,7 +642,17 @@ class PANEL extends React.Component {
 														title: Number.isInteger(guild.title) ? options.numberSpaces(guild.title, ' ') : guild.title,
 														right: true
 													}]}
-												/>)}
+												/>) : <TableCell
+													count={'-'}
+													style={grid}
+													avatar={<InitialsAvatar size={32}>#</InitialsAvatar>}
+													rows={[{
+														title: '-'
+													}, {
+														title: '-',
+														right: true
+													}]}
+												/>}
 											</div>
 										</React.Fragment>:<React.Fragment>
 											<Header subtitle={<Skeleton height={14} width={125} marginTop={2}/>} mode="primary" aside={<Skeleton height={20} width={50}/>}><Skeleton height={20} width={100} marginBottom={2}/></Header>
@@ -500,13 +688,39 @@ class PANEL extends React.Component {
 										placeholder="Введите номер гильдии"
 										align="center"
 										defaultValue={this.state.mainGuildID}
-										onChange={e => {
-											let id = Number(e.target.value);
-											if (id != 0 && Number.isInteger(id) && this.state.rating.items.find(guild => guild.id == id)) {
-												this.setState({ mainGuildID: id})
-											} else if (this.state.mainGuildID!=undefined) {
-												this.setState({ mainGuildID: undefined});
+										onChange={event => {
+											let id = Number(event.target.value);
+											if (id != 0 && id != NaN && Number.isInteger(id) && this.state.rating.items.find(guild => guild.id == id)) return this.setState({ mainGuildID: id});
+											
+											let isFind = false;
+											let search = String(event.target.value || '').trim().toLowerCase().replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
+											if (search?.length) {
+												for (let option of this.state.rating.items) {
+													let value = String(option.name || '').trim().toLowerCase();
+													if (value?.length) {
+														if (new RegExp(search, 'i').test(value)) {
+															isFind = true;
+															this.setState({ mainGuildID: option.id });
+															break;
+														} else if (new RegExp(search.replace(/\s/g, ''), 'i').test(value.replace(/\s/g, ''))) {
+															isFind = true;
+															this.setState({ mainGuildID: option.id });
+															break;
+														} else if (search.length >= 1 && new RegExp(this.convertLayout(search, value), 'i').test(value)) {
+															isFind = true;
+															this.setState({ mainGuildID: option.id });
+															break;
+														} else if (search.length >= 1 && new RegExp(this.convertTranslit(search, value), 'i').test(value)) {
+															isFind = true;
+															this.setState({ mainGuildID: option.id });
+															break;
+														}
+													}
+												}
+												if (isFind) return;
 											}
+
+											return this.setState({ mainGuildID: undefined });
 										}}
 									/>:<Skeleton height={36}/>)}
 								{state.isDesktop&&<Spacing size={8} />}
