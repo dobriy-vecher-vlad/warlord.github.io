@@ -175,7 +175,7 @@ Object.defineProperty(Array.prototype, 'includesArray', {
 });
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
-const wikiVersion = '1.7.10';
+const wikiVersion = '1.7.10 (OK fixes)';
 const pathImages = 'https://dobriy-vecher-vlad.github.io/warlord-helper/media/images/';
 const serverHub = [{
 	id: 1,
@@ -404,6 +404,9 @@ const App = withAdaptivity(({ viewWidth }) => {
 			if (!auth?.login) return 'Укажите логин запроса';
 			if (!auth?.password) return 'Укажите пароль запроса';
 		}
+		if (auth?.id) auth.id = String(auth.id);
+		if (auth?.login) auth.login = String(auth.login);
+		if (auth?.password) auth.password = String(auth.password);
 		let host;
 		let request;
 		if (server == 'vk1' || server == 1) {
