@@ -21,6 +21,7 @@ import Resources from '../../data/resources.json';
 
 let syncBot = null;
 let globalTimer;
+let SAVED_DATA_ENERGY;
 
 class PANEL extends React.Component {
 	constructor(props) {
@@ -36,6 +37,7 @@ class PANEL extends React.Component {
 				chest: 0,
 				pet: 0,
 				lottery: 0,
+				energy: 0,
 				daily: 0,
 				vip: 0,
 				guildBuilds: 0,
@@ -48,6 +50,7 @@ class PANEL extends React.Component {
 				chest: null,
 				pet: null,
 				lottery: null,
+				energy: null,
 				daily: null,
 				vip: null,
 				guildBuilds: null,
@@ -339,7 +342,7 @@ class PANEL extends React.Component {
 		} = props || {};
 		const { setBotLog } = this;
 		const { BotAPI, openSnackbar, setActivePanel, numberForm } = this.props.options;
-		const { getGame, storeProfiles } = this.props.state;
+		const { getData, getGame, storeProfiles } = this.props.state;
 		
 		this._isMounted && this.setState({ isLoad: true });
 
@@ -538,19 +541,28 @@ class PANEL extends React.Component {
 		if (mode == 'chest' && action == 'open') {
 			let data;
 			if (dataProfile?.chests?.ch?.length) {
-				let chest = dataProfile?.chests?.ch?.find(chest => Number(chest._o) == 0);
-				if (chest) {
-					data = this._isMounted && await getGame(this.props.state.server, {
-						i: 100,
-						t: chest?._id,
-					}, getGameAuth);
-					if (data?.ch) {
-						this._isMounted && setBotLog({
-							avatar: `bot/resources/1_${chest._ci}.png`,
-							name: ['', 'Деревянный сундук', 'Серебряный сундук', 'Золотой сундук', 'Магический сундук', 'Трофейный сундук', 'Сундук', 'Пиратский сундук'][chest._ci],
-							message: `Откроется через ${this.props.options.getTime(data?.ch?._ot)}`,
-						}, 'message');
-					} else this._isMounted && needReload && this.setBotLog(`Нет доступных мест для взлома`, 'text');
+				let chests = dataProfile?.chests?.ch?.filter(chest => Number(chest._o) == 0);
+				if (chests?.length) {
+					let chest;
+					if (new Date().getHours() > 9 && new Date().getHours() < 21) {
+						chest = chests.sort((a, b) => [0, 15, 180, 480, 720, 300, 0, 300][a._ci] < [0, 15, 180, 480, 720, 300, 0, 300][b._ci] ? -1 : 1)[0];
+					} else {
+						chest = chests.sort((a, b) => [0, 15, 180, 480, 720, 300, 0, 300][a._ci] > [0, 15, 180, 480, 720, 300, 0, 300][b._ci] ? -1 : 1)[0];
+					}
+					console.warn(chest);
+					if (chest) {
+						data = this._isMounted && await getGame(this.props.state.server, {
+							i: 100,
+							t: chest?._id,
+						}, getGameAuth);
+						if (data?.ch) {
+							this._isMounted && setBotLog({
+								avatar: `bot/resources/1_${chest._ci}.png`,
+								name: ['', 'Деревянный сундук', 'Серебряный сундук', 'Золотой сундук', 'Магический сундук', 'Трофейный сундук', 'Сундук', 'Пиратский сундук'][chest._ci],
+								message: `Откроется через ${this.props.options.getTime(data?.ch?._ot)}`,
+							}, 'message');
+						} else this._isMounted && needReload && this.setBotLog(`Нет доступных мест для взлома`, 'text');
+					} else this._isMounted && needReload && this.setBotLog(`Нет доступных сундуков для взлома`, 'text');
 				} else this._isMounted && needReload && this.setBotLog(`Нет доступных сундуков для взлома`, 'text');
 			} else {
 				this.state.times.chest = null;
@@ -723,6 +735,48 @@ class PANEL extends React.Component {
 				this._isMounted && needReload && await this.BotResources({ profile });
 			}
 		}
+		if (mode == 'energy' && action == 'collect') {
+			let DATA_ENERGY;
+			if (!SAVED_DATA_ENERGY) {
+				DATA_ENERGY = this._isMounted && await getData(`https://dobriy-vecher-vlad.github.io/warlord/data/energy/${['ermun', 'antares'][this.props.state.server-1]}.json`);
+				if (DATA_ENERGY && typeof DATA_ENERGY === 'object') {
+					SAVED_DATA_ENERGY = DATA_ENERGY;
+				} else this._isMounted && needReload && this.setBotLog(`Ошибка при получении списка энергии`, 'text');
+			} else {
+				DATA_ENERGY = SAVED_DATA_ENERGY;
+			}
+			if (DATA_ENERGY && typeof DATA_ENERGY === 'object') {
+				let data;
+				let reward = [];
+				let count = 0;
+				for (let energy of [...DATA_ENERGY]) {
+					data = this._isMounted && await getGame(this.props.state.server, {
+						i: 87,
+						rid: energy.from,
+						lid: energy.id,
+					}, getGameAuth);
+					if (data && typeof data === 'object' && !(data.msg && data.msg == 'Время получения подарка истекло.')) {
+						data = this._isMounted && await getGame(this.props.state.server, {
+							i: 86,
+							t1: energy.from,
+							lid: energy.id,
+						}, getGameAuth);
+					}
+					if (data?.r) {
+						count++;
+						reward.push(data?.r);
+					}
+				}
+				if (count != 0) {
+					this._isMounted && setBotLog({
+						avatar: `bot/resources/0.png`,
+						name: `Ежедневная энергия`,
+						message: this.parseReward(this.joinReward(reward)),
+					}, 'message');
+				} else this._isMounted && needReload && this.setBotLog(`Все известные ссылки уже собраны`, 'text');
+			} else this._isMounted && needReload && this.setBotLog(`Ошибка при получении списка энергии`, 'text');
+			this._isMounted && needReload && await this.BotResources({ profile });
+		}
 		if (mode == 'daily' && action == 'collect') {
 			let data;
 			data = this._isMounted && await getGame(this.props.state.server, {
@@ -792,6 +846,7 @@ class PANEL extends React.Component {
 			this._isMounted && await this.BotResources({ mode: 'pet', action: 'send', needReload: false, profile });
 			this._isMounted && await this.BotResources({ mode: 'lottery', action: 'collect', needReload: false, profile });
 			this._isMounted && await this.BotResources({ mode: 'search', action: 'collect', needReload: false, profile });
+			this._isMounted && await this.BotResources({ mode: 'energy', action: 'collect', needReload: false, profile });
 			this._isMounted && await this.BotResources({ mode: 'daily', action: 'collect', needReload: false, profile });
 			this._isMounted && await this.BotResources({ mode: 'vip', action: 'collect', needReload: false, profile });
 			this._isMounted && await this.BotResources({ mode: 'guildBuild', action: 'collect', needReload: false, profile });
@@ -837,6 +892,7 @@ class PANEL extends React.Component {
 	async componentWillUnmount () {
 		this._isMounted = false;
 		syncBot = null;
+		SAVED_DATA_ENERGY = null;
 		clearInterval(globalTimer);
 	};
 	async shouldComponentUpdate(nextProps, nextState) {
@@ -937,6 +993,18 @@ class PANEL extends React.Component {
 											<div className='ActionCard__body'>Получение награды за обыск друзей</div>
 											<div className='ActionCard__bottom'>
 												<Button mode="commerce" loading={this.state.isLoad} onClick={() => this.BotResources({ mode: 'search', action: 'collect' })}>Собрать</Button>
+											</div>
+										</div>
+									</div>
+									<div className='ActionCard' isdisabled={`${this.state.times.energy == null}`}>
+										{this.state.times.energy == null && <div className='ActionCard__hint'>{this.state.hints.energy || 'Недоступно'}</div>}
+										<div>
+											<div className='ActionCard__head'>
+												<div className='ActionCard__head--title'>Ежедневная энергия</div>
+											</div>
+											<div className='ActionCard__body'>Получение энергии по ссылкам</div>
+											<div className='ActionCard__bottom'>
+												<Button mode="commerce" loading={this.state.isLoad} onClick={() => this.BotResources({ mode: 'energy', action: 'collect' })}>Собрать</Button>
 											</div>
 										</div>
 									</div>
