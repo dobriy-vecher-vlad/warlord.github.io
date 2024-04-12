@@ -544,12 +544,11 @@ class PANEL extends React.Component {
 				let chests = dataProfile?.chests?.ch?.filter(chest => Number(chest._o) == 0);
 				if (chests?.length) {
 					let chest;
-					if (new Date().getHours() > 9 && new Date().getHours() < 21) {
+					if (new Date().getHours() > 7 && new Date().getHours() < 21) {
 						chest = chests.sort((a, b) => [0, 15, 180, 480, 720, 300, 0, 300][a._ci] < [0, 15, 180, 480, 720, 300, 0, 300][b._ci] ? -1 : 1)[0];
 					} else {
 						chest = chests.sort((a, b) => [0, 15, 180, 480, 720, 300, 0, 300][a._ci] > [0, 15, 180, 480, 720, 300, 0, 300][b._ci] ? -1 : 1)[0];
 					}
-					console.warn(chest);
 					if (chest) {
 						data = this._isMounted && await getGame(this.props.state.server, {
 							i: 100,
