@@ -141,7 +141,9 @@ class PANEL extends React.Component {
 					if (_item.lvl >= 5 || _item.scrolls < [...enchantmentsScrolls].splice(0, 5)?.[_item.lvl]) return;
 				}
 				_item.prices = enchantmentsMultiplier.map((multiplier) => Math.ceil((_item.dmg + _item.hp) * multiplier) * (this.state.resources.find(resource => resource.id == `m${_item.currency}`)?.multiplier || 1));
-				if (this.state.resources.find(resource => resource.id == `m${_item.currency}`)?.count < _item.prices[_item.lvl]) _item.blocked = true;
+				if (this.state.resources.find(resource => resource.id == `m${_item.currency}`)?.count < _item.prices[_item.lvl]) {
+					_item.blocked = true;
+				} else _item.blocked = false;
 				_item.enchantments = {
 					dmg: enchantmentsMultiplier.map((multiplier) => Math.ceil(_item.dmg * multiplier || 0)),
 					hp: enchantmentsMultiplier.map((multiplier) => Math.ceil(_item.hp * multiplier || 0)),
@@ -244,7 +246,7 @@ class PANEL extends React.Component {
 										currentHp = 0;
 									}
 									return (<React.Fragment key={x}>
-										<div style={{ marginLeft: state.isDesktop ? 0 : 8, marginRight: state.isDesktop ? 0 : 8 }}>{options.getItemPreview(item, x, `Необходимо ${options.numberSpaces(item.prices[item.lvl], ' ')} ${options.numberForm(item.prices[item.lvl], this.state.resources.find(resource => resource.id == `m${item.currency}`)?.forms)} и ${scrolls} ${options.numberForm(scrolls, item.lvl >= 5 ? ['жемчужина', 'жемчужины', 'жемчужин'] : ['заточка', 'заточки', 'заточек'])}`, false, false, false, false, false, (item.blocked ? <Button disabled={true} appearance="overlay" mode="secondary">Не хватает ресурсов</Button> : <Button loading={this.state.isLoad} before={<Icon12ArrowUp style={{color: 'var(--button_commerce_foreground,var(--vkui--color_text_contrast))'}}/>} appearance="positive" mode="primary" onClick={() => this.upgradeItem(item)}>Улучшить</Button>))}</div>
+										<div style={{ marginLeft: state.isDesktop ? 0 : 8, marginRight: state.isDesktop ? 0 : 8 }}>{options.getItemPreview(item, x, `Необходимо ${options.numberSpaces(item.prices[item.lvl], ' ')} ${options.numberForm(item.prices[item.lvl], this.state.resources.find(resource => resource.id == `m${item.currency}`)?.forms)} и ${scrolls} ${options.numberForm(scrolls, item.lvl >= 5 ? ['жемчужина', 'жемчужины', 'жемчужин'] : ['заточка', 'заточки', 'заточек'])}`, false, false, false, false, false, (item.blocked ? <Button disabled={true} appearance="neutral" mode="secondary">Не хватает ресурсов</Button> : <Button loading={this.state.isLoad} before={<Icon12ArrowUp style={{color: 'var(--button_commerce_foreground,var(--vkui--color_text_contrast))'}}/>} appearance="positive" mode="primary" onClick={() => this.upgradeItem(item)}>Улучшить</Button>))}</div>
 										<Spacing size={16} separator />
 										<div className="CounterCell__grid">
 											<div className="CounterCell">

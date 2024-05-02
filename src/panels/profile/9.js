@@ -11,8 +11,10 @@ import {
 	CardScroll,
 	Card,
 	Counter,
+	Checkbox,
+	Link,
 } from '@vkontakte/vkui';
-import { Icon28ListOutline } from '@vkontakte/icons';
+import { Icon16LinkOutline, Icon24ExternalLinkOutline, Icon28ListOutline } from '@vkontakte/icons';
 import Skeleton from '../../components/skeleton';
 
 import Items from '../../data/items.json';
@@ -59,10 +61,11 @@ class PANEL extends React.Component {
 				search: null,
 			},
 			data: {
+				guildReward: false,
 				guildWars: {
 					start: null,
 					end: null,
-				}
+				},
 			},
 			resources: [{
 				id: 'chest',
@@ -649,7 +652,7 @@ class PANEL extends React.Component {
 				this._isMounted && needReload && await this.BotResources({ profile });
 			}
 		}
-		if (mode == 'guildReward' && action == 'collect' && profile.main) {
+		if (mode == 'guildReward' && action == 'collect' && this.state.data.guildReward) {
 			if (Number(dataProfile?.u?._clan_id) != 0) {
 				let data;
 				data = this._isMounted && await getGame(this.props.state.server, {
@@ -935,7 +938,7 @@ class PANEL extends React.Component {
 												<div className='ActionCard__head--title'>Карта</div>
 												<div className='ActionCard__head--after'>{this.state.times.map || '0/0'}</div>
 											</div>
-											<div className='ActionCard__body'>Взаимодействие со зданиями на карте</div>
+											<div className='ActionCard__body'>Сбор награды и улучшение доступных построек на карте</div>
 											<div className='ActionCard__bottom'>
 												<Button mode="commerce" loading={this.state.isLoad} onClick={() => this.BotResources({ mode: 'map', action: 'collect' })}>Собрать</Button>
 												<Button mode="secondary" loading={this.state.isLoad} onClick={() => this.BotResources({ mode: 'map', action: 'upgrade' })}>Улучшить</Button>
@@ -949,7 +952,7 @@ class PANEL extends React.Component {
 												<div className='ActionCard__head--title'>Сундук</div>
 												<div className='ActionCard__head--after'>{this.props.options.getTime(this.state.times.chest)}</div>
 											</div>
-											<div className='ActionCard__body'>Взаимодействие с сундуками в профиле</div>
+											<div className='ActionCard__body'>Сбор награды и взлом активных сундуков в профиле</div>
 											<div className='ActionCard__bottom'>
 												<Button mode="commerce" loading={this.state.isLoad} disabled={this.state.times.chest > 0 || this.state.times.chest == 'clear'} onClick={() => this.BotResources({ mode: 'chest', action: 'collect' })}>Собрать</Button>
 												<Button mode="secondary" loading={this.state.isLoad} disabled={this.state.times.chest != 'clear'} onClick={() => this.BotResources({ mode: 'chest', action: 'open' })}>Взломать</Button>
@@ -963,7 +966,7 @@ class PANEL extends React.Component {
 												<div className='ActionCard__head--title'>Питомец</div>
 												<div className='ActionCard__head--after'>{this.props.options.getTime(this.state.times.pet)}</div>
 											</div>
-											<div className='ActionCard__body'>Взаимодействие с активным питомцем</div>
+											<div className='ActionCard__body'>Сбор награды и отправка на поиск активного питомца</div>
 											<div className='ActionCard__bottom'>
 												<Button mode="commerce" loading={this.state.isLoad} disabled={this.state.times.pet > 0 || this.state.times.pet == 'clear'} onClick={() => this.BotResources({ mode: 'pet', action: 'collect' })}>Собрать</Button>
 												<Button mode="secondary" loading={this.state.isLoad} disabled={this.state.times.pet != 'clear'} onClick={() => this.BotResources({ mode: 'pet', action: 'send' })}>Отправить</Button>
@@ -977,7 +980,7 @@ class PANEL extends React.Component {
 												<div className='ActionCard__head--title'>Лотерея</div>
 												<div className='ActionCard__head--after'>{this.props.options.getTime(this.state.times.lottery)}</div>
 											</div>
-											<div className='ActionCard__body'>Получение награды за лотерею</div>
+											<div className='ActionCard__body'>Сбор ежедневной награды за игру в лотерею</div>
 											<div className='ActionCard__bottom'>
 												<Button mode="commerce" loading={this.state.isLoad} disabled={this.state.times.lottery > 0} onClick={() => this.BotResources({ mode: 'lottery', action: 'collect' })}>Собрать</Button>
 											</div>
@@ -989,7 +992,7 @@ class PANEL extends React.Component {
 											<div className='ActionCard__head'>
 												<div className='ActionCard__head--title'>Обыск друзей</div>
 											</div>
-											<div className='ActionCard__body'>Получение награды за обыск друзей</div>
+											<div className='ActionCard__body'>Сбор ежедневной награды за обыск друзей</div>
 											<div className='ActionCard__bottom'>
 												<Button mode="commerce" loading={this.state.isLoad} onClick={() => this.BotResources({ mode: 'search', action: 'collect' })}>Собрать</Button>
 											</div>
@@ -999,9 +1002,9 @@ class PANEL extends React.Component {
 										{this.state.times.energy == null && <div className='ActionCard__hint'>{this.state.hints.energy || 'Недоступно'}</div>}
 										<div>
 											<div className='ActionCard__head'>
-												<div className='ActionCard__head--title'>Ежедневная энергия</div>
+												<div className='ActionCard__head--title'>Энергия</div>
 											</div>
-											<div className='ActionCard__body'>Получение энергии по ссылкам</div>
+											<div className='ActionCard__body'>Сбор ежедневной энергии по ссылкам со стены <Link href="https://vk.com/wiki.warlord" target="_blank">vk.com/wiki.warlord <Icon24ExternalLinkOutline width={16} height={16} /></Link></div>
 											<div className='ActionCard__bottom'>
 												<Button mode="commerce" loading={this.state.isLoad} onClick={() => this.BotResources({ mode: 'energy', action: 'collect' })}>Собрать</Button>
 											</div>
@@ -1013,7 +1016,7 @@ class PANEL extends React.Component {
 											<div className='ActionCard__head'>
 												<div className='ActionCard__head--title'>Ежедневная награда</div>
 											</div>
-											<div className='ActionCard__body'>Получение награды за вход в игру</div>
+											<div className='ActionCard__body'>Собирает случайную награду за ежедневный вход в игру</div>
 											<div className='ActionCard__bottom'>
 												<Button mode="commerce" loading={this.state.isLoad} onClick={() => this.BotResources({ mode: 'daily', action: 'collect' })}>Собрать</Button>
 											</div>
@@ -1025,7 +1028,7 @@ class PANEL extends React.Component {
 											<div className='ActionCard__head'>
 												<div className='ActionCard__head--title'>Премиум сундук</div>
 											</div>
-											<div className='ActionCard__body'>Получение награды за премиум статус</div>
+											<div className='ActionCard__body'>Собирает сундук, который выдается за премиум статус</div>
 											<div className='ActionCard__bottom'>
 												<Button mode="commerce" loading={this.state.isLoad} onClick={() => this.BotResources({ mode: 'vip', action: 'collect' })}>Собрать</Button>
 											</div>
@@ -1038,7 +1041,7 @@ class PANEL extends React.Component {
 												<div className='ActionCard__head--title'>Здания гильдии</div>
 												<div className='ActionCard__head--after'>{this.props.options.getTime(this.state.times.guildBuilds)}</div>
 											</div>
-											<div className='ActionCard__body'>Получение награды за обыск зданий</div>
+											<div className='ActionCard__body'>Собирает награду за обыск зданий, которые построены в гильдии</div>
 											<div className='ActionCard__bottom'>
 												<Button mode="commerce" loading={this.state.isLoad} disabled={this.state.times.guildBuilds > 0} onClick={() => this.BotResources({ mode: 'guildBuild', action: 'collect' })}>Собрать</Button>
 											</div>
@@ -1050,9 +1053,13 @@ class PANEL extends React.Component {
 											<div className='ActionCard__head'>
 												<div className='ActionCard__head--title'>Дань гильдии</div>
 											</div>
-											<div className='ActionCard__body'>Получение награды за захваченные районы</div>
+											<div className='ActionCard__body'>Собирает награду за захваченные районы гильдией</div>
 											<div className='ActionCard__bottom'>
 												<Button mode="commerce" loading={this.state.isLoad} onClick={() => this.BotResources({ mode: 'guildReward', action: 'collect' })}>Собрать</Button>
+											</div>
+											<Spacing separator size={16} style={{padding: 0, marginRight: '-16px', marginLeft: '-16px'}}/>
+											<div className='ActionCard__bottom'>
+												<Checkbox onChange={() => (this.state.data.guildReward = !this.state.data.guildReward, this.setState({ data: this.state.data }))} checked={this.state.data.guildReward}>Собирать со всех</Checkbox>
 											</div>
 										</div>
 									</div>
@@ -1062,9 +1069,12 @@ class PANEL extends React.Component {
 											<div className='ActionCard__head'>
 												<div className='ActionCard__head--title'>Набеги гильдии</div>
 											</div>
-											<div className='ActionCard__body'>Получение награды за побеждённых врагов</div>
+											<div className='ActionCard__body'>Собирает награды за побеждённых врагов во всех возможных набегах</div>
 											<div className='ActionCard__bottom'>
 												<Button mode="commerce" loading={this.state.isLoad} onClick={() => this.BotResources({ mode: 'guildWars', action: 'collect' })}>Собрать</Button>
+											</div>
+											<Spacing separator size={16} style={{padding: 0, marginRight: '-16px', marginLeft: '-16px'}}/>
+											<div className='ActionCard__bottom'>
 												<Input disabled={this.state.isLoad} placeholder='Начало' value={String(this.state.data.guildWars.start || '')} onChange={(e) => (this.state.data.guildWars.start = Number(e.target.value), this.setState({ data: this.state.data }))} type="number"/>
 												<Input disabled={this.state.isLoad} placeholder='Конец' value={String(this.state.data.guildWars.end || '')} onChange={(e) => (this.state.data.guildWars.end = Number(e.target.value), this.setState({ data: this.state.data }))} type="number"/>
 											</div>
@@ -1134,8 +1144,8 @@ class PANEL extends React.Component {
 								</div>
 								<div className='ActionCard__body'><Skeleton height={16} width={'75%'}/></div>
 								<div className='ActionCard__bottom'>
-									<Skeleton height={state.isDesktop ? 28 : 30} width={90}/>
-									<Skeleton height={state.isDesktop ? 28 : 30} width={90}/>
+									<Skeleton height={state.isDesktop ? 28 : 30} width={'100%'}/>
+									<Skeleton height={state.isDesktop ? 28 : 30} width={'100%'}/>
 								</div>
 							</div>)}
 						</div>
