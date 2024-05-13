@@ -702,7 +702,23 @@ div.Scroll::-webkit-scrollbar-track {
 .Spacing.withRound {
 	height: calc(20px * 2 + 8px);
 	background-color: var(--background_page);
-	margin: -20px 0;
+	margin: -8px 0;
+	position: relative;
+	justify-content: space-between;
+}
+.Spacing.withRound::after,
+.Spacing.withRound::before {
+	--vkui--size_border_radius_paper--regular: 16px;
+	content: '';
+	display: block;
+	height: var(--vkui--size_border_radius_paper--regular);
+	background-color: var(--background_content,var(--vkui--color_background_content));
+}
+.Spacing.withRound::after {
+	border-radius: var(--vkui--size_border_radius_paper--regular) var(--vkui--size_border_radius_paper--regular) 0 0;
+}
+.Spacing.withRound::before {
+	border-radius: 0 0 var(--vkui--size_border_radius_paper--regular) var(--vkui--size_border_radius_paper--regular);
 }
 
 
@@ -2691,8 +2707,6 @@ body[scheme=space_gray] .ActionCard::after {
 	box-sizing: border-box;
 	border-radius: inherit;
 }
-
-
 .ActionCards [isdisabled="true"] .Button__spinner,
 .ActionCards .Button[disabled] .Button__spinner {
 	visibility: hidden;
@@ -2701,6 +2715,12 @@ body[scheme=space_gray] .ActionCard::after {
 .ActionCards [isdisabled="true"] .Button__spinner + .Button__in,
 .ActionCards .Button[disabled] .Button__spinner + .Button__in {
 	visibility: visible;
+}
+.ActionCard__head ~ .Spacing--separator {
+	color: #E9E9E9;
+}
+body[scheme=space_gray] .ActionCard__head ~ .Spacing--separator {
+	color: #2B2B2B;
 }
 
 

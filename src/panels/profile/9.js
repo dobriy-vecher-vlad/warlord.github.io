@@ -652,7 +652,7 @@ class PANEL extends React.Component {
 				this._isMounted && needReload && await this.BotResources({ profile });
 			}
 		}
-		if (mode == 'guildReward' && action == 'collect' && this.state.data.guildReward) {
+		if (mode == 'guildReward' && action == 'collect' && (profile.main || this.state.data.guildReward)) {
 			if (Number(dataProfile?.u?._clan_id) != 0) {
 				let data;
 				data = this._isMounted && await getGame(this.props.state.server, {
@@ -929,7 +929,7 @@ class PANEL extends React.Component {
 					</div>
 					{syncBot?<React.Fragment>
 						<PullToRefresh onRefresh={() => !this.state.isLoad&&this.BotResources().then(() => this.setBotLog(`данные обновлены`, 'text'))} isFetching={this.state.isLoad}>
-							<div className="Scroll" style={{maxHeight: state.isDesktop ? '314px' : 'unset'}}>
+							<div className="Scroll" style={{maxHeight: state.isDesktop ? '240px' : 'unset'}}>
 								<div className='ActionCards'>
 									<div className='ActionCard' isdisabled={`${this.state.times.map == null}`}>
 										{this.state.times.map == null && <div className='ActionCard__hint'>{this.state.hints.map || 'Недоступно'}</div>}
@@ -1138,11 +1138,11 @@ class PANEL extends React.Component {
 						</div>
 					</React.Fragment>:<React.Fragment>
 						<div className='ActionCards'>
-							{new Array(6).fill(null).map((item, x) => <div className='ActionCard' key={x}>
+							{new Array(4).fill(null).map((item, x) => <div className='ActionCard' key={x}>
 								<div className='ActionCard__head'>
 									<div className='ActionCard__head--title'><Skeleton height={20} width={70}/></div>
 								</div>
-								<div className='ActionCard__body'><Skeleton height={16} width={'75%'}/></div>
+								<div className='ActionCard__body'><Skeleton height={32} width={'75%'}/></div>
 								<div className='ActionCard__bottom'>
 									<Skeleton height={state.isDesktop ? 28 : 30} width={'100%'}/>
 									<Skeleton height={state.isDesktop ? 28 : 30} width={'100%'}/>

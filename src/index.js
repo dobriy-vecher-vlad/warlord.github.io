@@ -175,7 +175,7 @@ Object.defineProperty(Array.prototype, 'includesArray', {
 });
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
-const wikiVersion = '1.7.12';
+const wikiVersion = '1.7.14';
 const pathImages = 'https://dobriy-vecher-vlad.github.io/warlord-helper/media/images/';
 const serverHub = [{
 	id: 1,
@@ -2563,7 +2563,7 @@ const App = withAdaptivity(({ viewWidth }) => {
 										</React.Fragment>}
 										{!isDesktop && <React.Fragment>
 											<Spacing size={8}/>
-											<Group>
+											<Group separator="hide">
 												<CardGrid className={`CardsNews withIcon CardGrid--xs`}>
 													<Card data-story="map" onClick={onStoryChange}><HorizontalCell size='l' header="Карта"><Icon28GlobeOutline style={{['--fill']: 'var(--systemBlue)' }}/></HorizontalCell></Card>
 													<Card data-story="bosses" onClick={onStoryChange}><HorizontalCell size='l' header="Боссы"><Icon28PawOutline style={{['--fill']: 'var(--systemRed)' }}/></HorizontalCell></Card>
