@@ -118,7 +118,7 @@ let DEFAULT_AUTHORIZATION = [{
 	login: '292859277',
 	password: 'de73003f6d508e583e9c7f316024abbf',
 }, {
-	login: 'KGnXPZ/t46SDZ46xPer1buo3SxqTFRrUSi9L2B8JW/o=',
+	login: 'GI35gYrUj8YOaE8+V3RYiOm7yn+QWroYrvN1cSt8lZ0=',
 	password: 'GI35gYrUj8YOaE8+V3RYiOm7yn+QWroYrvN1cSt8lZ0=',
 }, {
 	login: '584840646046,597549694268',
@@ -126,6 +126,10 @@ let DEFAULT_AUTHORIZATION = [{
 }, {
 	login: '584840646046,628131408',
 	password: '60a2b68552999dcb1126611e6e008d48,-s-7Un0j3I8qVnwDYKbr1o2C-PWrwtvcXMUP.rydZR3qxL0eaLcK1oUE6t-KUpwdYQTMwswgVPcOWp2CdJaNxnveYM2',
+}, {
+	id: '12595',
+	login: '210697718',
+	password: '1302195fadf424defdc77c06948d00e9',
 }];
 let syncUser = null;
 let syncUserGame = null;
@@ -175,7 +179,7 @@ Object.defineProperty(Array.prototype, 'includesArray', {
 });
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
-const wikiVersion = '1.7.14';
+const wikiVersion = '1.8.0';
 const pathImages = 'https://dobriy-vecher-vlad.github.io/warlord-helper/media/images/';
 const serverHub = [{
 	id: 1,
@@ -212,6 +216,13 @@ const serverHub = [{
 	site: 'ok.ru',
 	company: 'Одноклассники',
 	logo: `${pathImages}/main/logo_ok.svg`,
+}, {
+	id: 6,
+	name: 'Эрмун',
+	api: 'gm',
+	site: 'vkplay.ru',
+	company: 'VK Play',
+	logo: `${pathImages}/main/logo_vk.svg`,
 }];
 
 
@@ -544,6 +555,36 @@ const App = withAdaptivity(({ viewWidth }) => {
 				request = {
 					...request,
 					api_uid: auth.login.split(',')[0],
+				};
+			}
+			request = {
+				...request,
+				...body,
+			};
+		}
+		if (server == 'gm' || server == 6) {
+			host = 'gs1.geronimo.su/';
+			request = {
+				api_type: 'gm',
+				api_id: 5782,
+			};
+			if (type == 1) {
+				host += 'warlord_ya1/game.php';
+				request = {
+					...request,
+					sslt: 0,
+					api_uid: auth.login,
+					auth_key: auth.password,
+					currency: 'RUB',
+					lang: 'ru_RU',
+				};
+				if (Object.keys(body).length) request.UID = auth.id || auth.login;
+			}
+			if (type == 2) {
+				host += 'gameHub/index.php';
+				request = {
+					...request,
+					api_uid: auth.login,
 				};
 			}
 			request = {
