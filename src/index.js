@@ -118,6 +118,7 @@ let DEFAULT_AUTHORIZATION = [{
 	login: '292859277',
 	password: 'de73003f6d508e583e9c7f316024abbf',
 }, {
+	id: '12591',
 	login: 'GI35gYrUj8YOaE8+V3RYiOm7yn+QWroYrvN1cSt8lZ0=',
 	password: 'GI35gYrUj8YOaE8+V3RYiOm7yn+QWroYrvN1cSt8lZ0=',
 }, {
@@ -179,7 +180,7 @@ Object.defineProperty(Array.prototype, 'includesArray', {
 });
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
-const wikiVersion = '1.8.0';
+const wikiVersion = '1.8.1';
 const pathImages = 'https://dobriy-vecher-vlad.github.io/warlord-helper/media/images/';
 const serverHub = [{
 	id: 1,
@@ -487,16 +488,16 @@ const App = withAdaptivity(({ viewWidth }) => {
 				request = {
 					...request,
 					sslt: 0,
-					UID: auth.id || auth.login,
-					api_uid: auth.password,
-					lapi_uid: auth.id || auth.login,
+					api_uid: auth.login,
+					lapi_uid: auth.password,
 				};
+				if (Object.keys(body).length) request.UID = auth.id || auth.login;
 			}
 			if (type == 2) {
 				host += 'gameHub/index.php';
 				request = {
 					...request,
-					api_uid: auth.password,
+					api_uid: auth.login,
 				};
 			}
 			request = {
